@@ -14,817 +14,387 @@
             --vermelho-obrigatorio: #E53935;
             --verde-sucesso: #2E7D32;
             --branco: #FFFFFF;
-            --cinza-bg: #F5F5F5;
             --cinza-borda: #D0D0D0;
-            --cinza-texto: #666666;
             --preto: #1A1A1A;
             --sombra: 0 4px 24px rgba(0,0,0,0.12);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--preto);
-            min-height: 100vh;
-            overflow-x: hidden;
-            color: #333;
-        }
-        .bg-pattern {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; z-index: 0;
-            overflow: hidden; background: #0D0D0D;
-        }
+        body { font-family: 'Inter', sans-serif; background: var(--preto); min-height: 100vh; overflow-x: hidden; color: #333; }
+        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; background: #0D0D0D; }
         .bg-pattern canvas { width: 100%; height: 100%; }
-        .form-wrapper {
-            position: relative; z-index: 1;
-            max-width: 900px; margin: 40px auto; padding: 0 20px;
-        }
+        .form-wrapper { position: relative; z-index: 1; max-width: 900px; margin: 40px auto; padding: 0 20px; }
         .form-header { text-align: center; margin-bottom: 24px; }
-        .form-header .logo-text {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px; font-weight: 700;
-            color: var(--branco); letter-spacing: 1px;
-        }
+        .form-header .logo-text { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: #FFFFFF; letter-spacing: 1px; }
         .form-header .logo-text span { color: #E91E63; }
-        .form-card {
-            background: var(--branco); border-radius: 16px;
-            box-shadow: var(--sombra); overflow: hidden;
-            animation: cardEntry 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes cardEntry {
-            from { opacity: 0; transform: translateY(30px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .card-top {
-            background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro));
-            padding: 32px 40px; color: var(--branco);
-        }
-        .card-top h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 24px; font-weight: 700;
-            margin-bottom: 8px; letter-spacing: 0.5px;
-        }
+        .form-card { background: #fff; border-radius: 16px; box-shadow: var(--sombra); overflow: hidden; animation: cardEntry 0.6s cubic-bezier(0.175,0.885,0.32,1.275); }
+        @keyframes cardEntry { from { opacity:0; transform:translateY(30px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+        .card-top { background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro)); padding: 32px 40px; color: #fff; }
+        .card-top h1 { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 8px; }
         .card-top p { font-size: 14px; line-height: 1.6; opacity: 0.9; }
-        .step-indicator {
-            display: flex; align-items: center; gap: 12px;
-            padding: 20px 40px; background: #F8F0FC;
-            border-bottom: 1px solid #E8D5F0;
-        }
-        .step-badge {
-            background: var(--roxo-principal); color: var(--branco);
-            font-size: 11px; font-weight: 700; padding: 4px 12px;
-            border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase;
-        }
+        .step-indicator { display: flex; align-items: center; gap: 12px; padding: 20px 40px; background: #F8F0FC; border-bottom: 1px solid #E8D5F0; }
+        .step-badge { background: var(--roxo-principal); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; }
         .step-text { font-size: 13px; color: var(--roxo-escuro); font-weight: 500; }
-
         .flash-messages { list-style: none; padding: 0; margin: 0; }
-        .flash-messages li {
-            padding: 14px 40px; font-size: 14px; font-weight: 500;
-            display: flex; align-items: center; gap: 10px;
-            animation: flashIn 0.4s ease;
-        }
-        .flash-messages li.error {
-            background: #FDE8E8; color: #B71C1C;
-            border-bottom: 2px solid #E53935;
-        }
-        .flash-messages li.success {
-            background: #E8F5E9; color: #1B5E20;
-            border-bottom: 2px solid #2E7D32;
-        }
-        @keyframes flashIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #toast-container {
-            position: fixed; top: 20px; right: 20px; z-index: 9999;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .toast {
-            min-width: 250px; padding: 12px 16px;
-            background: #333; color: #fff;
-            border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            font-size: 14px; font-weight: 500;
-            display: flex; align-items: center; gap: 10px;
-            animation: slideInRight 0.3s ease forwards;
-            border-left: 4px solid var(--roxo-principal);
-        }
+        .flash-messages li { padding: 14px 40px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; animation: flashIn 0.4s ease; }
+        .flash-messages li.error { background: #FDE8E8; color: #B71C1C; border-bottom: 2px solid #E53935; }
+        .flash-messages li.success { background: #E8F5E9; color: #1B5E20; border-bottom: 2px solid #2E7D32; }
+        @keyframes flashIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { min-width: 250px; padding: 12px 16px; background: #333; color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; animation: slideInRight 0.3s ease forwards; border-left: 4px solid var(--roxo-principal); }
         .toast.error { border-left-color: var(--vermelho-obrigatorio); }
         .toast.success { border-left-color: var(--verde-sucesso); }
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
+        @keyframes slideInRight { from { opacity:0; transform:translateX(50px); } to { opacity:1; transform:translateX(0); } }
         .form-body { padding: 32px 40px 40px; }
-
-        .instructions-box {
-            background: #FAFAFA; border: 1px solid #E8E8E8;
-            border-left: 4px solid var(--roxo-principal);
-            border-radius: 8px; padding: 20px 24px; margin-bottom: 28px;
-        }
+        .intro-box { background: linear-gradient(135deg, #F8F0FC, #EDE7F6); border: 1px solid #D1C4E9; border-radius: 12px; padding: 24px 28px; margin-bottom: 32px; }
+        .intro-box p { font-size: 13.5px; line-height: 1.8; color: #4A148C; margin-bottom: 10px; }
+        .intro-box p:last-child { margin-bottom: 0; font-weight: 600; color: var(--roxo-principal); }
+        .instructions-box { background: #FAFAFA; border: 1px solid #E8E8E8; border-left: 4px solid var(--roxo-principal); border-radius: 8px; padding: 20px 24px; margin-bottom: 28px; }
         .instructions-box p { font-size: 13px; line-height: 1.7; color: #444; margin-bottom: 8px; }
-
         .form-section { margin-bottom: 40px; padding-top: 10px; }
-        .section-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px; font-weight: 700; color: var(--roxo-escuro);
-            margin-bottom: 24px; padding-bottom: 12px;
-            border-bottom: 2px solid #E8D5F0;
-            display: flex; align-items: center; gap: 10px;
-        }
+        .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--roxo-escuro); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #E8D5F0; display: flex; align-items: center; gap: 10px; }
         .section-title i { font-size: 16px; color: var(--roxo-principal); }
-
         .field-group { margin-bottom: 20px; position: relative; }
-        .field-group label {
-            display: block; font-size: 13px; font-weight: 600;
-            color: #333; margin-bottom: 6px;
-        }
+        .field-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
         .field-group label .required { color: var(--vermelho-obrigatorio); font-weight: 700; margin-left: 2px; }
         .field-group .helper-text { font-size: 11px; color: #999; margin-top: 4px; }
-        .field-group input[type="text"],
-        .field-group input[type="email"],
-        .field-group input[type="number"],
-        .field-group select,
-        .field-group textarea {
-            width: 100%; padding: 10px 14px; font-size: 14px;
-            font-family: 'Inter', sans-serif; color: #333;
-            background: var(--branco); border: 1.5px solid var(--cinza-borda);
-            border-radius: 8px; outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+        .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="number"], .field-group select, .field-group textarea {
+            width: 100%; padding: 10px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: #333; background: #fff; border: 1.5px solid var(--cinza-borda); border-radius: 8px; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .field-group input:disabled, .field-group select:disabled, .field-group textarea:disabled {
-            background: #F0F0F0; color: #999; cursor: not-allowed;
-        }
-        .field-group input:focus,
-        .field-group select:focus,
-        .field-group textarea:focus {
-            border-color: var(--roxo-principal);
-            box-shadow: 0 0 0 3px rgba(123, 45, 142, 0.12);
-        }
+        .field-group input:disabled, .field-group select:disabled, .field-group textarea:disabled { background: #F0F0F0; color: #999; cursor: not-allowed; }
+        .field-group input:focus, .field-group select:focus, .field-group textarea:focus { border-color: var(--roxo-principal); box-shadow: 0 0 0 3px rgba(123,45,142,0.12); }
         .field-group input.error, .field-group select.error { border-color: var(--vermelho-obrigatorio); }
-        .field-group select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 14px center;
-            padding-right: 36px; cursor: pointer;
-        }
+        .field-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
         .field-group textarea { resize: vertical; min-height: 100px; }
-
         .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
         .radio-group { display: flex; gap: 16px; margin-top: 4px; flex-wrap: wrap; }
         .radio-option { display: flex; align-items: center; gap: 6px; cursor: pointer; }
-        .radio-option input[type="radio"] {
-            appearance: none; width: 18px; height: 18px;
-            border: 2px solid var(--cinza-borda); border-radius: 50%;
-            cursor: pointer; position: relative; transition: border-color 0.2s;
-        }
+        .radio-option input[type="radio"] { appearance: none; width: 18px; height: 18px; border: 2px solid var(--cinza-borda); border-radius: 50%; cursor: pointer; position: relative; transition: border-color 0.2s; }
         .radio-option input[type="radio"]:checked { border-color: var(--roxo-principal); }
-        .radio-option input[type="radio"]:checked::after {
-            content: ''; position: absolute; top: 3px; left: 3px;
-            width: 8px; height: 8px; background: var(--roxo-principal); border-radius: 50%;
-        }
+        .radio-option input[type="radio"]:checked::after { content: ''; position: absolute; top: 3px; left: 3px; width: 8px; height: 8px; background: var(--roxo-principal); border-radius: 50%; }
         .radio-option label { font-size: 14px; color: #333; cursor: pointer; font-weight: 400; }
-
         .checkbox-option { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .checkbox-option input[type="checkbox"] {
-            appearance: none; width: 18px; height: 18px;
-            border: 2px solid var(--cinza-borda); border-radius: 4px;
-            cursor: pointer; position: relative; flex-shrink: 0;
-        }
-        .checkbox-option input[type="checkbox"]:checked {
-            background: var(--roxo-principal); border-color: var(--roxo-principal);
-        }
-        .checkbox-option input[type="checkbox"]:checked::after {
-            content: '✓'; position: absolute; top: -2px; left: 2px;
-            font-size: 13px; color: var(--branco); font-weight: 700;
-        }
-
-        .type-selector {
-            display: flex; border-radius: 10px; overflow: hidden;
-            border: 2px solid var(--roxo-principal); margin-bottom: 24px;
-        }
-        .type-selector-btn {
-            flex: 1; text-align: center; padding: 14px 20px;
-            font-weight: 600; font-size: 14px; cursor: pointer;
-            background: var(--branco); color: var(--roxo-principal);
-            border: none; transition: all 0.25s;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        .type-selector-btn.active {
-            background: var(--roxo-principal); color: var(--branco);
-        }
+        .checkbox-option input[type="checkbox"] { appearance: none; width: 18px; height: 18px; border: 2px solid var(--cinza-borda); border-radius: 4px; cursor: pointer; position: relative; flex-shrink: 0; }
+        .checkbox-option input[type="checkbox"]:checked { background: var(--roxo-principal); border-color: var(--roxo-principal); }
+        .checkbox-option input[type="checkbox"]:checked::after { content: '✓'; position: absolute; top: -2px; left: 2px; font-size: 13px; color: #fff; font-weight: 700; }
+        .type-selector { display: flex; border-radius: 10px; overflow: hidden; border: 2px solid var(--roxo-principal); margin-bottom: 24px; }
+        .type-selector-btn { flex: 1; text-align: center; padding: 14px 20px; font-weight: 600; font-size: 14px; cursor: pointer; background: #fff; color: var(--roxo-principal); border: none; transition: all 0.25s; font-family: 'Space Grotesk', sans-serif; }
+        .type-selector-btn.active { background: var(--roxo-principal); color: #fff; }
         .type-selector-btn:hover:not(.active) { background: #F5F0FA; }
-
         .photo-upload-area { display: flex; align-items: center; gap: 20px; }
-        .photo-preview {
-            width: 80px; height: 80px; border-radius: 50%;
-            border: 2px dashed var(--cinza-borda);
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; flex-shrink: 0; background: #FAFAFA;
-        }
+        .photo-preview { width: 80px; height: 80px; border: 2px dashed var(--cinza-borda); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; background: #FAFAFA; border-radius: 8px; }
+        .photo-preview.square { border-radius: 8px; width: 100px; height: 100px; }
         .photo-preview i { font-size: 28px; color: #CCC; }
         .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
-
         .tags-container { position: relative; }
         .tags-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; min-height: 0; }
-        .tag-chip {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: #E8D5F0; color: var(--roxo-escuro);
-            padding: 5px 12px; border-radius: 16px;
-            font-size: 12px; font-weight: 500;
-            animation: chipIn 0.2s ease;
-        }
-        @keyframes chipIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .tag-chip button {
-            background: none; border: none; cursor: pointer;
-            color: var(--roxo-escuro); font-size: 15px; padding: 0;
-            line-height: 1; opacity: 0.7; transition: opacity 0.2s;
-        }
+        .tag-chip { display: inline-flex; align-items: center; gap: 6px; background: #E8D5F0; color: var(--roxo-escuro); padding: 5px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; animation: chipIn 0.2s ease; }
+        .tag-chip.suggestion { background: #FFF3E0; color: #E65100; border: 1px dashed #FF9800; }
+        @keyframes chipIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+        .tag-chip button { background: none; border: none; cursor: pointer; color: inherit; font-size: 15px; padding: 0; line-height: 1; opacity: 0.7; transition: opacity 0.2s; }
         .tag-chip button:hover { opacity: 1; }
         .tags-input-wrapper { position: relative; }
-        .tags-dropdown {
-            position: absolute; top: 100%; left: 0; right: 0;
-            max-height: 220px; overflow-y: auto;
-            background: white; border: 1.5px solid #DDD;
-            border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            z-index: 100; display: none; margin-top: 4px;
-        }
+        .tags-dropdown { position: absolute; top: 100%; left: 0; right: 0; max-height: 220px; overflow-y: auto; background: white; border: 1.5px solid #DDD; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100; display: none; margin-top: 4px; }
         .tags-dropdown.active { display: block; }
-        .tags-dropdown-item {
-            padding: 10px 14px; cursor: pointer; font-size: 13px;
-            transition: background 0.15s;
-        }
+        .tags-dropdown-item { padding: 10px 14px; cursor: pointer; font-size: 13px; transition: background 0.15s; }
         .tags-dropdown-item:hover { background: #F5F0FA; }
         .tags-dropdown-item .highlight { font-weight: 700; color: var(--roxo-principal); }
+        .tags-dropdown-item.suggestion-item { border-bottom: 1px solid #EEE; color: #E65100; font-style: italic; }
         .tags-dropdown-empty { padding: 14px; font-size: 13px; color: #999; text-align: center; }
-
-        .guest-card {
-            background: #FAFAFA; border: 1px solid #E8E8E8; border-radius: 12px;
-            padding: 24px; margin-bottom: 20px; position: relative;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            transition: all 0.3s ease;
-        }
-        .guest-card h4 {
-            font-family: 'Space Grotesk', sans-serif; font-size: 16px; color: var(--roxo-escuro);
-            margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #E0E0E0;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .remove-guest {
-            background: none; border: none; color: #999; cursor: pointer;
-            font-size: 16px; transition: color 0.2s;
-        }
+        .suggestion-input-row { display: flex; gap: 8px; margin-top: 8px; }
+        .suggestion-input-row input { flex: 1; padding: 8px 12px; border: 1.5px solid #FF9800; border-radius: 8px; font-size: 13px; outline: none; }
+        .suggestion-input-row input:focus { box-shadow: 0 0 0 3px rgba(255,152,0,0.15); }
+        .suggestion-input-row button { background: #FF9800; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
+        .guest-card { background: #FAFAFA; border: 1px solid #E8E8E8; border-radius: 12px; padding: 24px; margin-bottom: 20px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.3s ease; }
+        .guest-card h4 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; color: var(--roxo-escuro); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #E0E0E0; display: flex; justify-content: space-between; align-items: center; }
+        .remove-guest { background: none; border: none; color: #999; cursor: pointer; font-size: 16px; transition: color 0.2s; }
         .remove-guest:hover { color: var(--vermelho-obrigatorio); }
-        .guest-subsection {
-            background: #fff; padding: 12px; border: 1px solid #EEE; border-radius: 8px; margin-bottom: 12px;
-        }
-        .guest-subsection-title {
-            font-size: 12px; font-weight: 700; text-transform: uppercase; color: #888;
-            margin-bottom: 10px; letter-spacing: 0.5px;
-        }
-
-        #oficinaSection {
-            background: #FDFBFF; border: 2px dashed #D0C4E0;
-            border-radius: 12px; padding: 24px; margin-top: 20px;
-            animation: fadeIn 0.4s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .oficina-step {
-            margin-bottom: 20px; padding-bottom: 20px;
-            border-bottom: 1px solid #EEE;
-        }
+        .guest-subsection { background: #fff; padding: 12px; border: 1px solid #EEE; border-radius: 8px; margin-bottom: 12px; }
+        .guest-subsection-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #888; margin-bottom: 10px; letter-spacing: 0.5px; }
+        #oficinaSection { background: #FDFBFF; border: 2px dashed #D0C4E0; border-radius: 12px; padding: 24px; margin-top: 20px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        .oficina-step { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #EEE; }
         .oficina-step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .oficina-label {
-            font-family: 'Space Grotesk', sans-serif; font-size: 15px;
-            color: var(--roxo-escuro); font-weight: 600; margin-bottom: 12px;
-            display: block;
-        }
-
-        .representante-box {
-            background: #F8F0FC; border: 1px solid #E0D0EB;
-            border-radius: 10px; padding: 20px;
-        }
-
-        .submit-area {
-            display: flex; justify-content: flex-end; gap: 12px;
-            margin-top: 32px; padding-top: 24px; border-top: 1px solid #E8E8E8;
-        }
-        .btn-submit {
-            background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro));
-            color: var(--branco); border: none; padding: 14px 48px;
-            border-radius: 10px; font-size: 15px; font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif; cursor: pointer;
-            transition: all 0.25s;
-        }
-        .btn-submit:hover {
-            transform: translateY(-2px); box-shadow: 0 6px 20px rgba(123, 45, 142, 0.35);
-        }
-        .btn-clear {
-            background: none; border: 1.5px solid var(--cinza-borda);
-            color: #666; padding: 14px 28px; border-radius: 10px;
-            font-size: 14px; font-weight: 500; cursor: pointer;
-        }
+        .oficina-label { font-family: 'Space Grotesk', sans-serif; font-size: 15px; color: var(--roxo-escuro); font-weight: 600; margin-bottom: 12px; display: block; }
+        .representante-box { background: #F8F0FC; border: 1px solid #E0D0EB; border-radius: 10px; padding: 20px; }
+        .material-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+        .material-table th { background: var(--roxo-principal); color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
+        .material-table td { padding: 6px 8px; border-bottom: 1px solid #EEE; }
+        .material-table input { width: 100%; padding: 6px 8px; border: 1px solid var(--cinza-borda); border-radius: 4px; font-size: 13px; }
+        .material-table input:focus { border-color: var(--roxo-principal); outline: none; }
+        .material-total-row td { font-weight: 700; background: #F5F0FA; border-top: 2px solid var(--roxo-principal); }
+        .btn-add-row { background: var(--roxo-principal); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; margin-top: 8px; }
+        .btn-remove-row { background: #E53935; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .submit-area { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #E8E8E8; }
+        .btn-submit { background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro)); color: #fff; border: none; padding: 14px 48px; border-radius: 10px; font-size: 15px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; cursor: pointer; transition: all 0.25s; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(123,45,142,0.35); }
+        .btn-clear { background: none; border: 1.5px solid var(--cinza-borda); color: #666; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; }
         .btn-clear:hover { border-color: #999; background: #F5F5F5; }
-        .btn-add {
-            background: var(--roxo-principal); color: white; border: none;
-            padding: 10px 20px; border-radius: 8px; cursor: pointer;
-            font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;
-        }
+        .btn-add { background: var(--roxo-principal); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .btn-add:hover { background: var(--roxo-hover); }
         .btn-add:disabled { background: #CCC; cursor: not-allowed; }
-
         .hidden { display: none !important; }
         .char-counter { text-align: right; font-size: 11px; color: #999; margin-top: 4px; }
-
+        .bairro-field { animation: fadeIn 0.3s ease; }
         @media (max-width: 768px) {
             .form-wrapper { margin: 16px auto; padding: 0 10px; }
             .card-top, .form-body, .step-indicator { padding-left: 20px; padding-right: 20px; }
             .field-row { grid-template-columns: 1fr; }
             .submit-area { flex-direction: column; }
             .btn-submit, .btn-clear { width: 100%; }
-            .radio-group { gap: 10px; }
             .type-selector { flex-direction: column; }
+            .material-table { font-size: 11px; }
+            .material-table input { font-size: 11px; padding: 4px 6px; }
         }
     </style>
 </head>
 <body>
-
 <div class="bg-pattern"><canvas id="bgCanvas"></canvas></div>
 <div id="toast-container"></div>
-
+<canvas id="cropCanvas" width="512" height="512" style="display:none"></canvas>
 <div class="form-wrapper">
-    <div class="form-header">
-        <div class="logo-text">REC'n'<span>Play</span> 2026</div>
-    </div>
-
+    <div class="form-header"><div class="logo-text">REC'n'<span>Play</span> 2026</div></div>
     <div class="form-card">
-        <div class="card-top">
-            <h1>FORMULÁRIO EDITAL</h1>
-            <p>Fluxo Único de Inscrição e Upgrade de Propostas</p>
-        </div>
-
-        <div class="step-indicator">
-            <span class="step-badge">Etapa Única</span>
-            <span class="step-text">Preencha as informações do proponente, atividade e convidados</span>
-        </div>
-
+        <div class="card-top"><h1>FORMULÁRIO EDITAL</h1><p>Fluxo Único de Inscrição e Upgrade de Propostas</p></div>
+        <div class="step-indicator"><span class="step-badge">Etapa Única</span><span class="step-text">Preencha as informações do proponente, atividade e convidados</span></div>
         {%- with messages = get_flashed_messages(with_categories=true) -%}
         {%- if messages -%}
-        <ul class="flash-messages">
-            {%- for category, message in messages -%}
-            <li class="{{ category }}">
-                <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
-                {{ message }}
-            </li>
-            {%- endfor -%}
-        </ul>
-        {%- endif -%}
-        {%- endwith -%}
-
+        <ul class="flash-messages">{%- for category, message in messages -%}<li class="{{ category }}"><i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i> {{ message }}</li>{%- endfor -%}</ul>
+        {%- endif -%}{%- endwith -%}
         <form id="inscricaoForm" class="form-body" method="POST" action="/" enctype="multipart/form-data" novalidate>
-
-            <div class="instructions-box">
-                <p>Atenção: Este formulário segue o fluxo de upgrade. Adicione até <strong>5 convidados</strong> com informações detalhadas. Se selecionar "Oficina", campos específicos de infraestrutura serão abertos.</p>
+            <!-- INTRO -->
+            <div class="intro-box">
+                <p>O REC'n'Play é um festival colaborativo e estamos felizes com seu interesse em contribuir com nossa programação!</p>
+                <p>Este formulário é destinado a sugestões de atividades. Preencha todos os campos para que sua proposta seja avaliada.</p>
+                <p>Caso queira propor mais de uma atividade, preencha um formulário para cada atividade sugerida.</p>
+                <p>Lembramos que o envio da proposta não garante a aprovação imediata na grade de programação do evento. Além disso, ajustes podem ser solicitados a pedido da organização do festival.</p>
+                <p>Se surgir alguma dúvida, entre em contato com a equipe de programação.</p>
+                <p>Vamos começar?</p>
             </div>
-
-            <!-- 1. DADOS DO PROPONENTE -->
+            <!-- 1. PROPONENTE -->
             <div class="form-section">
                 <h2 class="section-title"><i class="fas fa-user-circle"></i> 1. Dados do Proponente</h2>
-
                 <div class="type-selector" id="typeSelector">
-                    <button type="button" class="type-selector-btn active" data-type="pf" onclick="setProponenteType('pf')">
-                        <i class="fas fa-user"></i> Pessoa Física
-                    </button>
-                    <button type="button" class="type-selector-btn" data-type="pj" onclick="setProponenteType('pj')">
-                        <i class="fas fa-building"></i> Pessoa Jurídica
-                    </button>
+                    <button type="button" class="type-selector-btn" data-type="pf" onclick="setProponenteType('pf')"><i class="fas fa-user"></i> Pessoa Física</button>
+                    <button type="button" class="type-selector-btn active" data-type="pj" onclick="setProponenteType('pj')"><i class="fas fa-building"></i> Pessoa Jurídica</button>
                 </div>
-                <input type="hidden" id="tipoProponente" name="tipoProponente" value="pf">
-
+                <input type="hidden" id="tipoProponente" name="tipoProponente" value="pj">
                 <div class="field-row">
-                    <div class="field-group">
-                        <label for="nomeInstituicao">Nome da Instituição <span class="required">*</span></label>
-                        <input type="text" id="nomeInstituicao" name="nomeInstituicao" required value="{{ dados.get('nomeInstituicao', '') }}">
-                    </div>
-                    <div class="field-group">
-                        <label for="cidadeProponente">Cidade / Estado <span class="required">*</span></label>
-                        <input type="text" id="cidadeProponente" name="cidadeProponente" required value="{{ dados.get('cidadeProponente', '') }}">
-                    </div>
+                    <div class="field-group"><label for="nomeInstituicao">Nome da Instituição <span class="required">*</span></label><input type="text" id="nomeInstituicao" name="nomeInstituicao" required value="{{ dados.get('nomeInstituicao', '') }}"></div>
+                    <div class="field-group"><label for="cidadeProponente">Cidade / Estado <span class="required">*</span></label><input type="text" id="cidadeProponente" name="cidadeProponente" required value="{{ dados.get('cidadeProponente', '') }}" oninput="checkBairro()"></div>
                 </div>
-
-                <div class="field-row hidden" id="categoriaGroup">
-                    <div class="field-group">
-                        <label for="categoria">Categoria <span class="required">*</span></label>
-                        <select id="categoria" name="categoria">
-                            <option value="">Selecione...</option>
-                            <option value="empresa" {{ 'selected' if dados.get('categoria') == 'empresa' }}>Empresa</option>
-                            <option value="ong" {{ 'selected' if dados.get('categoria') == 'ong' }}>ONG / Organização Social</option>
-                            <option value="instituicao_ensino" {{ 'selected' if dados.get('categoria') == 'instituicao_ensino' }}>Instituição de Ensino</option>
-                            <option value="orgao_publico" {{ 'selected' if dados.get('categoria') == 'orgao_publico' }}>Órgão Público</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label for="cnpjProponente">CNPJ <span class="required">*</span></label>
-                        <input type="text" id="cnpjProponente" name="cnpjProponente" placeholder="00.000.000/0000-00" value="{{ dados.get('cnpjProponente', '') }}" maxlength="18" oninput="maskCNPJ(this)">
-                    </div>
+                <div class="field-group hidden bairro-field" id="bairroGroup"><label for="bairroProponente">Bairro <span class="required">*</span></label><input type="text" id="bairroProponente" name="bairroProponente" value="{{ dados.get('bairroProponente', '') }}" placeholder="Informe o bairro"></div>
+                <!-- PJ: Categoria + CNPJ + Logo Marca -->
+                <div class="field-row" id="categoriaGroup">
+                    <div class="field-group"><label for="categoria">Categoria <span class="required">*</span></label><select id="categoria" name="categoria"><option value="">Selecione...</option><option value="empresa_startup" {{ 'selected' if dados.get('categoria') == 'empresa_startup' }}>Empresa / Startup</option><option value="ong_osc" {{ 'selected' if dados.get('categoria') == 'ong_osc' }}>ONG / OSC / OS</option><option value="instituicao_ensino" {{ 'selected' if dados.get('categoria') == 'instituicao_ensino' }}>Instituição de Ensino</option><option value="orgao_publico" {{ 'selected' if dados.get('categoria') == 'orgao_publico' }}>Órgão Público</option><option value="fundacao_instituto" {{ 'selected' if dados.get('categoria') == 'fundacao_instituto' }}>Fundação / Instituto</option><option value="coletivo" {{ 'selected' if dados.get('categoria') == 'coletivo' }}>Coletivo</option></select></div>
+                    <div class="field-group"><label for="cnpjProponente">CNPJ <span class="required">*</span></label><input type="text" id="cnpjProponente" name="cnpjProponente" placeholder="00.000.000/0000-00" value="{{ dados.get('cnpjProponente', '') }}" maxlength="18" oninput="maskCNPJ(this)"></div>
                 </div>
-
-                <div class="field-row" id="nacionalidadeGroup">
-                    <div class="field-group">
-                        <label for="nacionalidadeProponente">Nacionalidade <span class="required">*</span></label>
-                        <select id="nacionalidadeProponente" name="nacionalidadeProponente" onchange="toggleProponenteDocs()">
-                            <option value="brasileiro" {{ 'selected' if dados.get('nacionalidadeProponente') != 'estrangeiro' }}>Brasileiro</option>
-                            <option value="estrangeiro" {{ 'selected' if dados.get('nacionalidadeProponente') == 'estrangeiro' }}>Estrangeiro</option>
-                        </select>
-                    </div>
-                    <div class="field-group" id="docCpfField">
-                        <label for="cpfProponente">CPF <span class="required">*</span></label>
-                        <input type="text" id="cpfProponente" name="cpfProponente" placeholder="000.000.000-00" value="{{ dados.get('cpfProponente', '') }}" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)">
-                    </div>
-                    <div class="field-group hidden" id="docPassaporteField">
-                        <label for="passaporteProponente">Passaporte <span class="required">*</span></label>
-                        <input type="text" id="passaporteProponente" name="passaporteProponente" value="{{ dados.get('passaporteProponente', '') }}">
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <label>Foto do Perfil</label>
-                    <div class="photo-upload-area">
-                        <div class="photo-preview" id="photoPreview"><i class="fas fa-user"></i></div>
-                        <div class="photo-input-wrapper">
-                            <input type="file" id="fotoProponente" name="fotoProponente" accept="image/png,image/jpeg,image/webp">
-                            <div class="helper-text">Formatos: PNG, JPG, WebP. Máx 5MB.</div>
-                        </div>
-                    </div>
+                <div class="field-group" id="logoMarcaGroup"><label>Logo Marca</label><div class="photo-upload-area"><div class="photo-preview square" id="photoPreview"><i class="fas fa-image"></i></div><div class="photo-input-wrapper"><input type="file" id="fotoProponente" name="fotoProponente" accept="image/png,image/jpeg,image/webp"><div class="helper-text">Formatos: PNG, JPG, WebP. Máx 5MB.</div></div></div></div>
+                <!-- PF: Nacionalidade + CPF/Passaporte (SEM foto) -->
+                <div class="field-row hidden" id="nacionalidadeGroup">
+                    <div class="field-group"><label for="nacionalidadeProponente">Nacionalidade <span class="required">*</span></label><select id="nacionalidadeProponente" name="nacionalidadeProponente" onchange="toggleProponenteDocs()"><option value="brasileiro" {{ 'selected' if dados.get('nacionalidadeProponente') != 'estrangeiro' }}>Brasileiro</option><option value="estrangeiro" {{ 'selected' if dados.get('nacionalidadeProponente') == 'estrangeiro' }}>Estrangeiro</option></select></div>
+                    <div class="field-group" id="docCpfField"><label for="cpfProponente">CPF <span class="required">*</span></label><input type="text" id="cpfProponente" name="cpfProponente" placeholder="000.000.000-00" value="{{ dados.get('cpfProponente', '') }}" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)"></div>
+                    <div class="field-group hidden" id="docPassaporteField"><label for="passaporteProponente">Passaporte <span class="required">*</span></label><input type="text" id="passaporteProponente" name="passaporteProponente" value="{{ dados.get('passaporteProponente', '') }}"></div>
                 </div>
             </div>
-
-            <!-- 2. REPRESENTANTE DA INSCRIÇÃO -->
+            <!-- 2. REPRESENTANTE -->
             <div class="form-section">
                 <h2 class="section-title"><i class="fas fa-id-badge"></i> 2. Representante da Inscrição</h2>
                 <div class="representante-box">
-                    <div class="field-row">
-                        <div class="field-group">
-                            <label for="nomeRepresentante">Nome do Representante <span class="required">*</span></label>
-                            <input type="text" id="nomeRepresentante" name="nomeRepresentante" required value="{{ dados.get('nomeRepresentante', '') }}">
-                        </div>
-                        <div class="field-group">
-                            <label for="telefoneRepresentante">Telefone do Representante <span class="required">*</span></label>
-                            <input type="text" id="telefoneRepresentante" name="telefoneRepresentante" placeholder="(00) 00000-0000" required value="{{ dados.get('telefoneRepresentante', '') }}">
-                        </div>
-                    </div>
-                    <div class="field-row">
-                        <div class="field-group" style="grid-column: span 2;">
-                            <label for="emailRepresentante">E-mail do Representante <span class="required">*</span></label>
-                            <input type="email" id="emailRepresentante" name="emailRepresentante" required value="{{ dados.get('emailRepresentante', '') }}">
-                        </div>
-                    </div>
+                    <div class="field-row"><div class="field-group"><label for="nomeRepresentante">Nome do Representante <span class="required">*</span></label><input type="text" id="nomeRepresentante" name="nomeRepresentante" required value="{{ dados.get('nomeRepresentante', '') }}"></div><div class="field-group"><label for="telefoneRepresentante">Telefone <span class="required">*</span></label><input type="text" id="telefoneRepresentante" name="telefoneRepresentante" placeholder="(00) 00000-0000" required value="{{ dados.get('telefoneRepresentante', '') }}"></div></div>
+                    <div class="field-row"><div class="field-group" style="grid-column:span 2"><label for="emailRepresentante">E-mail <span class="required">*</span></label><input type="email" id="emailRepresentante" name="emailRepresentante" required value="{{ dados.get('emailRepresentante', '') }}"></div></div>
                 </div>
             </div>
-
-            <!-- 3. DADOS DA ATIVIDADE -->
+            <!-- 3. ATIVIDADE -->
             <div class="form-section">
                 <h2 class="section-title"><i class="fas fa-lightbulb"></i> 3. Dados da Atividade</h2>
-
+                <div class="field-row"><div class="field-group" style="grid-column:span 2"><label for="tituloAtividade">Nome da Atividade <span class="required">*</span></label><input type="text" id="tituloAtividade" name="tituloAtividade" required value="{{ dados.get('tituloAtividade', '') }}"></div></div>
                 <div class="field-row">
-                    <div class="field-group" style="grid-column: span 2;">
-                        <label for="tituloAtividade">Nome da Atividade <span class="required">*</span></label>
-                        <input type="text" id="tituloAtividade" name="tituloAtividade" required value="{{ dados.get('tituloAtividade', '') }}">
-                    </div>
+                    <div class="field-group"><label for="formatoAtividade">Formato <span class="required">*</span></label><select id="formatoAtividade" name="formatoAtividade" required onchange="toggleActivityFields()"><option value="">Selecione...</option><option value="debate">Debate</option><option value="roda_de_conversa">Roda de Conversa</option><option value="oficina">Oficina</option></select></div>
+                    <div class="field-group"><label for="tempoDuracao">Duração Prevista <span class="required">*</span></label><select id="tempoDuracao" name="tempoDuracao" required><option value="">Selecione o formato primeiro...</option></select></div>
                 </div>
-
                 <div class="field-row">
-                    <div class="field-group">
-                        <label for="formatoAtividade">Formato <span class="required">*</span></label>
-                        <select id="formatoAtividade" name="formatoAtividade" required onchange="toggleActivityFields()">
-                            <option value="">Selecione...</option>
-                            <option value="debate">Debate</option>
-                            <option value="roda_de_conversa">Roda de Conversa</option>
-                            <option value="oficina">Oficina</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label for="tempoDuracao">Tempo de Duração <span class="required">*</span></label>
-                        <select id="tempoDuracao" name="tempoDuracao" required>
-                            <option value="">Selecione o formato primeiro...</option>
-                        </select>
-                    </div>
+                    <div class="field-group"><label for="eixo">Eixo Temático <span class="required">*</span></label><select id="eixo" name="eixo" required><option value="">Selecione...</option><option value="cidade_sustentabilidade" {{ 'selected' if dados.get('eixo') == 'cidade_sustentabilidade' }}>Cidade e Sustentabilidade</option><option value="tecnologia" {{ 'selected' if dados.get('eixo') == 'tecnologia' }}>Tecnologia</option><option value="cultura_sociedade" {{ 'selected' if dados.get('eixo') == 'cultura_sociedade' }}>Cultura e Sociedade</option><option value="negocios" {{ 'selected' if dados.get('eixo') == 'negocios' }}>Negócios</option><option value="criatividade_midias" {{ 'selected' if dados.get('eixo') == 'criatividade_midias' }}>Criatividade e Mídias</option></select></div>
+                    <div class="field-group"><label for="publicoAlvo">Público-alvo <span class="required">*</span></label><select id="publicoAlvo" name="publicoAlvo" required><option value="">Selecione...</option><option value="publico_geral">Público Geral</option><option value="publico_especialista">Público Especialista</option><option value="professores">Professores</option><option value="infantil">Infantil</option><option value="adolescente">Adolescente</option><option value="apenas_mulheres">Apenas Mulheres</option></select></div>
                 </div>
-
-                <div class="field-row">
-                    <div class="field-group">
-                        <label for="eixo">Eixo Temático <span class="required">*</span></label>
-                        <select id="eixo" name="eixo" required>
-                            <option value="">Selecione...</option>
-                            <option value="cidade_sustentabilidade" {{ 'selected' if dados.get('eixo') == 'cidade_sustentabilidade' }}>Cidade e Sustentabilidade</option>
-                            <option value="tecnologia" {{ 'selected' if dados.get('eixo') == 'tecnologia' }}>Tecnologia</option>
-                            <option value="cultura_sociedade" {{ 'selected' if dados.get('eixo') == 'cultura_sociedade' }}>Cultura e Sociedade</option>
-                            <option value="negocios" {{ 'selected' if dados.get('eixo') == 'negocios' }}>Negócios</option>
-                            <option value="criatividade_midias" {{ 'selected' if dados.get('eixo') == 'criatividade_midias' }}>Criatividade e Mídias</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
-                        <label for="publicoAlvo">Público-alvo <span class="required">*</span></label>
-                        <select id="publicoAlvo" name="publicoAlvo" required>
-                            <option value="">Selecione...</option>
-                            <option value="publico_geral" {{ 'selected' if dados.get('publicoAlvo') == 'publico_geral' }}>Público Geral</option>
-                            <option value="publico_especialista" {{ 'selected' if dados.get('publicoAlvo') == 'publico_especialista' }}>Público Especialista</option>
-                            <option value="professores" {{ 'selected' if dados.get('publicoAlvo') == 'professores' }}>Professores</option>
-                            <option value="infantil" {{ 'selected' if dados.get('publicoAlvo') == 'infantil' }}>Infantil</option>
-                            <option value="adolescente" {{ 'selected' if dados.get('publicoAlvo') == 'adolescente' }}>Adolescente</option>
-                            <option value="apenas_mulheres" {{ 'selected' if dados.get('publicoAlvo') == 'apenas_mulheres' }}>Apenas Mulheres</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <label for="tagsInput">Tags (Máximo 5)</label>
-                    <div class="tags-container" id="tagsContainer">
-                        <div class="tags-chips" id="tagsChips"></div>
-                        <div class="tags-input-wrapper">
-                            <input type="text" id="tagsInput" placeholder="Buscar e selecionar tags..." autocomplete="off">
-                            <input type="hidden" id="tagsHidden" name="tags" value="{{ dados.get('tags', '') }}">
-                            <div class="tags-dropdown" id="tagsDropdown"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <label for="descricaoAtividade">Descrição (Máx 700 caracteres) <span class="required">*</span></label>
-                    <textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="700" required>{{ dados.get('descricaoAtividade', '') }}</textarea>
-                    <div class="char-counter" id="charCounter">0 / 700</div>
-                </div>
-
-                <div class="field-group">
-                    <label>Restrição de faixa etária? <span class="required">*</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="restricaoSim" name="restricaoEtaria" value="sim" {{ 'checked' if dados.get('restricaoEtaria') == 'sim' }} onchange="toggleRestricao()">
-                            <label for="restricaoSim">Sim</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="restricaoNao" name="restricaoEtaria" value="nao" {{ 'checked' if dados.get('restricaoEtaria') == 'nao' or not dados.get('restricaoEtaria') }} onchange="toggleRestricao()">
-                            <label for="restricaoNao">Não</label>
-                        </div>
-                    </div>
-                    <div class="field-row hidden" id="faixaEtariaGroup" style="margin-top:10px;">
-                        <div class="field-group">
-                            <label for="idadeMinima">Idade Mínima</label>
-                            <input type="number" id="idadeMinima" name="idadeMinima" min="0" max="100" placeholder="Ex: 14" value="{{ dados.get('idadeMinima', '') }}">
-                        </div>
-                        <div class="field-group">
-                            <label for="idadeMaxima">Idade Máxima</label>
-                            <input type="number" id="idadeMaxima" name="idadeMaxima" min="0" max="100" placeholder="Ex: 60" value="{{ dados.get('idadeMaxima', '') }}">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <label for="recursosAcessibilidade">Quais recursos de acessibilidade são necessários?</label>
-                    <textarea id="recursosAcessibilidade" name="recursosAcessibilidade" maxlength="500" style="min-height:80px;" placeholder="Descreva os recursos de acessibilidade necessários para a atividade...">{{ dados.get('recursosAcessibilidade', '') }}</textarea>
-                    <div class="helper-text">Ex: intérprete de Libras, rampas de acesso, audiodescrição, etc.</div>
-                </div>
-
+                <div class="field-group"><label for="acessoAtividade">Acesso à Atividade <span class="required">*</span></label><select id="acessoAtividade" name="acessoAtividade" required><option value="">Selecione...</option><option value="ordem_chegada">Acesso por ordem de chegada</option><option value="inscricao">Acesso por inscrição</option><option value="livre">Livre</option></select></div>
+                <div class="field-group"><label for="objetivoAtividade">Objetivo da Atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required>{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
+                <div class="field-group"><label for="justificativaTematica">Justificativa Temática <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="500" required>{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 500</div></div>
+                <div class="field-group"><label for="metodologiaAplicada">Metodologia Aplicada à Atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required>{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
+                <div class="field-group"><label for="descricaoAtividade">Descrição <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="500" required>{{ dados.get('descricaoAtividade', '') }}</textarea><div class="char-counter" id="charCounterDesc">0 / 500</div></div>
+                <!-- Tags após descrição -->
+                <div class="field-group"><label for="tagsInput">Tags <span class="required">*</span> <span style="font-weight:400;color:#999">(Mínimo 3, Máximo 5)</span></label><div class="tags-container" id="tagsContainer"><div class="tags-chips" id="tagsChips"></div><div class="tags-input-wrapper"><input type="text" id="tagsInput" placeholder="Buscar e selecionar tags..." autocomplete="off"><input type="hidden" id="tagsHidden" name="tags" value="{{ dados.get('tags', '') }}"><input type="hidden" id="tagSuggestionHidden" name="tagSuggestion" value="{{ dados.get('tagSuggestion', '') }}"><div class="tags-dropdown" id="tagsDropdown"></div></div><div class="suggestion-input-row hidden" id="suggestionInputRow"><input type="text" id="suggestionInput" placeholder="Digite sua sugestão de tag..." maxlength="50"><button type="button" onclick="addSuggestionTag()">Adicionar</button></div></div></div>
+                <!-- Faixa etária sem default -->
+                <div class="field-group"><label>Restrição de faixa etária? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="restricaoSim" name="restricaoEtaria" value="sim" onchange="toggleRestricao()"><label for="restricaoSim">Sim</label></div><div class="radio-option"><input type="radio" id="restricaoNao" name="restricaoEtaria" value="nao" onchange="toggleRestricao()"><label for="restricaoNao">Não</label></div></div><div class="field-row hidden" id="faixaEtariaGroup" style="margin-top:10px"><div class="field-group"><label for="idadeMinima">Idade Mínima</label><input type="number" id="idadeMinima" name="idadeMinima" min="0" max="100" placeholder="Ex: 14" value="{{ dados.get('idadeMinima', '') }}"></div><div class="field-group"><label for="idadeMaxima">Idade Máxima</label><input type="number" id="idadeMaxima" name="idadeMaxima" min="0" max="100" placeholder="Ex: 60" value="{{ dados.get('idadeMaxima', '') }}"></div></div></div>
+                <!-- OFICINA -->
                 <div id="oficinaSection" class="hidden">
-                    <div class="oficina-step">
-                        <span class="oficina-label">1. Capacidade e Infraestrutura Básica</span>
-                        <div class="field-group">
-                            <label>Quantidade máxima de público <span class="required">*</span></label>
-                            <div class="radio-group">
-                                <div class="radio-option"><input type="radio" id="pub20" name="oficina_qtd_publico" value="ate_20" {{ 'checked' if dados.get('oficina_qtd_publico') == 'ate_20' }}><label for="pub20">Até 20</label></div>
-                                <div class="radio-option"><input type="radio" id="pub30" name="oficina_qtd_publico" value="ate_30" {{ 'checked' if dados.get('oficina_qtd_publico') == 'ate_30' }}><label for="pub30">Até 30</label></div>
-                                <div class="radio-option"><input type="radio" id="pub50" name="oficina_qtd_publico" value="ate_50" {{ 'checked' if dados.get('oficina_qtd_publico') == 'ate_50' }}><label for="pub50">Até 50</label></div>
-                                <div class="radio-option"><input type="radio" id="pub80" name="oficina_qtd_publico" value="ate_80" {{ 'checked' if dados.get('oficina_qtd_publico') == 'ate_80' }}><label for="pub80">Até 80</label></div>
-                            </div>
-                        </div>
-                        <div class="field-group">
-                            <label>É indispensável que haja internet disponível? <span class="required">*</span></label>
-                            <div class="radio-group">
-                                <div class="radio-option"><input type="radio" id="netSim" name="oficina_internet" value="sim" {{ 'checked' if dados.get('oficina_internet') == 'sim' }}><label for="netSim">Sim</label></div>
-                                <div class="radio-option"><input type="radio" id="netNao" name="oficina_internet" value="nao" {{ 'checked' if dados.get('oficina_internet') == 'nao' }}><label for="netNao">Não</label></div>
-                            </div>
-                        </div>
-                        <div class="field-group">
-                            <label>Sua atividade precisa ocorrer em um laboratório de informática? <span class="required">*</span></label>
-                            <div class="radio-group">
-                                <div class="radio-option"><input type="radio" id="labSim" name="oficina_lab" value="sim" onchange="toggleLabFields()" {{ 'checked' if dados.get('oficina_lab') == 'sim' }}><label for="labSim">Sim</label></div>
-                                <div class="radio-option"><input type="radio" id="labNao" name="oficina_lab" value="nao" onchange="toggleLabFields()" {{ 'checked' if dados.get('oficina_lab') == 'nao' }}><label for="labNao">Não</label></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="labDetails" class="oficina-step hidden">
-                        <span class="oficina-label">2. Detalhes do Laboratório</span>
-                        <div class="field-group"><label>Quais as configurações mínimas para os computadores solicitados? <span class="required">*</span></label><input type="text" name="oficina_pc_specs" placeholder="Ex: 8GB RAM, Windows 10..." value="{{ dados.get('oficina_pc_specs', '') }}"></div>
-                        <div class="field-group"><label>Será necessário instalar algum software para realização da atividade? <span class="required">*</span></label>
-                            <div class="radio-group">
-                                <div class="radio-option"><input type="radio" id="softSim" name="oficina_soft_req" value="sim" onchange="toggleSoftwareFields()" {{ 'checked' if dados.get('oficina_soft_req') == 'sim' }}><label for="softSim">Sim</label></div>
-                                <div class="radio-option"><input type="radio" id="softNao" name="oficina_soft_req" value="nao" onchange="toggleSoftwareFields()" {{ 'checked' if dados.get('oficina_soft_req') == 'nao' }}><label for="softNao">Não</label></div>
-                            </div>
-                        </div>
-                        <div id="softwareDetails" class="hidden"><div class="field-group"><label for="softDesc">Descreva o software necessário <span class="required">*</span></label><textarea id="softDesc" name="oficina_soft_desc" style="min-height: 80px;">{{ dados.get('oficina_soft_desc', '') }}</textarea></div></div>
-                    </div>
-                    <div class="oficina-step">
-                        <span class="oficina-label">3. Materiais e Mobiliário</span>
-                        <div class="field-group"><label>Vai precisar de ajuda de custo com algum material para oficina? <span class="required">*</span></label><select id="materialAjuda" name="oficina_material_ajuda"><option value="nao" {{ 'selected' if dados.get('oficina_material_ajuda') == 'nao' }}>Não</option><option value="sim" {{ 'selected' if dados.get('oficina_material_ajuda') == 'sim' }}>Sim</option><option value="indispensavel" {{ 'selected' if dados.get('oficina_material_ajuda') == 'indispensavel' }}>Indispensável</option></select></div>
-                        <div class="field-group"><label for="mobiliario">Qual formato de mobiliário será necessário? <span class="required">*</span></label><select id="mobiliario" name="oficina_mobiliario"><option value="">Selecione...</option><option value="mesas_individuais" {{ 'selected' if dados.get('oficina_mobiliario') == 'mesas_individuais' }}>Mesas de trabalho individuais</option><option value="mesas_grupo" {{ 'selected' if dados.get('oficina_mobiliario') == 'mesas_grupo' }}>Mesas em grupo</option><option value="pelas_sem_mesas" {{ 'selected' if dados.get('oficina_mobiliario') == 'pelas_sem_mesas' }}>Pelas sem mesas (somente cadeiras)</option><option value="espaco_aberto" {{ 'selected' if dados.get('oficina_mobiliario') == 'espaco_aberto' }}>Espaço aberto</option></select></div>
-                    </div>
+                    <div class="oficina-step"><span class="oficina-label">1. Capacidade e Infraestrutura Básica</span><div class="field-group"><label>Quantidade máxima de público <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="pub20" name="oficina_qtd_publico" value="ate_20"><label for="pub20">Até 20</label></div><div class="radio-option"><input type="radio" id="pub30" name="oficina_qtd_publico" value="ate_30"><label for="pub30">Até 30</label></div><div class="radio-option"><input type="radio" id="pub50" name="oficina_qtd_publico" value="ate_50"><label for="pub50">Até 50</label></div><div class="radio-option"><input type="radio" id="pub80" name="oficina_qtd_publico" value="ate_80"><label for="pub80">Até 80</label></div></div></div><div class="field-group"><label>Internet indispensável? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="netSim" name="oficina_internet" value="sim"><label for="netSim">Sim</label></div><div class="radio-option"><input type="radio" id="netNao" name="oficina_internet" value="nao"><label for="netNao">Não</label></div></div></div><div class="field-group"><label>Laboratório de informática? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="labSim" name="oficina_lab" value="sim" onchange="toggleLabFields()"><label for="labSim">Sim</label></div><div class="radio-option"><input type="radio" id="labNao" name="oficina_lab" value="nao" onchange="toggleLabFields()"><label for="labNao">Não</label></div></div></div></div>
+                    <div id="labDetails" class="oficina-step hidden"><span class="oficina-label">2. Detalhes do Laboratório <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></span><div class="field-group"><label>Configurações mínimas dos PCs <span class="required">*</span></label><input type="text" name="oficina_pc_specs" maxlength="200" placeholder="Ex: 8GB RAM, Windows 10..." value="{{ dados.get('oficina_pc_specs', '') }}"></div><div class="field-group"><label>Instalar software? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="softSim" name="oficina_soft_req" value="sim" onchange="toggleSoftwareFields()"><label for="softSim">Sim</label></div><div class="radio-option"><input type="radio" id="softNao" name="oficina_soft_req" value="nao" onchange="toggleSoftwareFields()"><label for="softNao">Não</label></div></div></div><div id="softwareDetails" class="hidden"><div class="field-group"><label>Descreva o software <span class="required">*</span></label><textarea name="oficina_soft_desc" maxlength="200" style="min-height:60px">{{ dados.get('oficina_soft_desc', '') }}</textarea></div></div></div>
+                    <div class="oficina-step"><span class="oficina-label">3. Materiais e Mobiliário</span><div class="field-group"><label>Ajuda de custo com material? <span class="required">*</span></label><select id="materialAjuda" name="oficina_material_ajuda" onchange="toggleMaterialTable()"><option value="nao">Não</option><option value="sim">Sim</option><option value="indispensavel">Indispensável</option></select></div><div id="materialTableSection" class="hidden"><label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Lista de Materiais e Previsão de Custo</label><table class="material-table" id="materialTable"><thead><tr><th style="width:40%">Material</th><th style="width:20%">Qtd</th><th style="width:20%">Valor Unit. (R$)</th><th style="width:20%">Subtotal (R$)</th><th></th></tr></thead><tbody id="materialTableBody"></tbody><tfoot><tr class="material-total-row"><td colspan="3" style="text-align:right">TOTAL</td><td id="materialTotal">R$ 0,00</td><td></td></tr></tfoot></table><button type="button" class="btn-add-row" onclick="addMaterialRow()"><i class="fas fa-plus"></i> Adicionar Item</button></div><div class="field-group" style="margin-top:16px"><label for="mobiliario">Mobiliário necessário <span class="required">*</span></label><select id="mobiliario" name="oficina_mobiliario"><option value="">Selecione...</option><option value="mesas_individuais">Mesas individuais</option><option value="mesas_grupo">Mesas em grupo</option><option value="apenas_cadeiras">Apenas cadeiras</option><option value="espaco_sem_mobiliario">Espaço sem mobiliário</option></select></div></div>
                 </div>
+                <!-- Acessibilidade APÓS oficina -->
+                <div class="field-group"><label for="recursosAcessibilidade">Quais recursos de acessibilidade são necessários? <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></label><textarea id="recursosAcessibilidade" name="recursosAcessibilidade" maxlength="200" style="min-height:70px" placeholder="Ex: intérprete de Libras, rampas de acesso, audiodescrição...">{{ dados.get('recursosAcessibilidade', '') }}</textarea></div>
             </div>
-
             <!-- 4. CONVIDADOS -->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-users"></i> 4. Convidados / Equipe (Máx 5)</h2>
+                <h2 class="section-title"><i class="fas fa-users"></i> 4. Convidados / Equipe <span style="font-weight:400;font-size:13px;color:#E53935">(Mínimo 1, Máximo 5)</span></h2>
                 <div id="guestsList"></div>
                 <button type="button" class="btn-add" id="btnAddGuest" onclick="addGuest()"><i class="fas fa-plus"></i> Adicionar Convidado</button>
             </div>
-
-            <!-- 5. INFORMAÇÕES EXTRAS -->
+            <!-- 5. EXTRAS -->
             <div class="form-section">
                 <h2 class="section-title"><i class="fas fa-info-circle"></i> 5. Informações Extras</h2>
-                <div class="field-group"><label for="infoExtras">Observações</label><textarea id="infoExtras" name="infoExtras" maxlength="500" style="min-height:80px;">{{ dados.get('infoExtras', '') }}</textarea><div class="char-counter" id="charCounterExtra">0 / 500</div></div>
+                <div class="field-group"><label for="infoExtras">Observações</label><textarea id="infoExtras" name="infoExtras" maxlength="500" style="min-height:80px">{{ dados.get('infoExtras', '') }}</textarea><div class="char-counter" id="charCounterExtra">0 / 500</div></div>
             </div>
-
-            <div class="submit-area">
-                <button type="button" class="btn-clear" onclick="limparFormulario()">Limpar Tudo</button>
-                <button type="submit" class="btn-submit">Enviar Proposta</button>
-            </div>
+            <div class="submit-area"><button type="button" class="btn-clear" onclick="limparFormulario()">Limpar Tudo</button><button type="submit" class="btn-submit">Enviar Proposta</button></div>
         </form>
     </div>
 </div>
-
 <!-- TEMPLATE CONVIDADO -->
 <template id="guestTemplate">
     <div class="guest-card" data-id="">
         <h4><span class="guest-title">Convidado <span class="num"></span></span><button type="button" class="remove-guest" onclick="removeGuest(this)" title="Remover"><i class="fas fa-trash"></i></button></h4>
-        <div class="guest-subsection"><div class="guest-subsection-title">Foto</div><div class="photo-upload-area"><div class="photo-preview g-photo-preview"><i class="fas fa-user"></i></div><div class="photo-input-wrapper"><input type="file" class="g-foto" name="convidadoX_foto" accept="image/png,image/jpeg,image/webp"><div class="helper-text">Formatos: PNG, JPG, WebP. Máx 5MB.</div></div></div></div>
-        <div class="guest-subsection"><div class="guest-subsection-title">Identificação</div><div class="field-row"><div class="field-group" style="grid-column: span 2;"><label>Nome Completo <span class="required">*</span></label><input type="text" class="g-nome" name="convidadoX_nome" placeholder="Nome do convidado"></div></div><div class="field-row"><div class="field-group"><label>Papel na Atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="palestrante">Palestrante</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade</label><select class="g-nacionalidade" name="convidadoX_nacionalidade" onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div><div class="field-row"><div class="field-group g-doc-cpf"><label>CPF</label><input type="text" class="g-cpf" name="convidadoX_cpf" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)"></div><div class="field-group g-doc-passaporte hidden"><label>Passaporte</label><input type="text" class="g-passaporte" name="convidadoX_passaporte"></div></div><div class="field-row g-doc-br"><div class="field-group"><label>Estado</label><input type="text" class="g-estado" name="convidadoX_estado"></div><div class="field-group"><label>Cidade</label><input type="text" class="g-cidade" name="convidadoX_cidade"></div></div><div class="field-row g-doc-ext hidden"><div class="field-group" style="grid-column: span 2;"><label>País de Origem</label><input type="text" class="g-pais" name="convidadoX_pais_origem"></div></div></div>
-        <div class="guest-subsection"><div class="guest-subsection-title">Contato & Social</div><div class="field-row"><div class="field-group"><label>E-mail</label><input type="email" class="g-email" name="convidadoX_email"></div><div class="field-group"><label>Telefone</label><input type="text" class="g-telefone" name="convidadoX_telefone"></div></div><div class="field-row"><div class="field-group"><label>LinkedIn</label><input type="text" class="g-linkedin" name="convidadoX_social_linkedin" placeholder="linkedin.com/in/..."></div><div class="field-group"><label>Instagram</label><input type="text" class="g-insta" name="convidadoX_social_instagram" placeholder="@usuario"></div></div></div>
-        <div class="guest-subsection"><div class="guest-subsection-title">Perfil Profissional</div><div class="field-row"><div class="field-group"><label>Instituição Representada</label><input type="text" class="g-inst" name="convidadoX_instituicao"></div><div class="field-group"><label>Tipo de Instituição</label><select class="g-tipo-inst" name="convidadoX_tipo_instituicao"><option value="">Selecione...</option><option value="empresa">Empresa</option><option value="ong">ONG</option><option value="governo">Governo</option><option value="independente">Independente</option></select></div></div><div class="field-group"><label>Minibio (Máx 600)</label><input type="text" class="g-bio" name="convidadoX_minibio" maxlength="600"></div></div>
-        <div class="guest-subsection"><div class="guest-subsection-title">Demografia & Acessibilidade</div><div class="field-row"><div class="field-group"><label>Raça / Cor</label><select class="g-raca" name="convidadoX_raca"><option value="">Não declarar</option><option value="branca">Branca</option><option value="preta">Preta</option><option value="parda">Parda</option><option value="amarela">Amarela</option><option value="indigena">Indígena</option></select></div><div class="field-group"><label>Gênero</label><select class="g-genero" name="convidadoX_genero"><option value="">Não declarar</option><option value="mulher_cis">Mulher Cis</option><option value="homem_cis">Homem Cis</option><option value="mulher_trans">Mulher Trans</option><option value="homem_trans">Homem Trans</option><option value="nao_binario">Não Binário</option></select></div></div><div style="margin-top:10px;"><div class="checkbox-option"><input type="checkbox" class="g-acess" name="convidadoX_acessibilidade" value="sim" onchange="toggleGuestAcessibilidade(this)"><label>Necessita de recursos de acessibilidade?</label></div><div class="field-group hidden g-acess-detail" style="margin-top:8px;"><label>Quais recursos de acessibilidade?</label><input type="text" class="g-acess-desc" name="convidadoX_acessibilidade_desc" placeholder="Descreva os recursos necessários..."></div></div></div>
+        <div class="guest-subsection"><div class="guest-subsection-title">Foto (512x512)</div><div class="photo-upload-area"><div class="photo-preview square g-photo-preview"><i class="fas fa-user"></i></div><div class="photo-input-wrapper"><input type="file" class="g-foto" name="convidadoX_foto" accept="image/png,image/jpeg,image/webp"><div class="helper-text">Será recortada para 512x512</div></div></div></div>
+        <div class="guest-subsection"><div class="guest-subsection-title">Identificação</div>
+            <div class="field-row"><div class="field-group" style="grid-column:span 2"><label>Nome Completo <span class="required">*</span></label><input type="text" class="g-nome" name="convidadoX_nome" required></div></div>
+            <div class="field-row"><div class="field-group"><label>Papel na Atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="palestrante">Palestrante</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
+            <div class="field-row"><div class="field-group g-doc-cpf"><label>CPF</label><input type="text" class="g-cpf" name="convidadoX_cpf" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)"></div><div class="field-group g-doc-passaporte hidden"><label>Passaporte <span class="required">*</span></label><input type="text" class="g-passaporte" name="convidadoX_passaporte"></div></div>
+            <div class="field-row g-doc-br"><div class="field-group"><label>Estado <span class="required">*</span></label><input type="text" class="g-estado" name="convidadoX_estado" required></div><div class="field-group"><label>Cidade <span class="required">*</span></label><input type="text" class="g-cidade" name="convidadoX_cidade" required></div></div>
+            <div class="field-row g-doc-ext hidden"><div class="field-group" style="grid-column:span 2"><label>País de Origem <span class="required">*</span></label><input type="text" class="g-pais" name="convidadoX_pais_origem" required></div></div>
+        </div>
+        <div class="guest-subsection"><div class="guest-subsection-title">Contato</div>
+            <div class="field-row"><div class="field-group"><label>E-mail <span class="required">*</span></label><input type="email" class="g-email" name="convidadoX_email" required></div><div class="field-group"><label>Telefone <span class="required">*</span></label><input type="text" class="g-telefone" name="convidadoX_telefone" required></div></div>
+            <div class="field-row"><div class="field-group"><label>LinkedIn</label><input type="text" class="g-linkedin" name="convidadoX_social_linkedin" placeholder="linkedin.com/in/..."></div><div class="field-group"><label>Instagram</label><input type="text" class="g-insta" name="convidadoX_social_instagram" placeholder="@usuario"></div></div>
+        </div>
+        <div class="guest-subsection"><div class="guest-subsection-title">Perfil Profissional</div>
+            <div class="field-row"><div class="field-group"><label>Instituição Representada <span class="required">*</span></label><input type="text" class="g-inst" name="convidadoX_instituicao" required></div><div class="field-group"><label>Tipo de Instituição <span class="required">*</span></label><select class="g-tipo-inst" name="convidadoX_tipo_instituicao" required><option value="">Selecione...</option><option value="empresa">Empresa</option><option value="ong">ONG</option><option value="governo">Governo</option><option value="independente">Independente</option></select></div></div>
+            <div class="field-group"><label>Minibio <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 600)</span></label><input type="text" class="g-bio" name="convidadoX_minibio" maxlength="600" required></div>
+        </div>
+        <div class="guest-subsection"><div class="guest-subsection-title">Demografia & Acessibilidade</div>
+            <div class="field-row"><div class="field-group"><label>Raça / Cor <span class="required">*</span></label><select class="g-raca" name="convidadoX_raca" required><option value="">Selecione...</option><option value="branca">Branca</option><option value="preta">Preta</option><option value="parda">Parda</option><option value="amarela">Amarela</option><option value="indigena">Indígena</option></select></div><div class="field-group"><label>Gênero <span class="required">*</span></label><select class="g-genero" name="convidadoX_genero" required><option value="">Selecione...</option><option value="mulher_cis">Mulher Cis</option><option value="homem_cis">Homem Cis</option><option value="mulher_trans">Mulher Trans</option><option value="homem_trans">Homem Trans</option><option value="nao_binario">Não Binário</option></select></div></div>
+            <div style="margin-top:10px"><div class="checkbox-option"><input type="checkbox" class="g-acess" name="convidadoX_acessibilidade" value="sim" onchange="toggleGuestAcessibilidade(this)"><label>Necessita de recursos de acessibilidade?</label></div><div class="field-group hidden g-acess-detail" style="margin-top:8px"><label>Quais recursos? <span class="required">*</span></label><input type="text" class="g-acess-desc" name="convidadoX_acessibilidade_desc"></div></div>
+        </div>
     </div>
 </template>
-
 <script>
-    // Background Animation
-    (function(){var canvas=document.getElementById('bgCanvas'),ctx=canvas.getContext('2d'),patterns=[];var symbols=['♪','★','♦','●','▲','◆','♥','✦','⬟','◉','✿','⬡'];var colors=['#E91E63','#9C27B0','#2196F3','#00BCD4','#4CAF50','#FF9800','#FF5722','#673AB7'];function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;patterns=[];var c=Math.floor(canvas.width*canvas.height/4500);for(var i=0;i<c;i++){patterns.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:symbols[Math.floor(Math.random()*symbols.length)],cl:colors[Math.floor(Math.random()*colors.length)],sz:8+Math.random()*14,op:0.06+Math.random()*0.14,rot:Math.random()*Math.PI*2,sp:0.0003+Math.random()*0.001,ph:Math.random()*Math.PI*2});}}var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;function draw(t){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#0D0D0D';ctx.fillRect(0,0,canvas.width,canvas.height);var s=t*0.001;for(var i=0;i<patterns.length;i++){var p=patterns[i],yO=reduced?0:Math.sin(s*p.sp*1000+p.ph)*3;ctx.save();ctx.translate(p.x,p.y+yO);ctx.rotate(p.rot+(reduced?0:s*p.sp*0.5));ctx.globalAlpha=p.op;ctx.fillStyle=p.cl;ctx.font=p.sz+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.s,0,0);ctx.restore();}if(!reduced)requestAnimationFrame(draw);}window.addEventListener('resize',resize);resize();requestAnimationFrame(draw);})();
+// Background
+(function(){var canvas=document.getElementById('bgCanvas'),ctx=canvas.getContext('2d'),patterns=[];var symbols=['♪','★','♦','●','▲','◆','♥','✦','⬟','◉','✿','⬡'];var colors=['#E91E63','#9C27B0','#2196F3','#00BCD4','#4CAF50','#FF9800','#FF5722','#673AB7'];function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;patterns=[];var c=Math.floor(canvas.width*canvas.height/4500);for(var i=0;i<c;i++){patterns.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:symbols[Math.floor(Math.random()*symbols.length)],cl:colors[Math.floor(Math.random()*colors.length)],sz:8+Math.random()*14,op:0.06+Math.random()*0.14,rot:Math.random()*Math.PI*2,sp:0.0003+Math.random()*0.001,ph:Math.random()*Math.PI*2});}}var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;function draw(t){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#0D0D0D';ctx.fillRect(0,0,canvas.width,canvas.height);var s=t*0.001;for(var i=0;i<patterns.length;i++){var p=patterns[i],yO=reduced?0:Math.sin(s*p.sp*1000+p.ph)*3;ctx.save();ctx.translate(p.x,p.y+yO);ctx.rotate(p.rot+(reduced?0:s*p.sp*0.5));ctx.globalAlpha=p.op;ctx.fillStyle=p.cl;ctx.font=p.sz+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.s,0,0);ctx.restore();}if(!reduced)requestAnimationFrame(draw);}window.addEventListener('resize',resize);resize();requestAnimationFrame(draw);})();
 
-    // Toast
-    function showToast(message,type='info'){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className=`toast ${type}`;const icon=type==='success'?'check-circle':type==='error'?'exclamation-triangle':'info-circle';t.innerHTML=`<i class="fas fa-${icon}"></i> ${message}`;c.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity 0.3s';setTimeout(()=>t.remove(),300);},3500);}
+function showToast(m,t='info'){const c=document.getElementById('toast-container');const e=document.createElement('div');e.className=`toast ${t}`;e.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-triangle':'info-circle'}"></i> ${m}`;c.appendChild(e);setTimeout(()=>{e.style.opacity='0';e.style.transition='opacity 0.3s';setTimeout(()=>e.remove(),300);},3500);}
 
-    // Tags (LIMITE DE 5)
-    const MAX_TAGS = 5;
-    const AVAILABLE_TAGS=["Economia Circular","Energia Renovável","Gestão de Resíduos","Logística Reversa","Meio Ambiente","Mudanças Climáticas","ODS","Arquitetura","Intervenções Urbanas","ESG","Responsabilidade Social","Cidadania Digital","Geopolítica","Mobilidade Urbana","Turismo","Urbanismo","Saúde","Agritech","Cleantech","Construtech","Ecotech","Edutech","Fintech","Foodtech","Govtech","Healthtech","Lawtech","Retailtech","Sportech","Dados","Blockchain","Cibersegurança","LGPD","Cloud","Programação","XR / Realidade Virtual e Aumentada","Deep Learning","Engenharia de Prompt","Inteligência Artificial","LLM","Machine Learning","Metaverso","Processamento de Linguagem Natural","Visão Computacional","Internet das Coisas","Sistemas Embarcados","Computação Quântica","Automação","Robótica","Tecnologias de Conectividade","Acessibilidade","50+","PcD","Equidade Racial","LGBTQIAPN+","Mulheres","Neurodivergência","Periferias","Diversidade e Inclusão","Cultura Popular","Patrimônio Imaterial","Artes","Impacto Social","Legislação","Educação e Formação","Infância","Empreendedorismo","Inovação","Empresa Júnior","Gestão de Comunidades","Internacionalização","Modelagem de Negócios","Startup","Transformação Digital","Carreira Profissional","Cultura Organizacional","Desenvolvimento de Times","RH","Captação por Editais","Investimentos","Agilidade","Atacado e Varejo","Branding","Canais de Venda","Comportamento do Consumidor","Marketing","Vendas B2B e B2C","Artes Visuais","Audiovisual","Cultura Maker","Dança","Fotografia","Gastronomia","Literatura","Moda","Música","Teatro","Comunicação","Criação de Conteúdo","Design Gráfico/ Industrial","Podcast","e-Sports","Experiência do Usuário (UX / CX)","Gameficação","Interface do Usuário (UI)","Simulação e Modelagem","Desenvolvimento de Jogos","Economia Criativa"];
-    let selectedTags=[];
-    
-    (function(){const v=document.getElementById('tagsHidden').value;if(v&&v.trim()){selectedTags=v.split(',').map(t=>t.trim()).filter(t=>t);renderTagChips();}})();
-    
-    const tagsInput=document.getElementById('tagsInput');const tagsDropdown=document.getElementById('tagsDropdown');
-    tagsInput.addEventListener('input',function(){filterAndShowTags(this.value.toLowerCase().trim());});
-    tagsInput.addEventListener('focus',function(){filterAndShowTags(this.value.toLowerCase().trim()||'');});
-    document.addEventListener('click',function(e){if(!document.getElementById('tagsContainer').contains(e.target))tagsDropdown.classList.remove('active');});
-    
-    function filterAndShowTags(q){
-        if(selectedTags.length>=MAX_TAGS){tagsDropdown.innerHTML='<div class="tags-dropdown-empty">Máximo de '+MAX_TAGS+' tags atingido</div>';tagsDropdown.classList.add('active');return;}
-        const f=AVAILABLE_TAGS.filter(t=>(q===''||t.toLowerCase().includes(q))&&!selectedTags.includes(t));
-        if(f.length===0&&q!==''){tagsDropdown.innerHTML='<div class="tags-dropdown-empty">Nenhuma tag encontrada</div>';tagsDropdown.classList.add('active');return;}
-        if(f.length===0&&q===''){tagsDropdown.classList.remove('active');return;}
-        tagsDropdown.innerHTML=f.slice(0,30).map(t=>{let d=t;if(q){const i=t.toLowerCase().indexOf(q);if(i>=0)d=t.substring(0,i)+'<span class="highlight">'+t.substring(i,i+q.length)+'</span>'+t.substring(i+q.length);}return`<div class="tags-dropdown-item" onclick="addTag('${t.replace(/'/g,"\\'")}')">${d}</div>`;}).join('');
-        tagsDropdown.classList.add('active');
-    }
-    
-    function addTag(t){
-        if(selectedTags.length>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return;}
-        if(!selectedTags.includes(t)){selectedTags.push(t);renderTagChips();updateHiddenTags();}
-        tagsInput.value='';tagsDropdown.classList.remove('active');
-    }
-    
-    function removeTag(t){selectedTags=selectedTags.filter(x=>x!==t);renderTagChips();updateHiddenTags();}
-    
-    function renderTagChips(){
-        document.getElementById('tagsChips').innerHTML=selectedTags.map(t=>`<span class="tag-chip">${t} <button type="button" onclick="removeTag('${t.replace(/'/g,"\\'")}')">&times;</button></span>`).join('');
-        if(selectedTags.length>=MAX_TAGS){tagsInput.disabled=true;tagsInput.placeholder='Máximo de '+MAX_TAGS+' tags atingido';}else{tagsInput.disabled=false;tagsInput.placeholder='Buscar e selecionar tags...';}
-    }
-    
-    function updateHiddenTags(){document.getElementById('tagsHidden').value=selectedTags.join(',');}
+// Tags
+const MIN_TAGS=3,MAX_TAGS=5;
+const AVAILABLE_TAGS=["Economia Circular","Energia Renovável","Gestão de Resíduos","Logística Reversa","Meio Ambiente","Mudanças Climáticas","ODS","Arquitetura","Intervenções Urbanas","ESG","Responsabilidade Social","Cidadania Digital","Geopolítica","Mobilidade Urbana","Turismo","Urbanismo","Saúde","Agritech","Cleantech","Construtech","Ecotech","Edutech","Fintech","Foodtech","Govtech","Healthtech","Lawtech","Retailtech","Sportech","Dados","Blockchain","Cibersegurança","LGPD","Cloud","Programação","XR / Realidade Virtual e Aumentada","Deep Learning","Engenharia de Prompt","Inteligência Artificial","LLM","Machine Learning","Metaverso","Processamento de Linguagem Natural","Visão Computacional","Internet das Coisas","Sistemas Embarcados","Computação Quântica","Automação","Robótica","Tecnologias de Conectividade","Acessibilidade","50+","PcD","Equidade Racial","LGBTQIAPN+","Mulheres","Neurodivergência","Periferias","Diversidade e Inclusão","Cultura Popular","Patrimônio Imaterial","Artes","Impacto Social","Legislação","Educação e Formação","Infância","Empreendedorismo","Inovação","Empresa Júnior","Gestão de Comunidades","Internacionalização","Modelagem de Negócios","Startup","Transformação Digital","Carreira Profissional","Cultura Organizacional","Desenvolvimento de Times","RH","Captação por Editais","Investimentos","Agilidade","Atacado e Varejo","Branding","Canais de Venda","Comportamento do Consumidor","Marketing","Vendas B2B e B2C","Artes Visuais","Audiovisual","Cultura Maker","Dança","Fotografia","Gastronomia","Literatura","Moda","Música","Teatro","Comunicação","Criação de Conteúdo","Design Gráfico/ Industrial","Podcast","e-Sports","Experiência do Usuário (UX / CX)","Gameficação","Interface do Usuário (UI)","Simulação e Modelagem","Desenvolvimento de Jogos","Economia Criativa"];
+let selectedTags=[];
+let hasSuggestion=false;
 
-    // Seletor PF/PJ
-    let currentType='pf';
-    function setProponenteType(type){currentType=type;document.getElementById('tipoProponente').value=type;document.querySelectorAll('.type-selector-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));const catG=document.getElementById('categoriaGroup'),natG=document.getElementById('nacionalidadeGroup');if(type==='pj'){catG.classList.remove('hidden');natG.classList.add('hidden');}else{catG.classList.add('hidden');natG.classList.remove('hidden');toggleProponenteDocs();}}
-    function toggleProponenteDocs(){if(currentType!=='pf')return;const nat=document.getElementById('nacionalidadeProponente').value;document.getElementById('docCpfField').classList.toggle('hidden',nat!=='brasileiro');document.getElementById('docPassaporteField').classList.toggle('hidden',nat==='brasileiro');}
-    setProponenteType('pf');
+(function(){const v=document.getElementById('tagsHidden').value;if(v&&v.trim()){selectedTags=v.split(',').map(t=>t.trim()).filter(t=>t);renderTagChips();}
+const sv=document.getElementById('tagSuggestionHidden').value;if(sv&&sv.trim()){hasSuggestion=true;} })();
 
-    // ==========================================
-    // TEMPO DE DURAÇÃO DINÂMICO POR FORMATO
-    // ==========================================
-    const DURACOES = {
-        'debate': [
-            {value: '30min', label: '30 minutos'},
-            {value: '45min', label: '45 minutos'},
-            {value: '60min', label: '60 minutos (1 hora)'}
-        ],
-        'roda_de_conversa': [
-            {value: '30min', label: '30 minutos'},
-            {value: '45min', label: '45 minutos'},
-            {value: '60min', label: '60 minutos (1 hora)'},
-            {value: '75min', label: '75 minutos (1h15)'},
-            {value: '90min', label: '90 minutos (1h30)'}
-        ],
-        'oficina': [
-            {value: '30min', label: '30 minutos'},
-            {value: '45min', label: '45 minutos'},
-            {value: '60min', label: '60 minutos (1 hora)'},
-            {value: '75min', label: '75 minutos (1h15)'},
-            {value: '90min', label: '90 minutos (1h30)'},
-            {value: '105min', label: '105 minutos (1h45)'},
-            {value: '120min', label: '120 minutos (2 horas)'}
-        ]
-    };
+const tagsInput=document.getElementById('tagsInput'),tagsDropdown=document.getElementById('tagsDropdown');
+tagsInput.addEventListener('input',function(){filterAndShowTags(this.value.toLowerCase().trim());});
+tagsInput.addEventListener('focus',function(){filterAndShowTags(this.value.toLowerCase().trim()||'');});
+document.addEventListener('click',function(e){if(!document.getElementById('tagsContainer').contains(e.target))tagsDropdown.classList.remove('active');});
 
-    function updateDuracaoOptions() {
-        const formato = document.getElementById('formatoAtividade').value;
-        const select = document.getElementById('tempoDuracao');
-        const currentVal = select.value;
+function filterAndShowTags(q){
+    const total=selectedTags.length+(hasSuggestion?1:0);
+    if(total>=MAX_TAGS){tagsDropdown.innerHTML='<div class="tags-dropdown-empty">Máximo de '+MAX_TAGS+' tags atingido</div>';tagsDropdown.classList.add('active');return;}
+    let items='';
+    if(!hasSuggestion){items='<div class="tags-dropdown-item suggestion-item" onclick="showSuggestionInput()"><i class="fas fa-pen"></i> ✏️ Sugestão (personalizada)</div>';}
+    const f=AVAILABLE_TAGS.filter(t=>(q===''||t.toLowerCase().includes(q))&&!selectedTags.includes(t));
+    if(f.length===0&&q!==''&&!hasSuggestion){tagsDropdown.innerHTML=items+'<div class="tags-dropdown-empty">Nenhuma tag encontrada</div>';tagsDropdown.classList.add('active');return;}
+    if(f.length===0&&q===''){if(items){tagsDropdown.innerHTML=items;tagsDropdown.classList.add('active');}else{tagsDropdown.classList.remove('active');}return;}
+    items+=f.slice(0,30).map(t=>{let d=t;if(q){const i=t.toLowerCase().indexOf(q);if(i>=0)d=t.substring(0,i)+'<span class="highlight">'+t.substring(i,i+q.length)+'</span>'+t.substring(i+q.length);}return`<div class="tags-dropdown-item" onclick="addTag('${t.replace(/'/g,"\\'")}')">${d}</div>`;}).join('');
+    tagsDropdown.innerHTML=items;tagsDropdown.classList.add('active');
+}
+function addTag(t){const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return;}if(!selectedTags.includes(t)){selectedTags.push(t);renderTagChips();updateHiddenTags();}tagsInput.value='';tagsDropdown.classList.remove('active');}
+function removeTag(t){selectedTags=selectedTags.filter(x=>x!==t);renderTagChips();updateHiddenTags();}
+function showSuggestionInput(){document.getElementById('suggestionInputRow').classList.remove('hidden');tagsDropdown.classList.remove('active');tagsInput.value='';}
+function addSuggestionTag(){if(hasSuggestion){showToast('Apenas uma sugestão é permitida.','error');return;}const v=document.getElementById('suggestionInput').value.trim();if(!v){showToast('Digite a sugestão.','error');return;}const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return;}hasSuggestion=true;document.getElementById('tagSuggestionHidden').value=v;document.getElementById('suggestionInputRow').classList.add('hidden');renderTagChips();updateHiddenTags();}
+function removeSuggestionTag(){hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();}
+function renderTagChips(){
+    const total=selectedTags.length+(hasSuggestion?1:0);
+    let html=selectedTags.map(t=>`<span class="tag-chip">${t} <button type="button" onclick="removeTag('${t.replace(/'/g,"\\'")}')">&times;</button></span>`).join('');
+    if(hasSuggestion){html+=`<span class="tag-chip suggestion">✏️ ${document.getElementById('tagSuggestionHidden').value} <button type="button" onclick="removeSuggestionTag()">&times;</button></span>`;}
+    document.getElementById('tagsChips').innerHTML=html;
+    if(total>=MAX_TAGS){tagsInput.disabled=true;tagsInput.placeholder='Máximo de '+MAX_TAGS+' atingido';}else{tagsInput.disabled=false;tagsInput.placeholder='Buscar e selecionar tags...';}
+}
+function updateHiddenTags(){document.getElementById('tagsHidden').value=selectedTags.join(',');}
 
-        select.innerHTML = '<option value="">Selecione...</option>';
+// PF/PJ
+let currentType='pj';
+function setProponenteType(type){currentType=type;document.getElementById('tipoProponente').value=type;document.querySelectorAll('.type-selector-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));const catG=document.getElementById('categoriaGroup'),natG=document.getElementById('nacionalidadeGroup'),logoG=document.getElementById('logoMarcaGroup');if(type==='pj'){catG.classList.remove('hidden');logoG.classList.remove('hidden');natG.classList.add('hidden');}else{catG.classList.add('hidden');logoG.classList.add('hidden');natG.classList.remove('hidden');toggleProponenteDocs();}}
+function toggleProponenteDocs(){if(currentType!=='pf')return;const nat=document.getElementById('nacionalidadeProponente').value;document.getElementById('docCpfField').classList.toggle('hidden',nat!=='brasileiro');document.getElementById('docPassaporteField').classList.toggle('hidden',nat==='brasileiro');}
+setProponenteType('pj');
 
-        if (formato && DURACOES[formato]) {
-            DURACOES[formato].forEach(opt => {
-                const o = document.createElement('option');
-                o.value = opt.value;
-                o.textContent = opt.label;
-                select.appendChild(o);
-            });
-            // Manter o valor previamente selecionado se ainda existe nas novas opções
-            const validValues = DURACOES[formato].map(o => o.value);
-            if (validValues.includes(currentVal)) {
-                select.value = currentVal;
-            }
-        }
-    }
+// Bairro
+function checkBairro(){const c=document.getElementById('cidadeProponente').value.trim().toLowerCase();document.getElementById('bairroGroup').classList.toggle('hidden',!c.includes('recife'));}
 
-    // Toggle Oficina + Atualizar Duração
-    function toggleActivityFields(){
-        const f=document.getElementById('formatoAtividade').value;
-        const s=document.getElementById('oficinaSection');
-        
-        // Atualizar opções de duração
-        updateDuracaoOptions();
-        
-        if(f==='oficina'){s.classList.remove('hidden');toggleLabFields();toggleSoftwareFields();}
-        else{s.classList.add('hidden');}
-    }
-    toggleActivityFields();
+// Duração
+const DURACOES={'debate':[{value:'30min',label:'30 minutos'},{value:'45min',label:'45 minutos'},{value:'1h',label:'1h'}],'roda_de_conversa':[{value:'30min',label:'30 minutos'},{value:'45min',label:'45 minutos'},{value:'1h',label:'1h'},{value:'1h15',label:'1h15'},{value:'1h30',label:'1h30'}],'oficina':[{value:'30min',label:'30 minutos'},{value:'45min',label:'45 minutos'},{value:'1h',label:'1h'},{value:'1h15',label:'1h15'},{value:'1h30',label:'1h30'},{value:'1h45',label:'1h45'},{value:'2h',label:'2h'}]};
+function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value;const s=document.getElementById('tempoDuracao');const cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op);});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv;}}
 
-    function toggleLabFields(){const v=document.querySelector('input[name="oficina_lab"]:checked');document.getElementById('labDetails').classList.toggle('hidden',!(v&&v.value==='sim'));}
-    function toggleSoftwareFields(){const v=document.querySelector('input[name="oficina_soft_req"]:checked');document.getElementById('softwareDetails').classList.toggle('hidden',!(v&&v.value==='sim'));}
-    function toggleRestricao(){document.getElementById('faixaEtariaGroup').classList.toggle('hidden',!document.getElementById('restricaoSim').checked);}
-    toggleRestricao();
+function toggleActivityFields(){const f=document.getElementById('formatoAtividade').value;updateDuracaoOptions();const s=document.getElementById('oficinaSection');if(f==='oficina'){s.classList.remove('hidden');toggleLabFields();toggleSoftwareFields();}else{s.classList.add('hidden');}}
+toggleActivityFields();
+function toggleLabFields(){const v=document.querySelector('input[name="oficina_lab"]:checked');document.getElementById('labDetails').classList.toggle('hidden',!(v&&v.value==='sim'));}
+function toggleSoftwareFields(){const v=document.querySelector('input[name="oficina_soft_req"]:checked');document.getElementById('softwareDetails').classList.toggle('hidden',!(v&&v.value==='sim'));}
+function toggleRestricao(){document.getElementById('faixaEtariaGroup').classList.toggle('hidden',!document.getElementById('restricaoSim').checked);}
 
-    // Repopular dados salvos em caso de erro de validação
-    const savedFormato = "{{ dados.get('formatoAtividade', '') }}";
-    const savedDuracao = "{{ dados.get('tempoDuracao', '') }}";
-    if (savedFormato) {
-        document.getElementById('formatoAtividade').value = savedFormato;
-        updateDuracaoOptions();
-        if (savedDuracao) {
-            document.getElementById('tempoDuracao').value = savedDuracao;
-        }
-    }
+// Repopular dados salvos
+const savedFormato="{{ dados.get('formatoAtividade', '') }}";const savedDuracao="{{ dados.get('tempoDuracao', '') }}";
+if(savedFormato){document.getElementById('formatoAtividade').value=savedFormato;updateDuracaoOptions();if(savedDuracao)document.getElementById('tempoDuracao').value=savedDuracao;}
+const savedCat="{{ dados.get('categoria', '') }}";if(savedCat){document.getElementById('categoria').value=savedCat;}
+const savedCidade="{{ dados.get('cidadeProponente', '') }}";if(savedCidade){document.getElementById('cidadeProponente').value=savedCidade;checkBairro();}
 
-    // Máscaras
-    function maskCPF(i){let v=i.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>9)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6,9)+'-'+v.substring(9);else if(v.length>6)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6);else if(v.length>3)v=v.substring(0,3)+'.'+v.substring(3);i.value=v;}
-    function maskCNPJ(i){let v=i.value.replace(/\D/g,'');if(v.length>14)v=v.substring(0,14);if(v.length>12)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8,12)+'-'+v.substring(12);else if(v.length>8)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8);else if(v.length>5)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5);else if(v.length>2)v=v.substring(0,2)+'.'+v.substring(2);i.value=v;}
-    function validateCPF(c){c=c.replace(/\D/g,'');if(c.length!==11)return false;if(/^(\d)\1{10}$/.test(c))return false;let s=0;for(let i=0;i<9;i++)s+=parseInt(c.charAt(i))*(10-i);let r=11-(s%11);if(r===10||r===11)r=0;if(r!==parseInt(c.charAt(9)))return false;s=0;for(let i=0;i<10;i++)s+=parseInt(c.charAt(i))*(11-i);r=11-(s%11);if(r===10||r===11)r=0;return r===parseInt(c.charAt(10));}
-    function validateCPFfrontend(i){const v=i.value.replace(/\D/g,'');if(v.length===0)return true;if(v.length<11){i.classList.add('error');return false;}if(!validateCPF(i.value)){i.classList.add('error');showToast('CPF inválido.','error');return false;}i.classList.remove('error');return true;}
+// Material Table
+let materialRowCount=0;
+function addMaterialRow(){materialRowCount++;const tb=document.getElementById('materialTableBody');const tr=document.createElement('tr');tr.id='matRow'+materialRowCount;tr.innerHTML=`<td><input type="text" name="mat_item_${materialRowCount}" required></td><td><input type="number" name="mat_qtd_${materialRowCount}" min="1" value="1" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td><input type="number" name="mat_valor_${materialRowCount}" min="0" step="0.01" value="0" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td class="mat-subtotal">R$ 0,00</td><td><button type="button" class="btn-remove-row" onclick="removeMaterialRow('matRow${materialRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr);calcMaterialTotal();}
+function removeMaterialRow(id){document.getElementById(id).remove();calcMaterialTotal();}
+function calcMaterialTotal(){let total=0;document.querySelectorAll('#materialTableBody tr').forEach(tr=>{const q=parseFloat(tr.querySelector('input[name^="mat_qtd"]')?.value)||0;const v=parseFloat(tr.querySelector('input[name^="mat_valor"]')?.value)||0;const sub=q*v;tr.querySelector('.mat-subtotal').textContent='R$ '+sub.toFixed(2).replace('.',',');total+=sub;});document.getElementById('materialTotal').textContent='R$ '+total.toFixed(2).replace('.',',');}
+function toggleMaterialTable(){const v=document.getElementById('materialAjuda').value;const s=document.getElementById('materialTableSection');if(v==='sim'||v==='indispensavel'){s.classList.remove('hidden');if(materialRowCount===0)addMaterialRow();}else{s.classList.add('hidden');}}
 
-    function maskPhone(e){var v=e.target.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>6)e.target.value='('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7);else if(v.length>2)e.target.value='('+v.substring(0,2)+') '+v.substring(2);else if(v.length>0)e.target.value='('+v;}
-    document.getElementById('telefoneRepresentante').addEventListener('input',maskPhone);
+// Máscaras
+function maskCPF(i){let v=i.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>9)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6,9)+'-'+v.substring(9);else if(v.length>6)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6);else if(v.length>3)v=v.substring(0,3)+'.'+v.substring(3);i.value=v;}
+function maskCNPJ(i){let v=i.value.replace(/\D/g,'');if(v.length>14)v=v.substring(0,14);if(v.length>12)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8,12)+'-'+v.substring(12);else if(v.length>8)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8);else if(v.length>5)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5);else if(v.length>2)v=v.substring(0,2)+'.'+v.substring(2);i.value=v;}
+function validateCPF(c){c=c.replace(/\D/g,'');if(c.length!==11)return false;if(/^(\d)\1{10}$/.test(c))return false;let s=0;for(let i=0;i<9;i++)s+=parseInt(c.charAt(i))*(10-i);let r=11-(s%11);if(r===10||r===11)r=0;if(r!==parseInt(c.charAt(9)))return false;s=0;for(let i=0;i<10;i++)s+=parseInt(c.charAt(i))*(11-i);r=11-(s%11);if(r===10||r===11)r=0;return r===parseInt(c.charAt(10));}
+function validateCPFfrontend(i){const v=i.value.replace(/\D/g,'');if(v.length===0)return true;if(v.length<11){i.classList.add('error');return false;}if(!validateCPF(i.value)){i.classList.add('error');showToast('CPF inválido.','error');return false;}i.classList.remove('error');return true;}
+function maskPhone(e){var v=e.target.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>6)e.target.value='('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7);else if(v.length>2)e.target.value='('+v.substring(0,2)+') '+v.substring(2);else if(v.length>0)e.target.value='('+v;}
+document.getElementById('telefoneRepresentante').addEventListener('input',maskPhone);
 
-    function setupCounter(id,max){var el=document.getElementById(id);var cnt=document.getElementById(id==='descricaoAtividade'?'charCounter':'charCounterExtra');if(!el||!cnt)return;el.addEventListener('input',function(){cnt.innerText=this.value.length+' / '+max;});cnt.innerText=el.value.length+' / '+max;}
-    setupCounter('descricaoAtividade',700);setupCounter('infoExtras',500);
+function setupCounter(id,max){var el=document.getElementById(id);if(!el)return;var cnt=el.parentElement.querySelector('.char-counter');if(!cnt)return;el.addEventListener('input',function(){cnt.innerText=this.value.length+' / '+max;});cnt.innerText=el.value.length+' / '+max;}
+setupCounter('objetivoAtividade',500);setupCounter('justificativaTematica',500);setupCounter('metodologiaAplicada',500);setupCounter('descricaoAtividade',500);setupCounter('infoExtras',500);
 
-    // Convidados
-    let guestCount=0;const maxGuests=5;
-    function addGuest(){if(guestCount>=maxGuests){showToast('Máximo de 5 convidados atingido.','error');return;}guestCount++;const clone=document.getElementById('guestTemplate').content.cloneNode(true);const card=clone.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount);});document.getElementById('guestsList').appendChild(clone);document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);const fi=document.querySelector(`[name="convidado${guestCount}_foto"]`);if(fi){const pr=fi.closest('.guest-subsection').querySelector('.g-photo-preview');fi.addEventListener('change',function(e){if(this.files&&this.files[0]){const r=new FileReader();r.onload=ev=>{pr.innerHTML='<img src="'+ev.target.result+'" alt="Preview">';};r.readAsDataURL(this.files[0]);}else{pr.innerHTML='<i class="fas fa-user"></i>';}});}card.scrollIntoView({behavior:'smooth',block:'center'});}
-    function removeGuest(btn){const card=btn.closest('.guest-card');card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();guestCount--;document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);},300);}
-    function toggleGuestDocs(sel){const card=sel.closest('.guest-card');const isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>f.classList.toggle('hidden',!isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>f.classList.toggle('hidden',isBR));card.querySelectorAll('.g-doc-br').forEach(f=>f.classList.toggle('hidden',!isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>f.classList.toggle('hidden',isBR));}
-    function toggleGuestAcessibilidade(cb){cb.closest('.guest-card').querySelector('.g-acess-detail').classList.toggle('hidden',!cb.checked);}
+// Logo Marca preview
+document.getElementById('fotoProponente').addEventListener('change',function(e){var p=document.getElementById('photoPreview');if(this.files&&this.files[0]){var r=new FileReader();r.onload=ev=>{p.innerHTML='<img src="'+ev.target.result+'" alt="Logo">';};r.readAsDataURL(this.files[0]);}else{p.innerHTML='<i class="fas fa-image"></i>';}});
 
-    document.getElementById('fotoProponente').addEventListener('change',function(e){var p=document.getElementById('photoPreview');if(this.files&&this.files[0]){var r=new FileReader();r.onload=ev=>{p.innerHTML='<img src="'+ev.target.result+'" alt="Preview">';};r.readAsDataURL(this.files[0]);}else{p.innerHTML='<i class="fas fa-user"></i>';}});
+// Convidados
+let guestCount=0;const maxGuests=5;
+function addGuest(){if(guestCount>=maxGuests){showToast('Máximo de 5 convidados.','error');return;}guestCount++;const clone=document.getElementById('guestTemplate').content.cloneNode(true);const card=clone.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount);});document.getElementById('guestsList').appendChild(card);document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);
+const fi=document.querySelector(`[name="convidado${guestCount}_foto"]`);if(fi){const pr=fi.closest('.guest-subsection').querySelector('.g-photo-preview');fi.addEventListener('change',function(e){if(this.files&&this.files[0]){cropGuestPhoto(this.files[0],pr);}else{pr.innerHTML='<i class="fas fa-user"></i>';}});}
+card.scrollIntoView({behavior:'smooth',block:'center'});}
 
-    // Validação Submit
-    document.getElementById('inscricaoForm').addEventListener('submit',function(e){
-        if(selectedTags.length>MAX_TAGS){e.preventDefault();showToast('O limite máximo de tags é '+MAX_TAGS+'.','error');return;}
-        if(currentType==='pf'){const ci=document.getElementById('cpfProponente');const cg=document.getElementById('docCpfField');if(!cg.classList.contains('hidden')&&ci.value.trim()){if(!validateCPFfrontend(ci)){e.preventDefault();ci.focus();return;}}}
-        document.querySelectorAll('.g-cpf').forEach(inp=>{const v=inp.value.replace(/\D/g,'');if(v.length>0&&v.length<11){e.preventDefault();inp.classList.add('error');showToast('CPF de convidado incompleto.','error');inp.focus();return;}if(v.length===11&&!validateCPF(inp.value)){e.preventDefault();inp.classList.add('error');showToast('CPF de convidado inválido.','error');inp.focus();return;}inp.classList.remove('error');});
-        if(currentType==='pj'){if(!document.getElementById('categoria').value){e.preventDefault();showToast('Selecione a categoria.','error');document.getElementById('categoria').focus();return;}if(!document.getElementById('cnpjProponente').value.trim()){e.preventDefault();showToast('O CNPJ é obrigatório.','error');document.getElementById('cnpjProponente').focus();return;}}
-        if(document.getElementById('restricaoSim').checked){const min=parseInt(document.getElementById('idadeMinima').value);const max=parseInt(document.getElementById('idadeMaxima').value);if(isNaN(min)||isNaN(max)){e.preventDefault();showToast('Preencha a idade mínima e máxima.','error');return;}if(min>max){e.preventDefault();showToast('Idade mínima não pode ser maior que a máxima.','error');return;}}
-    });
+function cropGuestPhoto(file,previewEl){const reader=new FileReader();reader.onload=function(ev){const img=new Image();img.onload=function(){const canvas=document.getElementById('cropCanvas');const ctx=canvas.getContext('2d');const size=512;canvas.width=size;canvas.height=size;const minDim=Math.min(img.width,img.height);const sx=(img.width-minDim)/2;const sy=(img.height-minDim)/2;ctx.clearRect(0,0,size,size);ctx.drawImage(img,sx,sy,minDim,minDim,0,0,size,size);const dataUrl=canvas.toDataURL('image/jpeg',0.9);previewEl.innerHTML='<img src="'+dataUrl+'" alt="Foto 512x512">';const hiddenInput=previewEl.closest('.guest-card').querySelector('.g-foto-cropped');if(hiddenInput)hiddenInput.value=dataUrl;};img.src=ev.target.result;};reader.readAsDataURL(file);}
 
-    function limparFormulario(){document.getElementById('inscricaoForm').reset();document.getElementById('guestsList').innerHTML='';guestCount=0;document.getElementById('btnAddGuest').disabled=false;document.getElementById('photoPreview').innerHTML='<i class="fas fa-user"></i>';selectedTags=[];renderTagChips();updateHiddenTags();setProponenteType('pf');toggleActivityFields();toggleRestricao();showToast('Formulário limpo.','info');}
+function removeGuest(btn){const card=btn.closest('.guest-card');card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();guestCount--;document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);},300);}
+function toggleGuestDocs(sel){const card=sel.closest('.guest-card');const isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>f.classList.toggle('hidden',!isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>f.classList.toggle('hidden',isBR));card.querySelectorAll('.g-doc-br').forEach(f=>f.classList.toggle('hidden',!isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>f.classList.toggle('hidden',isBR));if(!isBR){card.querySelectorAll('.g-doc-passaporte input').forEach(i=>i.required=true);card.querySelectorAll('.g-doc-cpf input').forEach(i=>i.required=false);}else{card.querySelectorAll('.g-doc-passaporte input').forEach(i=>i.required=false);}}
+function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card');const d=card.querySelector('.g-acess-detail');d.classList.toggle('hidden',!cb.checked);const desc=d.querySelector('.g-acess-desc');if(cb.checked)desc.required=true;else{desc.required=false;desc.value='';}}
+
+// Auto-add first guest
+addGuest();
+
+// Submit
+document.getElementById('inscricaoForm').addEventListener('submit',function(e){
+    const totalTags=selectedTags.length+(hasSuggestion?1:0);
+    if(totalTags<MIN_TAGS){e.preventDefault();showToast('Selecione pelo menos '+MIN_TAGS+' tags.','error');return;}
+    if(totalTags>MAX_TAGS){e.preventDefault();showToast('O limite máximo de tags é '+MAX_TAGS+'.','error');return;}
+    if(currentType==='pf'){const ci=document.getElementById('cpfProponente');const cg=document.getElementById('docCpfField');if(!cg.classList.contains('hidden')&&ci.value.trim()){if(!validateCPFfrontend(ci)){e.preventDefault();ci.focus();return;}}}
+    if(guestCount<1){e.preventDefault();showToast('Adicione pelo menos 1 convidado.','error');return;}
+    document.querySelectorAll('.g-cpf').forEach(inp=>{const v=inp.value.replace(/\D/g,'');if(v.length>0&&v.length<11){e.preventDefault();inp.classList.add('error');showToast('CPF de convidado incompleto.','error');inp.focus();return;}if(v.length===11&&!validateCPF(inp.value)){e.preventDefault();inp.classList.add('error');showToast('CPF de convidado inválido.','error');inp.focus();return;}inp.classList.remove('error');});
+    if(currentType==='pj'){if(!document.getElementById('categoria').value){e.preventDefault();showToast('Selecione a categoria.','error');document.getElementById('categoria').focus();return;}if(!document.getElementById('cnpjProponente').value.trim()){e.preventDefault();showToast('O CNPJ é obrigatório.','error');document.getElementById('cnpjProponente').focus();return;}}
+    if(document.getElementById('restricaoSim').checked){const min=parseInt(document.getElementById('idadeMinima').value);const max=parseInt(document.getElementById('idadeMaxima').value);if(isNaN(min)||isNaN(max)){e.preventDefault();showToast('Preencha a idade mínima e máxima.','error');return;}if(min>max){e.preventDefault();showToast('Idade mínima não pode ser maior.','error');return;}}
+    if(!document.querySelector('input[name="restricaoEtaria"]:checked')){e.preventDefault();showToast('Selecione se há restrição de faixa etária.','error');return;}
+});
+
+function limparFormulario(){document.getElementById('inscricaoForm').reset();document.getElementById('guestsList').innerHTML='';guestCount=0;selectedTags=[];hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();setProponenteType('pj');toggleActivityFields();document.getElementById('bairroGroup').classList.add('hidden');document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';document.getElementById('materialTableBody').innerHTML='';materialRowCount=0;addGuest();showToast('Formulário limpo.','info');}
 </script>
 </body>
 </html>
