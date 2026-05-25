@@ -369,12 +369,11 @@ document.getElementById('fotoProponente').addEventListener('change',function(e){
 
 // Convidados
 let guestCount=0;const maxGuests=5;
-function addGuest(){if(guestCount>=maxGuests){showToast('Máximo de 5 convidados.','error');return;}guestCount++;const clone=document.getElementById('guestTemplate').content.cloneNode(true);const card=clone.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount);});
-// Adicionar máscara de telefone no convidado
+function addGuest(scroll=true){if(guestCount>=maxGuests){showToast('Máximo de 5 convidados.','error');return;}guestCount++;const clone=document.getElementById('guestTemplate').content.cloneNode(true);const card=clone.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount);});
 const telInput=card.querySelector('.g-telefone');if(telInput)telInput.addEventListener('input',maskPhone);
 document.getElementById('guestsList').appendChild(card);document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);
 const fi=card.querySelector('.g-foto');if(fi){const pr=fi.closest('.guest-subsection').querySelector('.g-photo-preview');fi.addEventListener('change',function(e){pr.classList.remove('error-border');if(this.files&&this.files[0]){cropGuestPhoto(this.files[0],pr);}else{pr.innerHTML='<i class="fas fa-user"></i>';}});}
-card.scrollIntoView({behavior:'smooth',block:'center'});}
+if(scroll) card.scrollIntoView({behavior:'smooth',block:'center'});}
 
 function cropGuestPhoto(file,previewEl){const reader=new FileReader();reader.onload=function(ev){const img=new Image();img.onload=function(){const canvas=document.getElementById('cropCanvas');const ctx=canvas.getContext('2d');const size=512;canvas.width=size;canvas.height=size;const minDim=Math.min(img.width,img.height);const sx=(img.width-minDim)/2;const sy=(img.height-minDim)/2;ctx.clearRect(0,0,size,size);ctx.drawImage(img,sx,sy,minDim,minDim,0,0,size,size);const dataUrl=canvas.toDataURL('image/jpeg',0.9);previewEl.innerHTML='<img src="'+dataUrl+'" alt="Foto 512x512">';};img.src=ev.target.result;};reader.readAsDataURL(file);}
 
@@ -383,7 +382,7 @@ function toggleGuestDocs(sel){const card=sel.closest('.guest-card');const isBR=s
 function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card');const d=card.querySelector('.g-acess-detail');d.classList.toggle('hidden',!cb.checked);const desc=d.querySelector('.g-acess-desc');if(cb.checked)desc.required=true;else{desc.required=false;desc.value='';}}
 
 // Auto-add first guest
-addGuest();
+addGuest(false);
 
 // Submit
 document.getElementById('inscricaoForm').addEventListener('submit',function(e){
