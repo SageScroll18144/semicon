@@ -122,7 +122,7 @@ def home():
             nome_amigavel = campo.replace('_', ' ').title()
             erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
 
-    # Validações por tipo
+    # Validações por tipo de proponente
     if tipo_prop == 'pj':
         cat = dados.get('categoria', '').strip()
         if not cat:
@@ -132,6 +132,12 @@ def home():
             erros.append('O CNPJ é obrigatório.')
         elif not validar_cnpj(cnpj):
             erros.append('O CNPJ informado não é válido.')
+
+        # Logo Marca OBRIGATÓRIA para PJ
+        if not arquivo_foto or arquivo_foto.filename.strip() == '':
+            erros.append('A Logo Marca é obrigatória para Pessoa Jurídica.')
+        elif not extensao_permitida(arquivo_foto.filename):
+            erros.append('Formato de Logo Marca não permitido. Use: png, jpg, jpeg, webp')
     else:
         nat_prop = dados.get('nacionalidadeProponente', '').strip()
         if not nat_prop:
@@ -145,12 +151,6 @@ def home():
         elif nat_prop == 'estrangeiro':
             if not dados.get('passaporteProponente', '').strip():
                 erros.append('O Passaporte é obrigatório para estrangeiros.')
-
-    # Bairro (se Recife)
-    cidade = dados.get('cidadeProponente', '').strip()
-    if cidade and 'recife' in cidade.lower():
-        if not dados.get('bairroProponente', '').strip():
-            erros.append('O bairro é obrigatório para a cidade de Recife.')
 
     # E-mail representante
     if dados.get('emailRepresentante') and not validar_email(dados.get('emailRepresentante')):
@@ -227,11 +227,6 @@ def home():
     if len(dados.get('recursosAcessibilidade', '')) > 200:
         erros.append('Recursos de acessibilidade: máximo 200 caracteres.')
 
-    # Foto
-    if arquivo_foto and arquivo_foto.filename.strip() != '':
-        if not extensao_permitida(arquivo_foto.filename):
-            erros.append('Formato de foto não permitido. Use: png, jpg, jpeg, webp')
-
     # Convidados - mínimo 1
     convidados = []
     tem_convidado = False
@@ -240,6 +235,17 @@ def home():
         nome = dados.get(f'{prefixo}nome', '').strip()
         if nome:
             tem_convidado = True
+
+            # Foto OBRIGATÓRIA do convidado
+            foto_conv = request.files.get(f'{prefixo}foto')
+            foto_conv_nome = None
+            if not foto_conv or foto_conv.filename.strip() == '':
+                erros.append(f'A foto do convidado {i} ({nome}) é obrigatória.')
+            elif not extensao_permitida(foto_conv.filename):
+                erros.append(f'Formato de foto do convidado {i} não permitido.')
+            else:
+                foto_conv_nome = salvar_foto(foto_conv, f'convidado{i}_{nome}')
+
             email = dados.get(f'{prefixo}email', '').strip()
             if not email:
                 erros.append(f'E-mail do convidado {i} é obrigatório.')
@@ -260,8 +266,16 @@ def home():
 
             estado = dados.get(f'{prefixo}estado', '').strip()
             cidade_c = dados.get(f'{prefixo}cidade', '').strip()
+            bairro_c = dados.get(f'{prefixo}bairro', '').strip()
+
             if nacionalidade == 'brasileiro' and (not estado or not cidade_c):
                 erros.append(f'Estado e cidade do convidado {i} são obrigatórios.')
+
+            # Bairro obrigatório se cidade for Recife
+            if cidade_c and 'recife' in cidade_c.lower():
+                if not bairro_c:
+                    erros.append(f'O bairro do convidado {i} é obrigatório quando a cidade é Recife.')
+
             elif nacionalidade == 'estrangeiro':
                 if not dados.get(f'{prefixo}passaporte', '').strip():
                     erros.append(f'Passaporte do convidado estrangeiro {i} é obrigatório.')
@@ -296,14 +310,6 @@ def home():
                 if not dados.get(f'{prefixo}acessibilidade_desc', '').strip():
                     erros.append(f'Descreva os recursos de acessibilidade do convidado {i}.')
 
-            foto_conv = request.files.get(f'{prefixo}foto')
-            foto_conv_nome = None
-            if foto_conv and foto_conv.filename.strip() != '':
-                if not extensao_permitida(foto_conv.filename):
-                    erros.append(f'Formato de foto do convidado {i} não permitido.')
-                else:
-                    foto_conv_nome = salvar_foto(foto_conv, f'convidado{i}_{nome}')
-
             convidados.append({
                 'nome': nome, 'email': email,
                 'nacionalidade': nacionalidade,
@@ -319,8 +325,9 @@ def home():
                 'acessibilidade_desc': dados.get(f'{prefixo}acessibilidade_desc'),
                 'social_linkedin': dados.get(f'{prefixo}social_linkedin'),
                 'social_instagram': dados.get(f'{prefixo}social_instagram'),
-                'cidade': dados.get(f'{prefixo}cidade'),
-                'estado': dados.get(f'{prefixo}estado'),
+                'cidade': cidade_c,
+                'estado': estado,
+                'bairro': bairro_c,
                 'pais_origem': dados.get(f'{prefixo}pais_origem'),
                 'foto': foto_conv_nome
             })
@@ -359,7 +366,6 @@ def home():
             'nome_instituicao': dados.get('nomeInstituicao'),
             'categoria': dados.get('categoria') if tipo_prop == 'pj' else None,
             'cidade': dados.get('cidadeProponente'),
-            'bairro': dados.get('bairroProponente') if 'recife' in cidade.lower() else None,
             'nacionalidade': nat_prop_val,
             'cpf': dados.get('cpfProponente') if tipo_prop == 'pf' else None,
             'passaporte': dados.get('passaporteProponente') if tipo_prop == 'pf' else None,
