@@ -244,7 +244,7 @@
                     <div class="field-group"><label for="eixo">Eixo Temático <span class="required">*</span></label><select id="eixo" name="eixo" required><option value="">Selecione...</option><option value="cidade_sustentabilidade" {{ 'selected' if dados.get('eixo') == 'cidade_sustentabilidade' }}>Cidade e Sustentabilidade</option><option value="tecnologia" {{ 'selected' if dados.get('eixo') == 'tecnologia' }}>Tecnologia</option><option value="cultura_sociedade" {{ 'selected' if dados.get('eixo') == 'cultura_sociedade' }}>Cultura e Sociedade</option><option value="negocios" {{ 'selected' if dados.get('eixo') == 'negocios' }}>Negócios</option><option value="criatividade_midias" {{ 'selected' if dados.get('eixo') == 'criatividade_midias' }}>Criatividade e Mídias</option></select></div>
                     <div class="field-group"><label for="publicoAlvo">Público-alvo <span class="required">*</span></label><select id="publicoAlvo" name="publicoAlvo" required><option value="">Selecione...</option><option value="publico_geral">Público Geral</option><option value="publico_especialista">Público Especialista</option><option value="professores">Professores</option><option value="infantil">Infantil</option><option value="adolescente">Adolescente</option><option value="apenas_mulheres">Apenas Mulheres</option></select></div>
                 </div>
-                <div class="field-group"><label for="acessoAtividade">Acesso à Atividade <span class="required">*</span></label><select id="acessoAtividade" name="acessoAtividade" required><option value="">Selecione...</option><option value="ordem_chegada">Acesso por ordem de chegada</option><option value="inscricao">Acesso por inscrição</option><option value="livre">Livre</option></select></div>
+                <div class="field-group"><label for="acessoAtividade">Acesso à Atividade <span class="required">*</span></label><select id="acessoAtividade" name="acessoAtividade" required><option value="">Selecione...</option><option value="ordem_chegada">Acesso por ordem de chegada</option><option value="inscricao">Acesso por inscrição</option></select></div>
                 <div class="field-group"><label for="objetivoAtividade">Objetivo da Atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required>{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
                 <div class="field-group"><label for="justificativaTematica">Justificativa Temática <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700 caracteres)</span></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required>{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
                 <div class="field-group"><label for="metodologiaAplicada">Metodologia Aplicada à Atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required>{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
@@ -410,9 +410,9 @@ function checkGuestBairro(input) {
 
     // Lógica atualizada: PE OU Recife
     const isPE = estado === 'PE';
-    const isRecife = cidade.includes('recife');
+    const isRecife = cidade === 'recife';
 
-    if (isPE || isRecife) {
+    if (isPE && isRecife) {
         bairroField.classList.remove('hidden');
         const bairroInp = card.querySelector('.g-bairro');
         if(bairroInp) bairroInp.required = true;
