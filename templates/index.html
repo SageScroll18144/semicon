@@ -418,13 +418,118 @@ function removeMaterialRow(id){document.getElementById(id).remove();calcMaterial
 function calcMaterialTotal(){let total=0;document.querySelectorAll('#materialTableBody tr').forEach(tr=>{const q=parseFloat(tr.querySelector('input[name^="mat_qtd"]')?.value)||0;const v=parseFloat(tr.querySelector('input[name^="mat_valor"]')?.value)||0;const sub=q*v;tr.querySelector('.mat-subtotal').textContent='R$ '+sub.toFixed(2).replace('.',',');total+=sub;});document.getElementById('materialTotal').textContent='R$ '+total.toFixed(2).replace('.',',');}
 function toggleMaterialTable(){const v=document.getElementById('materialAjuda').value;const s=document.getElementById('materialTableSection');if(v==='sim'||v==='indispensavel'){s.classList.remove('hidden');if(materialRowCount===0)addMaterialRow();}else{s.classList.add('hidden');}}
 
-// Máscaras
-function maskCPF(i){let v=i.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>9)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6,9)+'-'+v.substring(9);else if(v.length>6)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6);else if(v.length>3)v=v.substring(0,3)+'.'+v.substring(3);i.value=v;}
-function maskCNPJ(i){let v=i.value.replace(/\D/g,'');if(v.length>14)v=v.substring(0,14);if(v.length>12)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8,12)+'-'+v.substring(12);else if(v.length>8)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8);else if(v.length>5)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5);else if(v.length>2)v=v.substring(0,2)+'.'+v.substring(2);i.value=v;}
-function validateCPF(c){c=c.replace(/\D/g,'');if(c.length!==11)return false;if(/^(\d)\1{10}$/.test(c))return false;let s=0;for(let i=0;i<9;i++)s+=parseInt(c.charAt(i))*(10-i);let r=11-(s%11);if(r===10||r===11)r=0;if(r!==parseInt(c.charAt(9)))return false;s=0;for(let i=0;i<10;i++)s+=parseInt(c.charAt(i))*(11-i);r=11-(s%11);if(r===10||r===11)r=0;return r===parseInt(c.charAt(10));}
-function validateCPFfrontend(i){const v=i.value.replace(/\D/g,'');if(v.length===0)return true;if(v.length<11){i.classList.add('error');return false;}if(!validateCPF(i.value)){i.classList.add('error');showToast('CPF inválido.','error');return false;}i.classList.remove('error');return true;}
+// ══════════════════════════════════════════════════════════
+// INÍCIO: Máscaras e Validações CPF/CNPJ com suporte a PASTE
+// ══════════════════════════════════════════════════════════
+
+// Máscara CPF — já remove caracteres especiais automaticamente
+function maskCPF(i){
+    let v=i.value.replace(/\D/g,'');
+    if(v.length>11)v=v.substring(0,11);
+    if(v.length>9)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6,9)+'-'+v.substring(9);
+    else if(v.length>6)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6);
+    else if(v.length>3)v=v.substring(0,3)+'.'+v.substring(3);
+    i.value=v;
+}
+
+// Máscara CNPJ — já remove caracteres especiais automaticamente
+function maskCNPJ(i){
+    let v=i.value.replace(/\D/g,'');
+    if(v.length>14)v=v.substring(0,14);
+    if(v.length>12)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8,12)+'-'+v.substring(12);
+    else if(v.length>8)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8);
+    else if(v.length>5)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5);
+    else if(v.length>2)v=v.substring(0,2)+'.'+v.substring(2);
+    i.value=v;
+}
+
+// Handler de PASTE — intercepta cola e limpa caracteres especiais ANTES de inserir
+// Resolve o problema de maxlength truncar texto colado com formatação
+function handlePaste(e, maskFn, maxDigits) {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const digits = pasted.replace(/\D/g, '').substring(0, maxDigits);
+    e.target.value = digits;
+    maskFn(e.target);
+}
+
+// Registrar paste handlers nos campos do proponente
+document.getElementById('cnpjProponente').addEventListener('paste', function(e){ handlePaste(e, maskCNPJ, 14); });
+document.getElementById('cpfProponente').addEventListener('paste', function(e){ handlePaste(e, maskCPF, 11); });
+
+// Validação CPF — algoritmo dos dígitos verificadores
+function validateCPF(c){
+    c=c.replace(/\D/g,'');
+    if(c.length!==11)return false;
+    if(/^(\d)\1{10}$/.test(c))return false;
+    let s=0;for(let i=0;i<9;i++)s+=parseInt(c.charAt(i))*(10-i);
+    let r=11-(s%11);if(r===10||r===11)r=0;
+    if(r!==parseInt(c.charAt(9)))return false;
+    s=0;for(let i=0;i<10;i++)s+=parseInt(c.charAt(i))*(11-i);
+    r=11-(s%11);if(r===10||r===11)r=0;
+    return r===parseInt(c.charAt(10));
+}
+
+// Validação CNPJ — algoritmo dos dígitos verificadores
+function validateCNPJ(c){
+    c=c.replace(/\D/g,'');
+    if(c.length!==14)return false;
+    if(/^(\d)\1{13}$/.test(c))return false;
+    let pesos1=[5,4,3,2,9,8,7,6,5,4,3,2];
+    let soma=0;
+    for(let i=0;i<12;i++)soma+=parseInt(c.charAt(i))*pesos1[i];
+    let resto=11-(soma%11);if(resto>=10)resto=0;
+    if(resto!==parseInt(c.charAt(12)))return false;
+    let pesos2=[6,5,4,3,2,9,8,7,6,5,4,3,2];
+    soma=0;
+    for(let i=0;i<13;i++)soma+=parseInt(c.charAt(i))*pesos2[i];
+    resto=11-(soma%11);if(resto>=10)resto=0;
+    return resto===parseInt(c.charAt(13));
+}
+
+// Validação frontend CPF — com mensagens claras
+function validateCPFfrontend(i){
+    const v=i.value.replace(/\D/g,'');
+    if(v.length===0){i.classList.remove('error');return true;}
+    if(v.length<11){
+        i.classList.add('error');
+        showToast('CPF incompleto — são necessários 11 dígitos. Você digitou apenas '+v.length+'.','error');
+        return false;
+    }
+    if(!validateCPF(i.value)){
+        i.classList.add('error');
+        showToast('CPF inválido — os dígitos verificadores não conferem. Verifique o número digitado.','error');
+        return false;
+    }
+    i.classList.remove('error');
+    return true;
+}
+
+// Validação frontend CNPJ — com mensagens claras
+function validateCNPJfrontend(i){
+    const v=i.value.replace(/\D/g,'');
+    if(v.length===0){i.classList.remove('error');return true;}
+    if(v.length<14){
+        i.classList.add('error');
+        showToast('CNPJ incompleto — são necessários 14 dígitos. Você digitou apenas '+v.length+'.','error');
+        return false;
+    }
+    if(!validateCNPJ(i.value)){
+        i.classList.add('error');
+        showToast('CNPJ inválido — os dígitos verificadores não conferem. Verifique o número digitado.','error');
+        return false;
+    }
+    i.classList.remove('error');
+    return true;
+}
+
+// Telefone
 function maskPhone(e){var v=e.target.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>6)e.target.value='('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7);else if(v.length>2)e.target.value='('+v.substring(0,2)+') '+v.substring(2);else if(v.length>0)e.target.value='('+v;}
 document.getElementById('telefoneRepresentante').addEventListener('input',maskPhone);
+
+// ══════════════════════════════════════════════════════════
+// FIM: Máscaras e Validações CPF/CNPJ
+// ══════════════════════════════════════════════════════════
 
 function setupCounter(id,max){var el=document.getElementById(id);if(!el)return;var cnt=el.parentElement.querySelector('.char-counter');if(!cnt)return;el.addEventListener('input',function(){cnt.innerText=this.value.length+' / '+max;});cnt.innerText=el.value.length+' / '+max;}
 setupCounter('objetivoAtividade',500);
@@ -440,6 +545,9 @@ document.getElementById('fotoProponente').addEventListener('change',function(e){
 let guestCount=0;const maxGuests=5;
 function addGuest(scroll=true){if(guestCount>=maxGuests){showToast('Máximo de 5 convidados.','error');return;}guestCount++;const clone=document.getElementById('guestTemplate').content.cloneNode(true);const card=clone.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount);});
 const telInput=card.querySelector('.g-telefone');if(telInput)telInput.addEventListener('input',maskPhone);
+// Paste handler para CPF do convidado
+const guestCpfInput=card.querySelector('.g-cpf');
+if(guestCpfInput)guestCpfInput.addEventListener('paste',function(e){handlePaste(e,maskCPF,11);});
 document.getElementById('guestsList').appendChild(card);document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);
 const fi=card.querySelector('.g-foto');if(fi){const pr=fi.closest('.guest-subsection').querySelector('.g-photo-preview');fi.addEventListener('change',function(e){pr.classList.remove('error-border');if(this.files&&this.files[0]){cropGuestPhoto(this.files[0],pr);}else{pr.innerHTML='<i class="fas fa-user"></i>';}});}
 if(scroll) card.scrollIntoView({behavior:'smooth',block:'center'});}
@@ -509,8 +617,8 @@ document.getElementById('inscricaoForm').addEventListener('submit',function(e){
         const cpfInp=card.querySelector('.g-cpf');
         if(cpfInp&&!cpfInp.closest('.g-doc-cpf').classList.contains('hidden')){
             const v=cpfInp.value.replace(/\D/g,'');
-            if(v.length>0&&v.length<11){e.preventDefault();cpfInp.classList.add('error');showToast('CPF de convidado incompleto.','error');cpfInp.focus();cpfError=true;return;}
-            if(v.length===11&&!validateCPF(cpfInp.value)){e.preventDefault();cpfInp.classList.add('error');showToast('CPF de convidado inválido.','error');cpfInp.focus();cpfError=true;return;}
+            if(v.length>0&&v.length<11){e.preventDefault();cpfInp.classList.add('error');showToast('CPF do convidado '+num+' incompleto — são necessários 11 dígitos.','error');cpfInp.focus();cpfError=true;return;}
+            if(v.length===11&&!validateCPF(cpfInp.value)){e.preventDefault();cpfInp.classList.add('error');showToast('CPF do convidado '+num+' inválido — dígitos verificadores não conferem.','error');cpfInp.focus();cpfError=true;return;}
             cpfInp.classList.remove('error');
         }
         const estadoInp=card.querySelector('.g-estado');
@@ -529,8 +637,15 @@ document.getElementById('inscricaoForm').addEventListener('submit',function(e){
     });
     if(cpfError)return;
 
-    // 7. Validar campos PJ
-    if(currentType==='pj'){if(!document.getElementById('categoria').value){e.preventDefault();showToast('Selecione a categoria.','error');document.getElementById('categoria').focus();return;}if(!document.getElementById('cnpjProponente').value.trim()){e.preventDefault();showToast('O CNPJ é obrigatório.','error');document.getElementById('cnpjProponente').focus();return;}}
+    // 7. Validar campos PJ (com validação CNPJ melhorada)
+    if(currentType==='pj'){
+        if(!document.getElementById('categoria').value){e.preventDefault();showToast('Selecione a categoria.','error');document.getElementById('categoria').focus();return;}
+        const cnpjInput=document.getElementById('cnpjProponente');
+        const cnpjVal=cnpjInput.value.replace(/\D/g,'');
+        if(!cnpjVal){e.preventDefault();showToast('O CNPJ é obrigatório.','error');cnpjInput.focus();return;}
+        if(cnpjVal.length<14){e.preventDefault();showToast('CNPJ incompleto — são necessários 14 dígitos. Você digitou apenas '+cnpjVal.length+'.','error');cnpjInput.classList.add('error');cnpjInput.focus();return;}
+        if(!validateCNPJfrontend(cnpjInput)){e.preventDefault();cnpjInput.focus();return;}
+    }
 
     // 8. Validar faixa etária
     if(!document.querySelector('input[name="restricaoEtaria"]:checked')){e.preventDefault();showToast('Selecione se há restrição de faixa etária.','error');return;}
@@ -548,11 +663,10 @@ function limparFormulario(){
     document.getElementById('photoPreview').classList.remove('error-border');
     document.getElementById('materialTableBody').innerHTML='';
     materialRowCount=0;
+    // Limpar classes de erro dos campos CPF/CNPJ
+    document.querySelectorAll('input.error').forEach(i=>i.classList.remove('error'));
     addGuest();
-    // Resetar o widget do Turnstile ao limpar
-    if(typeof turnstile !== 'undefined') {
-        turnstile.reset();
-    }
+    if(typeof turnstile !== 'undefined') { turnstile.reset(); }
     turnstileVerified = false;
     showToast('Formulário limpo.','info');
 }
