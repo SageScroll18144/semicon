@@ -498,7 +498,7 @@ function validateCPFfrontend(i){
     }
     if(!validateCPF(i.value)){
         i.classList.add('error');
-        showToast('CPF inválido — os dígitos verificadores não conferem. Verifique o número digitado.','error');
+        showToast('CPF inválido — os dígitos verificadores não conferem. Verifique o número digitado. Em caso de cópia, cole apenas o valor com números','error');
         return false;
     }
     i.classList.remove('error');
@@ -516,7 +516,7 @@ function validateCNPJfrontend(i){
     }
     if(!validateCNPJ(i.value)){
         i.classList.add('error');
-        showToast('CNPJ inválido — os dígitos verificadores não conferem. Verifique o número digitado.','error');
+        showToast('CNPJ inválido — os dígitos verificadores não conferem. Verifique o número digitado. Em caso de cópia, cole apenas o valor com números','error');
         return false;
     }
     i.classList.remove('error');
