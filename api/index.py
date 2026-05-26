@@ -11,7 +11,6 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 app.secret_key = 'recnplay2026-chave-secreta-upgrade'
 
-# REMOVIDO: UPLOAD_FOLDER e MAX_CONTENT_LENGTH (ainda limitamos via Flask, mas não salvamos em disco)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
 EXTENSOES_PERMITIDAS = {'png', 'jpg', 'jpeg', 'webp'}
@@ -25,12 +24,25 @@ CAMPOS_OBRIGATORIOS_BASE = [
     'acessoAtividade'
 ]
 
+try:
+    from upstash_redis import Redis
+except ImportError:
+    Redis = None
+    print("AVISO: Biblioteca upstash-redis não foi encontrada!")
+
+
 redis_url = os.environ.get("UPSTASH_REDIS_REST_URL")
 redis_token = os.environ.get("UPSTASH_REDIS_REST_TOKEN")
 
 redis_client = None
-if redis_url and redis_token:
-    redis_client = Redis(url=redis_url, token=redis_token)
+if Redis and redis_url and redis_token:
+    try:
+        redis_client = Redis(url=redis_url, token=redis_token)
+        print("✅ Upstash conectado com sucesso!")
+    except Exception as e:
+        print(f"❌ Erro ao conectar ao Upstash: {e}")
+else:
+    print("⚠️ Upstash não configurado ou biblioteca não instalada.")
 
 def extensao_permitida(nome_arquivo):
     return '.' in nome_arquivo and \
@@ -104,9 +116,9 @@ def home():
     arquivo_foto = request.files.get('fotoProponente')
     erros = []
 
-    tipo_prop = dados.get('tipoProponente', '')
+    tipo_prop = dados.get('tipoProponente', '') 
 
-   for campo in CAMPOS_OBRIGATORIOS_BASE:
+    for campo in CAMPOS_OBRIGATORIOS_BASE:
         valor = dados.get(campo, '').strip()
         if not valor:
             nome_amigavel = campo.replace('_', ' ').title()
@@ -217,7 +229,7 @@ def home():
 
             if nacionalidade == 'brasileiro' and (not estado or not cidade_c):
                 erros.append(f'Estado e cidade do convidado {i} são obrigatórios.')
-            if cidade_c and 'recife' in cidade_c.lower():
+            if estado == 'PE' and cidade_c and 'recife' in cidade_c.lower():
                 if not bairro_c: erros.append(f'O bairro do convidado {i} é obrigatório quando a cidade é Recife.')
             elif nacionalidade == 'estrangeiro':
                 if not dados.get(f'{prefixo}passaporte', '').strip(): erros.append(f'Passaporte do convidado estrangeiro {i} é obrigatório.')
