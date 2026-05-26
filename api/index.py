@@ -3,13 +3,29 @@ import os
 import re
 import json
 import base64
-from upstash_redis import Redis
+import urllib.request
+import urllib.parse
+from urllib.parse import urlparse
+
+# ──────────────────────────────────────────────
+# INÍCIO: Configurações Anti-Spam / Segurança
+# ──────────────────────────────────────────────
+TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '')
+TURNSTILE_SITE_KEY = os.environ.get('TURNSTILE_SITE_KEY', '')
+ALLOWED_DOMAINS = [d.strip() for d in os.environ.get('ALLOWED_DOMAINS', '').split(',') if d.strip()]
+# Exemplo de ALLOWED_DOMAINS: "recnplay.com.br,www.recnplay.com.br"
+# Se vazio, a validação de origem é pulada (útil em dev local)
+
+HONEYPOT_FIELD_NAME = 'website_url'  # Nome do campo honeypot
+# ──────────────────────────────────────────────
+# FIM: Configurações Anti-Spam / Segurança
+# ──────────────────────────────────────────────
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
-app.secret_key = 'recnplay2026-chave-secreta-upgrade'
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'chave-padrao-apenas-para-dev-local')
 
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
@@ -30,7 +46,6 @@ except ImportError:
     Redis = None
     print("AVISO: Biblioteca upstash-redis não foi encontrada!")
 
-
 redis_url = os.environ.get("UPSTASH_REDIS_REST_URL")
 redis_token = os.environ.get("UPSTASH_REDIS_REST_TOKEN")
 
@@ -44,13 +59,16 @@ if Redis and redis_url and redis_token:
 else:
     print("⚠️ Upstash não configurado ou biblioteca não instalada.")
 
+
 def extensao_permitida(nome_arquivo):
     return '.' in nome_arquivo and \
            nome_arquivo.rsplit('.', 1)[1].lower() in EXTENSOES_PERMITIDAS
 
+
 def validar_email(email):
     padrao = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     return re.match(padrao, email) is not None
+
 
 def validar_cpf(cpf):
     cpf = re.sub(r'\D', '', cpf)
@@ -66,6 +84,7 @@ def validar_cpf(cpf):
     resto = 11 - (soma % 11)
     if resto in (10, 11): resto = 0
     return resto == int(cpf[10])
+
 
 def validar_cnpj(cnpj):
     cnpj = re.sub(r'\D', '', cnpj)
@@ -84,39 +103,152 @@ def validar_cnpj(cnpj):
     if resto in (10, 11): resto = 0
     return resto == int(cnpj[13])
 
+
 def converter_foto_base64(arquivo_foto):
     if not arquivo_foto or arquivo_foto.filename == '':
         return None
-    
     if not extensao_permitida(arquivo_foto.filename):
-        return None # A validação de extensão já ocorre no fluxo principal
-    
+        return None
     try:
-        # Lê os bytes do arquivo
         dados_bytes = arquivo_foto.read()
-        # Codifica para Base64 string
         encoded_string = base64.b64encode(dados_bytes).decode('utf-8')
-        
-        # Determina o MIME type
         ext = arquivo_foto.filename.rsplit('.', 1)[1].lower()
         mime_type = 'image/jpeg' if ext in ['jpg', 'jpeg'] else f'image/{ext}'
-        
-        # Retorna no formato Data URL (pronto para consumir depois)
         return f"data:{mime_type};base64,{encoded_string}"
     except Exception as e:
         print(f"Erro ao converter imagem: {e}")
         return None
 
+
+# ──────────────────────────────────────────────
+# INÍCIO: Funções de Segurança
+# ──────────────────────────────────────────────
+
+def verify_turnstile(token, remote_ip=None):
+    """Verifica o token do Cloudflare Turnstile no servidor."""
+    if not TURNSTILE_SECRET_KEY:
+        print("⚠️ TURNSTILE_SECRET_KEY não configurada, pulando verificação CAPTCHA")
+        return True
+
+    if not token:
+        return False
+
+    try:
+        payload = urllib.parse.urlencode({
+            'secret': TURNSTILE_SECRET_KEY,
+            'response': token,
+        })
+        if remote_ip:
+            payload += f'&remoteip={urllib.parse.quote(remote_ip)}'
+
+        req = urllib.request.Request(
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            data=payload.encode('utf-8'),
+            method='POST',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'}
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read().decode('utf-8'))
+            if not result.get('success', False):
+                print(f"❌ Turnstile falhou: {result.get('error-codes', [])}")
+            return result.get('success', False)
+    except Exception as e:
+        print(f"❌ Erro na verificação Turnstile: {e}")
+        return False
+
+
+def validate_origin():
+    """Valida os headers Origin e Referer contra os domínios permitidos."""
+    if not ALLOWED_DOMAINS:
+        # Se nenhum domínio foi configurado, pula a validação (ambiente de dev)
+        return True
+
+    origin = request.headers.get('Origin', '').strip()
+    referer = request.headers.get('Referer', '').strip()
+
+    # Pelo menos um dos dois headers deve estar presente
+    if not origin and not referer:
+        print("⚠️ Requisição sem Origin nem Referer")
+        return False
+
+    def _check_domain(header_value):
+        """Extrai o hostname e verifica contra ALLOWED_DOMAINS."""
+        if not header_value:
+            return True  # Se o header não existe, não rejeita por ele
+        try:
+            parsed = urlparse(header_value)
+            hostname = (parsed.hostname or '').lower()
+            if not hostname:
+                return False
+            # Verifica correspondência exata ou subdomínio
+            for allowed in ALLOWED_DOMAINS:
+                allowed_lower = allowed.lower()
+                if hostname == allowed_lower or hostname.endswith('.' + allowed_lower):
+                    return True
+            return False
+        except Exception:
+            return False
+
+    # Ambos os headers presentes devem ser válidos
+    if origin and not _check_domain(origin):
+        print(f"⚠️ Origin rejeitada: {origin}")
+        return False
+    if referer and not _check_domain(referer):
+        print(f"⚠️ Referer rejeitado: {referer}")
+        return False
+
+    return True
+
+# ──────────────────────────────────────────────
+# FIM: Funções de Segurança
+# ──────────────────────────────────────────────
+
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'GET':
-        return render_template('index.html', dados={})
+        return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY)
 
     dados = request.form
     arquivo_foto = request.files.get('fotoProponente')
     erros = []
 
-    tipo_prop = dados.get('tipoProponente', '') 
+    # ──────────────────────────────────────────────
+    # INÍCIO: Verificações de Segurança (antes de qualquer validação)
+    # ──────────────────────────────────────────────
+
+    # 1. Honeypot — se preenchido, é bot. Finge sucesso para não alertar.
+    honeypot_value = dados.get(HONEYPOT_FIELD_NAME, '').strip()
+    if honeypot_value:
+        print(f"🚨 Honeypot preenchido — bot detectado! Valor: '{honeypot_value}'")
+        # Finge sucesso para o bot não saber que foi bloqueado
+        flash('Proposta enviada com sucesso!', 'success')
+        return redirect(url_for('home'))
+
+    # 2. Validação de Origin / Referer
+    if not validate_origin():
+        flash('Origem da requisição não autorizada.', 'error')
+        return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 403
+
+    # 3. Cloudflare Turnstile CAPTCHA
+    turnstile_token = dados.get('cf-turnstile-response', '').strip()
+    if TURNSTILE_SECRET_KEY:
+        if not turnstile_token:
+            erros.append('Complete a verificação de segurança (CAPTCHA).')
+        elif not verify_turnstile(turnstile_token, request.remote_addr):
+            erros.append('Falha na verificação de segurança. Recarregue a página e tente novamente.')
+
+    # Se erros de segurança, já retorna
+    if erros:
+        for erro in erros:
+            flash(erro, 'error')
+        return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 400
+
+    # ──────────────────────────────────────────────
+    # FIM: Verificações de Segurança
+    # ──────────────────────────────────────────────
+
+    tipo_prop = dados.get('tipoProponente', '')
 
     for campo in CAMPOS_OBRIGATORIOS_BASE:
         valor = dados.get(campo, '').strip()
@@ -157,9 +289,10 @@ def home():
     if tag_count < 3: erros.append('Selecione pelo menos 3 tags.')
     if tag_count > 5: erros.append('O limite máximo de tags é 5.')
 
-    for campo, limite in [('objetivoAtividade', 500), ('justificativaTematica', 500),
-                          ('metodologiaAplicada', 500), ('descricaoAtividade', 500),
-                          ('infoExtras', 500)]:
+    # CORREÇÃO: Limites de caracteres alinhados com o HTML
+    for campo, limite in [('objetivoAtividade', 500), ('justificativaTematica', 700),
+                          ('metodologiaAplicada', 500), ('descricaoAtividade', 700),
+                          ('infoExtras', 700)]:
         if len(dados.get(campo, '')) > limite:
             erros.append(f'O campo "{campo}" excedeu o limite de {limite} caracteres.')
 
@@ -204,7 +337,7 @@ def home():
             tem_convidado = True
             foto_conv = request.files.get(f'{prefixo}foto')
             foto_conv_base64 = None
-            
+
             if not foto_conv or foto_conv.filename.strip() == '':
                 erros.append(f'A foto do convidado {i} ({nome}) é obrigatória.')
             elif not extensao_permitida(foto_conv.filename):
@@ -263,14 +396,14 @@ def home():
                 'social_instagram': dados.get(f'{prefixo}social_instagram'),
                 'cidade': cidade_c, 'estado': estado, 'bairro': bairro_c,
                 'pais_origem': dados.get(f'{prefixo}pais_origem'),
-                'foto_base64': foto_conv_base64 
+                'foto_base64': foto_conv_base64
             })
 
     if not tem_convidado: erros.append('Adicione pelo menos 1 convidado obrigatório.')
 
     if erros:
         for erro in erros: flash(erro, 'error')
-        return render_template('index.html', dados={}), 400
+        return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 400
 
     foto_proponente_base64 = None
     if tipo_prop == 'pj':
@@ -300,7 +433,7 @@ def home():
             'cpf': dados.get('cpfProponente') if tipo_prop == 'pf' else None,
             'passaporte': dados.get('passaporteProponente') if tipo_prop == 'pf' else None,
             'cnpj': dados.get('cnpjProponente') if tipo_prop == 'pj' else None,
-            'logo_marca_base64': foto_proponente_base64 # NOVO: Base64 aqui
+            'logo_marca_base64': foto_proponente_base64
         },
         'representante': {
             'nome': dados.get('nomeRepresentante'),
@@ -342,20 +475,14 @@ def home():
 
     if redis_client:
         try:
-            # Transforma o dicionário em string JSON
             payload_json = json.dumps(inscricao, ensure_ascii=False)
-            
-            # Usa LPUSH para adicionar na lista (fila) chamada "fila_inscricoes"
-            # O consumidor usará RPOP para tirar da fila (FIFO - First In, First Out)
             redis_client.lpush('fila_inscricoes', payload_json)
-            
             print(f"✅ Inscrição enviada para a fila Upstash: {inscricao['proponente']['nome_instituicao']}")
             flash('Proposta enviada com sucesso e adicionada à fila de processamento!', 'success')
-            
         except Exception as e:
             print(f"❌ Erro ao enviar para o Upstash: {e}")
             flash('Erro interno ao processar a inscrição. Tente novamente mais tarde.', 'error')
-            return render_template('index.html', dados={}), 500
+            return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 500
     else:
         print("⚠️ Upstash não configurado. Dados não foram enfileirados.")
         flash('Aviso: Sistema de fila não configurado. Inscrição recebida mas não processada.', 'error')

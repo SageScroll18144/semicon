@@ -6,6 +6,8 @@
     <title>REC'n'Play 2026 - Upgrade</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Cloudflare Turnstile Script -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         :root {
             --roxo-principal: #7B2D8E;
@@ -53,35 +55,15 @@
         .form-section { margin-bottom: 40px; padding-top: 10px; }
         .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--roxo-escuro); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #E8D5F0; display: flex; align-items: center; gap: 10px; }
         .section-title i { font-size: 16px; color: var(--roxo-principal); }
-        
-        /* Tooltip Styles */
-        .info-icon { 
-            display: inline-flex; align-items: center; justify-content: center; 
-            width: 18px; height: 18px; border-radius: 50%; 
-            background: #E8D5F0; color: var(--roxo-principal); 
-            font-size: 10px; margin-left: 8px; cursor: help; position: relative; font-family: sans-serif; font-style: italic; font-weight: bold;
-        } 
-        .info-icon .tooltip-text { 
-            visibility: hidden; width: 240px; background-color: #333; color: #fff; 
-            text-align: left; border-radius: 6px; padding: 10px; 
-            position: absolute; z-index: 10; bottom: 125%; left: 50%; 
-            margin-left: -120px; opacity: 0; transition: opacity 0.3s; 
-            font-size: 11px; font-weight: 400; line-height: 1.4; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        } 
-        .info-icon .tooltip-text::after { 
-            content: ""; position: absolute; top: 100%; left: 50%; 
-            margin-left: -5px; border-width: 5px; border-style: solid; 
-            border-color: #333 transparent transparent transparent; 
-        } 
+        .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: #E8D5F0; color: var(--roxo-principal); font-size: 10px; margin-left: 8px; cursor: help; position: relative; font-family: sans-serif; font-style: italic; font-weight: bold; }
+        .info-icon .tooltip-text { visibility: hidden; width: 240px; background-color: #333; color: #fff; text-align: left; border-radius: 6px; padding: 10px; position: absolute; z-index: 10; bottom: 125%; left: 50%; margin-left: -120px; opacity: 0; transition: opacity 0.3s; font-size: 11px; font-weight: 400; line-height: 1.4; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .info-icon .tooltip-text::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #333 transparent transparent transparent; }
         .info-icon:hover .tooltip-text { visibility: visible; opacity: 1; }
-
         .field-group { margin-bottom: 20px; position: relative; }
         .field-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
         .field-group label .required { color: var(--vermelho-obrigatorio); font-weight: 700; margin-left: 2px; }
         .field-group .helper-text { font-size: 11px; color: #999; margin-top: 4px; }
-        .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="number"], .field-group select, .field-group textarea {
-            width: 100%; padding: 10px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: #333; background: #fff; border: 1.5px solid var(--cinza-borda); border-radius: 8px; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-        }
+        .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="number"], .field-group select, .field-group textarea { width: 100%; padding: 10px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: #333; background: #fff; border: 1.5px solid var(--cinza-borda); border-radius: 8px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
         .field-group input:disabled, .field-group select:disabled, .field-group textarea:disabled { background: #F0F0F0; color: #999; cursor: not-allowed; }
         .field-group input:focus, .field-group select:focus, .field-group textarea:focus { border-color: var(--roxo-principal); box-shadow: 0 0 0 3px rgba(123,45,142,0.12); }
         .field-group input.error, .field-group select.error { border-color: var(--vermelho-obrigatorio); }
@@ -147,7 +129,7 @@
         .material-total-row td { font-weight: 700; background: #F5F0FA; border-top: 2px solid var(--roxo-principal); }
         .btn-add-row { background: var(--roxo-principal); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; margin-top: 8px; }
         .btn-remove-row { background: #E53935; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-        .submit-area { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #E8E8E8; }
+        .submit-area { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #E8E8E8; align-items: center; flex-wrap: wrap; }
         .btn-submit { background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro)); color: #fff; border: none; padding: 14px 48px; border-radius: 10px; font-size: 15px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; cursor: pointer; transition: all 0.25s; }
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(123,45,142,0.35); }
         .btn-clear { background: none; border: 1.5px solid var(--cinza-borda); color: #666; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; }
@@ -158,10 +140,27 @@
         .hidden { display: none !important; }
         .char-counter { text-align: right; font-size: 11px; color: #999; margin-top: 4px; }
         .bairro-field { animation: fadeIn 0.3s ease; }
-        
-        /* Extra spacing for accessibility section */
         .acessibilidade-spacing { margin-top: 30px; }
-        
+
+        /* Anti-Spam: Honeypot invisível para humanos */
+        .hp-field-wrap {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Anti-Spam: Turnstile wrapper */
+        .turnstile-wrapper {
+            flex: 1 1 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
         @media (max-width: 768px) {
             .form-wrapper { margin: 16px auto; padding: 0 10px; }
             .card-top, .form-body, .step-indicator { padding-left: 20px; padding-right: 20px; }
@@ -188,6 +187,13 @@
         <ul class="flash-messages">{%- for category, message in messages -%}<li class="{{ category }}"><i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i> {{ message }}</li>{%- endfor -%}</ul>
         {%- endif -%}{%- endwith -%}
         <form id="inscricaoForm" class="form-body" method="POST" action="/" enctype="multipart/form-data" novalidate>
+
+            <!-- Anti-Spam: Honeypot Field (NÃO REMOVA) -->
+            <div class="hp-field-wrap" aria-hidden="true">
+                <label for="website_url">Website</label>
+                <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off" placeholder="Deixe este campo vazio">
+            </div>
+
             <!-- INTRO -->
             <div class="intro-box">
                 <p>O REC’n’Play é um festival colaborativo, e estamos felizes com seu interesse em contribuir com a programação de 2026.</p>
@@ -202,7 +208,6 @@
             <div class="form-section">
                 <h2 class="section-title"><i class="fas fa-user-circle"></i> 1. Dados do Proponente <span class="info-icon">i<span class="tooltip-text">Proponente é o persona que vai propor aquela atividade.</span></span></h2>
                 <div class="type-selector" id="typeSelector">
-                    <!-- Trocado: PJ agora na esquerda -->
                     <button type="button" class="type-selector-btn active" data-type="pj" onclick="setProponenteType('pj')"><i class="fas fa-building"></i> Pessoa Jurídica</button>
                     <button type="button" class="type-selector-btn" data-type="pf" onclick="setProponenteType('pf')"><i class="fas fa-user"></i> Pessoa Física</button>
                 </div>
@@ -211,13 +216,11 @@
                     <div class="field-group"><label for="nomeInstituicao">Nome da Instituição <span class="required">*</span></label><input type="text" id="nomeInstituicao" name="nomeInstituicao" required value="{{ dados.get('nomeInstituicao', '') }}"></div>
                     <div class="field-group"><label for="cidadeProponente">Cidade / Estado <span class="required">*</span></label><input type="text" id="cidadeProponente" name="cidadeProponente" required value="{{ dados.get('cidadeProponente', '') }}"></div>
                 </div>
-                <!-- PJ: Categoria + CNPJ + Logo Marca -->
                 <div class="field-row" id="categoriaGroup">
                     <div class="field-group"><label for="categoria">Categoria <span class="required">*</span></label><select id="categoria" name="categoria"><option value="">Selecione...</option><option value="empresa_startup" {{ 'selected' if dados.get('categoria') == 'empresa_startup' }}>Empresa / Startup</option><option value="ong_osc" {{ 'selected' if dados.get('categoria') == 'ong_osc' }}>ONG / OSC / OS</option><option value="instituicao_ensino" {{ 'selected' if dados.get('categoria') == 'instituicao_ensino' }}>Instituição de Ensino</option><option value="orgao_publico" {{ 'selected' if dados.get('categoria') == 'orgao_publico' }}>Órgão Público</option><option value="fundacao_instituto" {{ 'selected' if dados.get('categoria') == 'fundacao_instituto' }}>Fundação / Instituto</option><option value="coletivo" {{ 'selected' if dados.get('categoria') == 'coletivo' }}>Coletivo</option></select></div>
                     <div class="field-group"><label for="cnpjProponente">CNPJ <span class="required">*</span></label><input type="text" id="cnpjProponente" name="cnpjProponente" placeholder="00.000.000/0000-00" value="{{ dados.get('cnpjProponente', '') }}" maxlength="18" oninput="maskCNPJ(this)"></div>
                 </div>
                 <div class="field-group" id="logoMarcaGroup"><label>Logo Marca <span class="required">*</span></label><div class="photo-upload-area"><div class="photo-preview square" id="photoPreview"><i class="fas fa-image"></i></div><div class="photo-input-wrapper"><input type="file" id="fotoProponente" name="fotoProponente" accept="image/png,image/jpeg,image/webp"><div class="helper-text">Formatos: PNG, JPG, WebP. Máx 5MB. Obrigatório.</div></div></div></div>
-                <!-- PF: Nacionalidade + CPF/Passaporte -->
                 <div class="field-row hidden" id="nacionalidadeGroup">
                     <div class="field-group"><label for="nacionalidadeProponente">Nacionalidade <span class="required">*</span></label><select id="nacionalidadeProponente" name="nacionalidadeProponente" onchange="toggleProponenteDocs()"><option value="brasileiro" {{ 'selected' if dados.get('nacionalidadeProponente') != 'estrangeiro' }}>Brasileiro</option><option value="estrangeiro" {{ 'selected' if dados.get('nacionalidadeProponente') == 'estrangeiro' }}>Estrangeiro</option></select></div>
                     <div class="field-group" id="docCpfField"><label for="cpfProponente">CPF <span class="required">*</span></label><input type="text" id="cpfProponente" name="cpfProponente" placeholder="000.000.000-00" value="{{ dados.get('cpfProponente', '') }}" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)"></div>
@@ -248,23 +251,14 @@
                 <div class="field-group"><label for="objetivoAtividade">Objetivo da Atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required>{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
                 <div class="field-group"><label for="justificativaTematica">Justificativa Temática <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700 caracteres)</span></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required>{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
                 <div class="field-group"><label for="metodologiaAplicada">Metodologia Aplicada à Atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required>{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
-                
-                <!-- Título alterado e limite aumentado para 700 -->
                 <div class="field-group"><label for="descricaoAtividade">Descrição para publicação da atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700 caracteres)</span></label><textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="700" required>{{ dados.get('descricaoAtividade', '') }}</textarea><div class="char-counter" id="charCounterDesc">0 / 700</div></div>
-                
-                <!-- Tag alterado para Palavra-Chave -->
                 <div class="field-group"><label for="tagsInput">Palavra-Chave <span class="required">*</span> <span style="font-weight:400;color:#999">(Mínimo 3, Máximo 5)</span></label><div class="tags-container" id="tagsContainer"><div class="tags-chips" id="tagsChips"></div><div class="tags-input-wrapper"><input type="text" id="tagsInput" placeholder="Buscar e selecionar palavras-chave..." autocomplete="off"><input type="hidden" id="tagsHidden" name="tags" value="{{ dados.get('tags', '') }}"><input type="hidden" id="tagSuggestionHidden" name="tagSuggestion" value="{{ dados.get('tagSuggestion', '') }}"><div class="tags-dropdown" id="tagsDropdown"></div></div><div class="suggestion-input-row hidden" id="suggestionInputRow"><input type="text" id="suggestionInput" placeholder="Digite sua sugestão de palavra-chave..." maxlength="50"><button type="button" onclick="addSuggestionTag()">Adicionar</button></div></div></div>
-                
-                <!-- Faixa etária -->
                 <div class="field-group"><label>Restrição de faixa etária? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="restricaoSim" name="restricaoEtaria" value="sim" onchange="toggleRestricao()"><label for="restricaoSim">Sim</label></div><div class="radio-option"><input type="radio" id="restricaoNao" name="restricaoEtaria" value="nao" onchange="toggleRestricao()"><label for="restricaoNao">Não</label></div></div><div class="field-row hidden" id="faixaEtariaGroup" style="margin-top:10px"><div class="field-group"><label for="idadeMinima">Idade Mínima</label><input type="number" id="idadeMinima" name="idadeMinima" min="0" max="100" placeholder="Ex: 14" value="{{ dados.get('idadeMinima', '') }}"></div><div class="field-group"><label for="idadeMaxima">Idade Máxima</label><input type="number" id="idadeMaxima" name="idadeMaxima" min="0" max="100" placeholder="Ex: 60" value="{{ dados.get('idadeMaxima', '') }}"></div></div></div>
-                
-                <!-- OFICINA -->
                 <div id="oficinaSection" class="hidden">
                     <div class="oficina-step"><span class="oficina-label">1. Capacidade e Infraestrutura Básica</span><div class="field-group"><label>Quantidade máxima de público <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="pub20" name="oficina_qtd_publico" value="ate_20"><label for="pub20">Até 20</label></div><div class="radio-option"><input type="radio" id="pub30" name="oficina_qtd_publico" value="ate_30"><label for="pub30">Até 30</label></div><div class="radio-option"><input type="radio" id="pub50" name="oficina_qtd_publico" value="ate_50"><label for="pub50">Até 50</label></div><div class="radio-option"><input type="radio" id="pub80" name="oficina_qtd_publico" value="ate_80"><label for="pub80">Até 80</label></div></div></div><div class="field-group"><label>Internet indispensável? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="netSim" name="oficina_internet" value="sim"><label for="netSim">Sim</label></div><div class="radio-option"><input type="radio" id="netNao" name="oficina_internet" value="nao"><label for="netNao">Não</label></div></div></div><div class="field-group"><label>Laboratório de informática? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="labSim" name="oficina_lab" value="sim" onchange="toggleLabFields()"><label for="labSim">Sim</label></div><div class="radio-option"><input type="radio" id="labNao" name="oficina_lab" value="nao" onchange="toggleLabFields()"><label for="labNao">Não</label></div></div></div></div>
                     <div id="labDetails" class="oficina-step hidden"><span class="oficina-label">2. Detalhes do Laboratório <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></span><div class="field-group"><label>Configurações mínimas dos PCs <span class="required">*</span></label><input type="text" name="oficina_pc_specs" maxlength="200" placeholder="Ex: 8GB RAM, Windows 10..." value="{{ dados.get('oficina_pc_specs', '') }}"></div><div class="field-group"><label>Instalar software? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="softSim" name="oficina_soft_req" value="sim" onchange="toggleSoftwareFields()"><label for="softSim">Sim</label></div><div class="radio-option"><input type="radio" id="softNao" name="oficina_soft_req" value="nao" onchange="toggleSoftwareFields()"><label for="softNao">Não</label></div></div></div><div id="softwareDetails" class="hidden"><div class="field-group"><label>Descreva o software <span class="required">*</span></label><textarea name="oficina_soft_desc" maxlength="200" style="min-height:60px">{{ dados.get('oficina_soft_desc', '') }}</textarea></div></div></div>
                     <div class="oficina-step"><span class="oficina-label">3. Materiais e Mobiliário</span><div class="field-group"><label>Ajuda de custo com material? <span class="required">*</span></label><select id="materialAjuda" name="oficina_material_ajuda" onchange="toggleMaterialTable()"><option value="nao">Não</option><option value="sim">Sim</option><option value="indispensavel">Indispensável</option></select></div><div id="materialTableSection" class="hidden"><label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Lista de Materiais e Previsão de Custo</label><table class="material-table" id="materialTable"><thead><tr><th style="width:40%">Material</th><th style="width:20%">Qtd</th><th style="width:20%">Valor Unit. (R$)</th><th style="width:20%">Subtotal (R$)</th><th></th></tr></thead><tbody id="materialTableBody"></tbody><tfoot><tr class="material-total-row"><td colspan="3" style="text-align:right">TOTAL</td><td id="materialTotal">R$ 0,00</td><td></td></tr></tfoot></table><button type="button" class="btn-add-row" onclick="addMaterialRow()"><i class="fas fa-plus"></i> Adicionar Item</button></div><div class="field-group" style="margin-top:16px"><label for="mobiliario">Mobiliário necessário <span class="required">*</span></label><select id="mobiliario" name="oficina_mobiliario"><option value="">Selecione...</option><option value="mesas_individuais">Mesas individuais</option><option value="mesas_grupo">Mesas em grupo</option><option value="apenas_cadeiras">Apenas cadeiras</option><option value="espaco_sem_mobiliario">Espaço sem mobiliário</option></select></div></div>
                 </div>
-                <!-- Acessibilidade com Espaçamento Extra -->
                 <div class="field-group acessibilidade-spacing"><label for="recursosAcessibilidade">Quais recursos de acessibilidade são necessários? <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></label><textarea id="recursosAcessibilidade" name="recursosAcessibilidade" maxlength="200" style="min-height:70px" placeholder="Ex: intérprete de Libras, rampas de acesso, audiodescrição...">{{ dados.get('recursosAcessibilidade', '') }}</textarea></div>
             </div>
             <!-- 4. CONVIDADOS -->
@@ -278,7 +272,18 @@
                 <h2 class="section-title"><i class="fas fa-info-circle"></i> 5. Informações Extras <span class="info-icon">i<span class="tooltip-text">O proponente pode elencar quaisquer pontos relevantes sobre a realização da atividade.</span></span></h2>
                 <div class="field-group"><label for="infoExtras">Observações</label><textarea id="infoExtras" name="infoExtras" maxlength="700" style="min-height:80px">{{ dados.get('infoExtras', '') }}</textarea><div class="char-counter" id="charCounterExtra">0 / 700</div></div>
             </div>
-            <div class="submit-area"><button type="button" class="btn-clear" onclick="limparFormulario()">Limpar Tudo</button><button type="submit" class="btn-submit">Enviar Proposta</button></div>
+
+            <!-- Anti-Spam: Cloudflare Turnstile CAPTCHA Widget -->
+            {% if turnstile_site_key %}
+            <div class="turnstile-wrapper">
+                <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-theme="light" data-callback="onTurnstileSuccess" data-error-callback="onTurnstileError"></div>
+            </div>
+            {% endif %}
+
+            <div class="submit-area">
+                <button type="button" class="btn-clear" onclick="limparFormulario()">Limpar Tudo</button>
+                <button type="submit" class="btn-submit" id="btnSubmit">Enviar Proposta</button>
+            </div>
         </form>
     </div>
 </div>
@@ -292,40 +297,7 @@
             <div class="field-row"><div class="field-group"><label>Papel na Atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="palestrante">Palestrante</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
             <div class="field-row"><div class="field-group g-doc-cpf"><label>CPF</label><input type="text" class="g-cpf" name="convidadoX_cpf" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)"></div><div class="field-group g-doc-passaporte hidden"><label>Passaporte <span class="required">*</span></label><input type="text" class="g-passaporte" name="convidadoX_passaporte"></div></div>
             <div class="field-row g-doc-br">
-                <div class="field-group">
-                    <label>Estado <span class="required">*</span></label>
-                    <!-- Lista de Estados adicionada -->
-                    <select class="g-estado" name="convidadoX_estado" required onchange="checkGuestBairro(this)">
-                        <option value="">Selecione...</option>
-                        <option value="AC">Acre</option>
-                        <option value="AL">Alagoas</option>
-                        <option value="AP">Amapá</option>
-                        <option value="AM">Amazonas</option>
-                        <option value="BA">Bahia</option>
-                        <option value="CE">Ceará</option>
-                        <option value="DF">Distrito Federal</option>
-                        <option value="ES">Espírito Santo</option>
-                        <option value="GO">Goiás</option>
-                        <option value="MA">Maranhão</option>
-                        <option value="MT">Mato Grosso</option>
-                        <option value="MS">Mato Grosso do Sul</option>
-                        <option value="MG">Minas Gerais</option>
-                        <option value="PA">Pará</option>
-                        <option value="PB">Paraíba</option>
-                        <option value="PR">Paraná</option>
-                        <option value="PE">Pernambuco</option>
-                        <option value="PI">Piauí</option>
-                        <option value="RJ">Rio de Janeiro</option>
-                        <option value="RN">Rio Grande do Norte</option>
-                        <option value="RS">Rio Grande do Sul</option>
-                        <option value="RO">Rondônia</option>
-                        <option value="RR">Roraima</option>
-                        <option value="SC">Santa Catarina</option>
-                        <option value="SP">São Paulo</option>
-                        <option value="SE">Sergipe</option>
-                        <option value="TO">Tocantins</option>
-                    </select>
-                </div>
+                <div class="field-group"><label>Estado <span class="required">*</span></label><select class="g-estado" name="convidadoX_estado" required onchange="checkGuestBairro(this)"><option value="">Selecione...</option><option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option></select></div>
                 <div class="field-group"><label>Cidade <span class="required">*</span></label><input type="text" class="g-cidade" name="convidadoX_cidade" required oninput="checkGuestBairro(this)"></div>
             </div>
             <div class="field-group hidden g-bairro-field g-doc-br bairro-field" style="margin-top:0"><label>Bairro <span class="required">*</span></label><input type="text" class="g-bairro" name="convidadoX_bairro" placeholder="Informe o bairro"></div>
@@ -336,7 +308,7 @@
             <div class="field-row"><div class="field-group"><label>LinkedIn</label><input type="text" class="g-linkedin" name="convidadoX_social_linkedin" placeholder="linkedin.com/in/..."></div><div class="field-group"><label>Instagram</label><input type="text" class="g-insta" name="convidadoX_social_instagram" placeholder="@usuario"></div></div>
         </div>
         <div class="guest-subsection"><div class="guest-subsection-title">Perfil Profissional</div>
-            <div class="field-row"><div class="field-group"><label>Instituição Representada <span class="required">*</span></label><input type="text" class="g-inst" name="convidadoX_instituicao" required></div><div class="field-group"><label>Tipo de Instituição <span class="required">*</span></label><select class="g-tipo-inst" name="convidadoX_tipo_instituicao" required><option value="">Selecione...</option><option value="empresa_startup">Empresa / Startup</option><option value="ong_osc">ONG / OSC / OS</option><option value="instituicao_ensino">Instituição de Ensino</option><option value="orgao_publico">Órgao Público</option><option value="fundacao_instituto">Fundação / Instituto</option><option value="coletivo">Coletivo</option></select></div></div>
+            <div class="field-row"><div class="field-group"><label>Instituição Representada <span class="required">*</span></label><input type="text" class="g-inst" name="convidadoX_instituicao" required></div><div class="field-group"><label>Tipo de Instituição <span class="required">*</span></label><select class="g-tipo-inst" name="convidadoX_tipo_instituicao" required><option value="">Selecione...</option><option value="empresa_startup">Empresa / Startup</option><option value="ong_osc">ONG / OSC / OS</option><option value="instituicao_ensino">Instituição de Ensino</option><option value="orgao_publico">Órgão Público</option><option value="fundacao_instituto">Fundação / Instituto</option><option value="coletivo">Coletivo</option></select></div></div>
             <div class="field-group"><label>Minibio <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 600)</span></label><input type="text" class="g-bio" name="convidadoX_minibio" maxlength="600" required></div>
         </div>
         <div class="guest-subsection"><div class="guest-subsection-title">Demografia & Acessibilidade</div>
@@ -350,6 +322,11 @@
 (function(){var canvas=document.getElementById('bgCanvas'),ctx=canvas.getContext('2d'),patterns=[];var symbols=['♪','★','♦','●','▲','◆','♥','✦','⬟','◉','✿','⬡'];var colors=['#E91E63','#9C27B0','#2196F3','#00BCD4','#4CAF50','#FF9800','#FF5722','#673AB7'];function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;patterns=[];var c=Math.floor(canvas.width*canvas.height/4500);for(var i=0;i<c;i++){patterns.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:symbols[Math.floor(Math.random()*symbols.length)],cl:colors[Math.floor(Math.random()*colors.length)],sz:8+Math.random()*14,op:0.06+Math.random()*0.14,rot:Math.random()*Math.PI*2,sp:0.0003+Math.random()*0.001,ph:Math.random()*Math.PI*2});}}var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;function draw(t){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#0D0D0D';ctx.fillRect(0,0,canvas.width,canvas.height);var s=t*0.001;for(var i=0;i<patterns.length;i++){var p=patterns[i],yO=reduced?0:Math.sin(s*p.sp*1000+p.ph)*3;ctx.save();ctx.translate(p.x,p.y+yO);ctx.rotate(p.rot+(reduced?0:s*p.sp*0.5));ctx.globalAlpha=p.op;ctx.fillStyle=p.cl;ctx.font=p.sz+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.s,0,0);ctx.restore();}if(!reduced)requestAnimationFrame(draw);}window.addEventListener('resize',resize);resize();requestAnimationFrame(draw);})();
 
 function showToast(m,t='info'){const c=document.getElementById('toast-container');const e=document.createElement('div');e.className=`toast ${t}`;e.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-triangle':'info-circle'}"></i> ${m}`;c.appendChild(e);setTimeout(()=>{e.style.opacity='0';e.style.transition='opacity 0.3s';setTimeout(()=>e.remove(),300);},3500);}
+
+// Anti-Spam: Turnstile Callbacks
+let turnstileVerified = false;
+function onTurnstileSuccess(token) { turnstileVerified = true; }
+function onTurnstileError(code) { turnstileVerified = false; showToast('Erro na verificação de segurança. Recarregue a página.', 'error'); }
 
 // Tags
 const MIN_TAGS=3,MAX_TAGS=5;
@@ -396,22 +373,17 @@ function setProponenteType(type){currentType=type;document.getElementById('tipoP
 function toggleProponenteDocs(){if(currentType!=='pf')return;const nat=document.getElementById('nacionalidadeProponente').value;document.getElementById('docCpfField').classList.toggle('hidden',nat!=='brasileiro');document.getElementById('docPassaporteField').classList.toggle('hidden',nat==='brasileiro');}
 setProponenteType('pj');
 
-// Bairro do convidado (aparece quando estado é PE ou cidade contém "recife")
+// Bairro do convidado
 function checkGuestBairro(input) {
     const card = input.closest('.guest-card');
     if (!card) return;
-    
     const bairroField = card.querySelector('.g-bairro-field');
     const estadoSelect = card.querySelector('.g-estado');
     const cidadeInput = card.querySelector('.g-cidade');
-    
     const estado = estadoSelect ? estadoSelect.value : '';
     const cidade = cidadeInput ? cidadeInput.value.trim().toLowerCase() : '';
-
-    // Lógica atualizada: PE OU Recife
     const isPE = estado === 'PE';
     const isRecife = cidade === 'recife';
-
     if (isPE && isRecife) {
         bairroField.classList.remove('hidden');
         const bairroInp = card.querySelector('.g-bairro');
@@ -419,10 +391,7 @@ function checkGuestBairro(input) {
     } else {
         bairroField.classList.add('hidden');
         const bairroInp = card.querySelector('.g-bairro');
-        if(bairroInp) {
-            bairroInp.required = false;
-            bairroInp.value = '';
-        }
+        if(bairroInp) { bairroInp.required = false; bairroInp.value = ''; }
     }
 }
 
@@ -458,7 +427,6 @@ function maskPhone(e){var v=e.target.value.replace(/\D/g,'');if(v.length>11)v=v.
 document.getElementById('telefoneRepresentante').addEventListener('input',maskPhone);
 
 function setupCounter(id,max){var el=document.getElementById(id);if(!el)return;var cnt=el.parentElement.querySelector('.char-counter');if(!cnt)return;el.addEventListener('input',function(){cnt.innerText=this.value.length+' / '+max;});cnt.innerText=el.value.length+' / '+max;}
-// Atualizando contadores para os novos limites
 setupCounter('objetivoAtividade',500);
 setupCounter('justificativaTematica',700);
 setupCounter('metodologiaAplicada',500);
@@ -485,14 +453,32 @@ function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card');cons
 // Auto-add first guest
 addGuest(false);
 
-// Submit
+// Submit com validação Anti-Spam
 document.getElementById('inscricaoForm').addEventListener('submit',function(e){
-    // Validar tags
+    
+    // 1. Honeypot — se preenchido, bloqueia silenciosamente fingindo sucesso
+    const honeypotField = document.getElementById('website_url');
+    if (honeypotField && honeypotField.value.trim()) {
+        e.preventDefault();
+        showToast('Proposta enviada com sucesso!', 'success');
+        setTimeout(() => { window.location.href = '/'; }, 1500);
+        return;
+    }
+
+    // 2. Turnstile CAPTCHA
+    const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
+    if (turnstileResponse && !turnstileResponse.value) {
+        e.preventDefault();
+        showToast('Complete a verificação de segurança (CAPTCHA) antes de enviar.', 'error');
+        return;
+    }
+
+    // 3. Validar tags
     const totalTags=selectedTags.length+(hasSuggestion?1:0);
     if(totalTags<MIN_TAGS){e.preventDefault();showToast('Selecione pelo menos '+MIN_TAGS+' palavras-chave.','error');return;}
     if(totalTags>MAX_TAGS){e.preventDefault();showToast('O limite máximo de palavras-chave é '+MAX_TAGS+'.','error');return;}
 
-    // Validar foto/logo obrigatória para PJ
+    // 4. Validar foto/logo obrigatória para PJ
     if(currentType==='pj'){
         const fotoInput=document.getElementById('fotoProponente');
         if(!fotoInput.files||!fotoInput.files[0]){
@@ -502,10 +488,10 @@ document.getElementById('inscricaoForm').addEventListener('submit',function(e){
         }
     }
 
-    // Validar CPF do proponente PF
+    // 5. Validar CPF do proponente PF
     if(currentType==='pf'){const ci=document.getElementById('cpfProponente');const cg=document.getElementById('docCpfField');if(!cg.classList.contains('hidden')&&ci.value.trim()){if(!validateCPFfrontend(ci)){e.preventDefault();ci.focus();return;}}}
 
-    // Validar convidados
+    // 6. Validar convidados
     if(guestCount<1){e.preventDefault();showToast('Adicione pelo menos 1 convidado.','error');return;}
 
     let cpfError=false;
@@ -513,7 +499,6 @@ document.getElementById('inscricaoForm').addEventListener('submit',function(e){
         if(cpfError)return;
         const num=card.dataset.id;
         const nome=card.querySelector('.g-nome').value.trim();
-        // Validar foto obrigatória do convidado
         const fotoInput=card.querySelector('.g-foto');
         const preview=card.querySelector('.g-photo-preview');
         if(!fotoInput.files||!fotoInput.files[0]){
@@ -521,7 +506,6 @@ document.getElementById('inscricaoForm').addEventListener('submit',function(e){
             preview.classList.add('error-border');
             fotoInput.focus();cpfError=true;return;
         }
-        // Validar CPF do convidado
         const cpfInp=card.querySelector('.g-cpf');
         if(cpfInp&&!cpfInp.closest('.g-doc-cpf').classList.contains('hidden')){
             const v=cpfInp.value.replace(/\D/g,'');
@@ -529,17 +513,14 @@ document.getElementById('inscricaoForm').addEventListener('submit',function(e){
             if(v.length===11&&!validateCPF(cpfInp.value)){e.preventDefault();cpfInp.classList.add('error');showToast('CPF de convidado inválido.','error');cpfInp.focus();cpfError=true;return;}
             cpfInp.classList.remove('error');
         }
-        // Validar bairro do convidado (se PE ou Recife)
-        const estadoInp = card.querySelector('.g-estado');
+        const estadoInp=card.querySelector('.g-estado');
         const cidadeInp=card.querySelector('.g-cidade');
         const bairroInp=card.querySelector('.g-bairro');
         const bairroField=card.querySelector('.g-bairro-field');
-        
-        let devePedirBairro = false;
-        if(estadoInp && estadoInp.value === 'PE') devePedirBairro = true;
-        if(cidadeInp && cidadeInp.value.toLowerCase().includes('recife')) devePedirBairro = true;
-
-        if(devePedirBairro && bairroField && !bairroField.classList.contains('hidden')){
+        let devePedirBairro=false;
+        if(estadoInp&&estadoInp.value==='PE')devePedirBairro=true;
+        if(cidadeInp&&cidadeInp.value.toLowerCase().includes('recife'))devePedirBairro=true;
+        if(devePedirBairro&&bairroField&&!bairroField.classList.contains('hidden')){
             if(!bairroInp.value.trim()){
                 e.preventDefault();showToast('O bairro é obrigatório quando o estado é Pernambuco ou a cidade é Recife.','error');
                 bairroInp.focus();cpfError=true;return;
@@ -548,15 +529,33 @@ document.getElementById('inscricaoForm').addEventListener('submit',function(e){
     });
     if(cpfError)return;
 
-    // Validar campos PJ
+    // 7. Validar campos PJ
     if(currentType==='pj'){if(!document.getElementById('categoria').value){e.preventDefault();showToast('Selecione a categoria.','error');document.getElementById('categoria').focus();return;}if(!document.getElementById('cnpjProponente').value.trim()){e.preventDefault();showToast('O CNPJ é obrigatório.','error');document.getElementById('cnpjProponente').focus();return;}}
 
-    // Validar faixa etária
+    // 8. Validar faixa etária
     if(!document.querySelector('input[name="restricaoEtaria"]:checked')){e.preventDefault();showToast('Selecione se há restrição de faixa etária.','error');return;}
     if(document.getElementById('restricaoSim').checked){const min=parseInt(document.getElementById('idadeMinima').value);const max=parseInt(document.getElementById('idadeMaxima').value);if(isNaN(min)||isNaN(max)){e.preventDefault();showToast('Preencha a idade mínima e máxima.','error');return;}if(min>max){e.preventDefault();showToast('Idade mínima não pode ser maior.','error');return;}}
 });
 
-function limparFormulario(){document.getElementById('inscricaoForm').reset();document.getElementById('guestsList').innerHTML='';guestCount=0;selectedTags=[];hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();setProponenteType('pj');toggleActivityFields();document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';document.getElementById('photoPreview').classList.remove('error-border');document.getElementById('materialTableBody').innerHTML='';materialRowCount=0;addGuest();showToast('Formulário limpo.','info');}
+function limparFormulario(){
+    document.getElementById('inscricaoForm').reset();
+    document.getElementById('guestsList').innerHTML='';
+    guestCount=0;selectedTags=[];hasSuggestion=false;
+    document.getElementById('tagSuggestionHidden').value='';
+    renderTagChips();updateHiddenTags();
+    setProponenteType('pj');toggleActivityFields();
+    document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';
+    document.getElementById('photoPreview').classList.remove('error-border');
+    document.getElementById('materialTableBody').innerHTML='';
+    materialRowCount=0;
+    addGuest();
+    // Resetar o widget do Turnstile ao limpar
+    if(typeof turnstile !== 'undefined') {
+        turnstile.reset();
+    }
+    turnstileVerified = false;
+    showToast('Formulário limpo.','info');
+}
 </script>
 </body>
 </html>
