@@ -270,7 +270,7 @@ def home():
 
     if erros:
         for erro in erros: flash(erro, 'error')
-        return render_template('index.html', dados=dados), 400
+        return render_template('index.html', dados={}), 400
 
     foto_proponente_base64 = None
     if tipo_prop == 'pj':
@@ -355,7 +355,7 @@ def home():
         except Exception as e:
             print(f"❌ Erro ao enviar para o Upstash: {e}")
             flash('Erro interno ao processar a inscrição. Tente novamente mais tarde.', 'error')
-            return render_template('index.html', dados=dados), 500
+            return render_template('index.html', dados={}), 500
     else:
         print("⚠️ Upstash não configurado. Dados não foram enfileirados.")
         flash('Aviso: Sistema de fila não configurado. Inscrição recebida mas não processada.', 'error')
