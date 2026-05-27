@@ -5,7 +5,9 @@ import json
 import base64
 import urllib.request
 import urllib.parse
+import urllib.error
 from urllib.parse import urlparse
+import copy
 
 # ──────────────────────────────────────────────
 # INÍCIO: Configurações Anti-Spam / Segurança
@@ -13,10 +15,8 @@ from urllib.parse import urlparse
 TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '')
 TURNSTILE_SITE_KEY = os.environ.get('TURNSTILE_SITE_KEY', '')
 ALLOWED_DOMAINS = [d.strip() for d in os.environ.get('ALLOWED_DOMAINS', '').split(',') if d.strip()]
-# Exemplo de ALLOWED_DOMAINS: "recnplay.com.br,www.recnplay.com.br"
-# Se vazio, a validação de origem é pulada (útil em dev local)
 
-HONEYPOT_FIELD_NAME = 'website_url'  # Nome do campo honeypot
+HONEYPOT_FIELD_NAME = 'website_url'
 # ──────────────────────────────────────────────
 # FIM: Configurações Anti-Spam / Segurança
 # ──────────────────────────────────────────────
@@ -58,6 +58,70 @@ if Redis and redis_url and redis_token:
         print(f"❌ Erro ao conectar ao Upstash: {e}")
 else:
     print("⚠️ Upstash não configurado ou biblioteca não instalada.")
+
+# ──────────────────────────────────────────────
+# INÍCIO: Configuração Supabase
+# ──────────────────────────────────────────────
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
+
+def strip_base64_for_supabase(data):
+    """Remove strings base64 para não estourar o limite de payload do Supabase."""
+    clean = copy.deepcopy(data)
+    if 'proponente' in clean and 'logo_marca_base64' in clean['proponente']:
+        clean['proponente']['logo_marca_base64'] = '[ENVIADO VIA WORKER]'
+    if 'convidados' in clean:
+        for conv in clean['convidados']:
+            if 'foto_base64' in conv:
+                conv['foto_base64'] = '[ENVIADO VIA WORKER]'
+    return clean
+
+def save_to_supabase(inscricao):
+    """Salva o payload no Supabase como fonte da verdade (usando urllib nativo)."""
+    if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
+        print("⚠️ Supabase não configurado. Pulando salvamento.")
+        return None
+        
+    try:
+        clean_payload = strip_base64_for_supabase(inscricao)
+        
+        body = json.dumps({
+            "status": "pending",
+            "payload": clean_payload
+        }, ensure_ascii=False, default=str)
+        
+        req = urllib.request.Request(
+            f"{SUPABASE_URL}/rest/v1/inscricoes",
+            data=body.encode('utf-8'),
+            method='POST',
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+                "Content-Type": "application/json",
+                "Prefer": "return=representation"
+            }
+        )
+        
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            result = json.loads(resp.read().decode('utf-8'))
+            if result and len(result) > 0 and 'id' in result[0]:
+                supabase_id = result[0]['id']
+                print(f"✅ Salvo no Supabase! ID: {supabase_id}")
+                return supabase_id
+            else:
+                print(f"❌ Supabase retornou resposta inesperada: {result}")
+                return None
+                
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode('utf-8', errors='replace')
+        print(f"❌ Erro Supabase HTTP {e.code}: {error_body}")
+        return None
+    except Exception as e:
+        print(f"❌ Exceção ao salvar no Supabase: {type(e).__name__}: {e}")
+        return None
+# ──────────────────────────────────────────────
+# FIM: Configuração Supabase
+# ──────────────────────────────────────────────
 
 
 def extensao_permitida(nome_arquivo):
@@ -125,14 +189,11 @@ def converter_foto_base64(arquivo_foto):
 # ──────────────────────────────────────────────
 
 def verify_turnstile(token, remote_ip=None):
-    """Verifica o token do Cloudflare Turnstile no servidor."""
     if not TURNSTILE_SECRET_KEY:
         print("⚠️ TURNSTILE_SECRET_KEY não configurada, pulando verificação CAPTCHA")
         return True
-
     if not token:
         return False
-
     try:
         payload = urllib.parse.urlencode({
             'secret': TURNSTILE_SECRET_KEY,
@@ -140,7 +201,6 @@ def verify_turnstile(token, remote_ip=None):
         })
         if remote_ip:
             payload += f'&remoteip={urllib.parse.quote(remote_ip)}'
-
         req = urllib.request.Request(
             'https://challenges.cloudflare.com/turnstile/v0/siteverify',
             data=payload.encode('utf-8'),
@@ -158,29 +218,21 @@ def verify_turnstile(token, remote_ip=None):
 
 
 def validate_origin():
-    """Valida os headers Origin e Referer contra os domínios permitidos."""
     if not ALLOWED_DOMAINS:
-        # Se nenhum domínio foi configurado, pula a validação (ambiente de dev)
         return True
-
     origin = request.headers.get('Origin', '').strip()
     referer = request.headers.get('Referer', '').strip()
-
-    # Pelo menos um dos dois headers deve estar presente
     if not origin and not referer:
         print("⚠️ Requisição sem Origin nem Referer")
         return False
-
     def _check_domain(header_value):
-        """Extrai o hostname e verifica contra ALLOWED_DOMAINS."""
         if not header_value:
-            return True  # Se o header não existe, não rejeita por ele
+            return True
         try:
             parsed = urlparse(header_value)
             hostname = (parsed.hostname or '').lower()
             if not hostname:
                 return False
-            # Verifica correspondência exata ou subdomínio
             for allowed in ALLOWED_DOMAINS:
                 allowed_lower = allowed.lower()
                 if hostname == allowed_lower or hostname.endswith('.' + allowed_lower):
@@ -188,15 +240,12 @@ def validate_origin():
             return False
         except Exception:
             return False
-
-    # Ambos os headers presentes devem ser válidos
     if origin and not _check_domain(origin):
         print(f"⚠️ Origin rejeitada: {origin}")
         return False
     if referer and not _check_domain(referer):
         print(f"⚠️ Referer rejeitado: {referer}")
         return False
-
     return True
 
 # ──────────────────────────────────────────────
@@ -213,24 +262,17 @@ def home():
     arquivo_foto = request.files.get('fotoProponente')
     erros = []
 
-    # ──────────────────────────────────────────────
-    # INÍCIO: Verificações de Segurança (antes de qualquer validação)
-    # ──────────────────────────────────────────────
-
-    # 1. Honeypot — se preenchido, é bot. Finge sucesso para não alertar.
+    # INÍCIO: Verificações de Segurança
     honeypot_value = dados.get(HONEYPOT_FIELD_NAME, '').strip()
     if honeypot_value:
         print(f"🚨 Honeypot preenchido — bot detectado! Valor: '{honeypot_value}'")
-        # Finge sucesso para o bot não saber que foi bloqueado
         flash('Proposta enviada com sucesso!', 'success')
         return redirect(url_for('home'))
 
-    # 2. Validação de Origin / Referer
     if not validate_origin():
         flash('Origem da requisição não autorizada.', 'error')
         return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 403
 
-    # 3. Cloudflare Turnstile CAPTCHA
     turnstile_token = dados.get('cf-turnstile-response', '').strip()
     if TURNSTILE_SECRET_KEY:
         if not turnstile_token:
@@ -238,15 +280,11 @@ def home():
         elif not verify_turnstile(turnstile_token, request.remote_addr):
             erros.append('Falha na verificação de segurança. Recarregue a página e tente novamente.')
 
-    # Se erros de segurança, já retorna
     if erros:
         for erro in erros:
             flash(erro, 'error')
         return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 400
-
-    # ──────────────────────────────────────────────
     # FIM: Verificações de Segurança
-    # ──────────────────────────────────────────────
 
     tipo_prop = dados.get('tipoProponente', '')
 
@@ -289,7 +327,6 @@ def home():
     if tag_count < 3: erros.append('Selecione pelo menos 3 tags.')
     if tag_count > 5: erros.append('O limite máximo de tags é 5.')
 
-    # CORREÇÃO: Limites de caracteres alinhados com o HTML
     for campo, limite in [('objetivoAtividade', 500), ('justificativaTematica', 700),
                           ('metodologiaAplicada', 500), ('descricaoAtividade', 700),
                           ('infoExtras', 700)]:
@@ -473,19 +510,41 @@ def home():
         'convidados': convidados
     }
 
+    # ──────────────────────────────────────────────
+    # INÍCIO: Persistência e Fila
+    # ──────────────────────────────────────────────
+
+    # 1. Salvar no Supabase (Fonte da Verdade) — não bloqueia o fluxo caso falhe
+    supabase_id = None
+    if SUPABASE_URL and SUPABASE_SERVICE_KEY:
+        supabase_id = save_to_supabase(inscricao)
+        if supabase_id:
+            inscricao['supabase_id'] = supabase_id
+        else:
+            print("⚠️ Falha ao salvar no Supabase, mas continuando com a fila...")
+
+    # 2. Enfileirar no Upstash
     if redis_client:
         try:
-            payload_json = json.dumps(inscricao, ensure_ascii=False)
+            payload_json = json.dumps(inscricao, ensure_ascii=False, default=str)
             redis_client.lpush('fila_inscricoes', payload_json)
             print(f"✅ Inscrição enviada para a fila Upstash: {inscricao['proponente']['nome_instituicao']}")
-            flash('Proposta enviada com sucesso e adicionada à fila de processamento!', 'success')
+            flash('Proposta enviada com sucesso!', 'success')
         except Exception as e:
             print(f"❌ Erro ao enviar para o Upstash: {e}")
             flash('Erro interno ao processar a inscrição. Tente novamente mais tarde.', 'error')
             return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 500
     else:
         print("⚠️ Upstash não configurado. Dados não foram enfileirados.")
-        flash('Aviso: Sistema de fila não configurado. Inscrição recebida mas não processada.', 'error')
+        # Se nem Supabase nem Upstash estão disponíveis, pelo menos um precisa funcionar
+        if not supabase_id:
+            flash('Sistema de persistência não configurado. Contate o suporte.', 'error')
+            return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 500
+        flash('Proposta registrada! Processamento pendente.', 'success')
+
+    # ──────────────────────────────────────────────
+    # FIM: Persistência e Fila
+    # ──────────────────────────────────────────────
 
     return redirect(url_for('home'))
 

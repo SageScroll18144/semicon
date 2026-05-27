@@ -2,3 +2,4 @@ flask
 gunicorn
 werkzeug
 upstash-redis
+requests
