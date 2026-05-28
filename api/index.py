@@ -365,6 +365,16 @@ def home():
     if len(dados.get('recursosAcessibilidade', '')) > 200:
         erros.append('Recursos de acessibilidade: máximo 200 caracteres.')
 
+    # Validação infraestrutura outros
+    if dados.get('infra_outros') == 'sim':
+        has_infra_items = False
+        for key in dados:
+            if key.startswith('infra_item_') and dados[key].strip():
+                has_infra_items = True
+                break
+        if not has_infra_items:
+            erros.append('Liste pelo menos um recurso de infraestrutura em "Outros".')
+
     convidados = []
     tem_convidado = False
     for i in range(1, 6):
@@ -460,6 +470,32 @@ def home():
                     'valor_unitario': dados.get(f'mat_valor_{idx}', '0'),
                 })
 
+    # Coletar itens de infraestrutura "Outros"
+    infra_outros_items = []
+    if dados.get('infra_outros') == 'sim':
+        for key in sorted(dados.keys()):
+            if key.startswith('infra_item_'):
+                idx = key.split('_')[-1]
+                item = dados.get(f'infra_item_{idx}', '').strip()
+                if item:
+                    infra_outros_items.append({
+                        'recurso': item,
+                        'quantidade': dados.get(f'infra_qtd_{idx}', '1'),
+                        'observacoes': dados.get(f'infra_obs_{idx}', '').strip(),
+                    })
+
+    # Montar lista de recursos de infraestrutura selecionados
+    infra_recursos = []
+    if dados.get('infra_projecao') == 'sim': infra_recursos.append('Recursos básicos de projeção')
+    if dados.get('infra_som') == 'sim': infra_recursos.append('Sistema básico de som')
+    if dados.get('infra_microfones') == 'sim': infra_recursos.append('Microfones')
+    if dados.get('infra_internet') == 'sim': infra_recursos.append('Internet')
+    if dados.get('infra_outros') == 'sim':
+        if infra_outros_items:
+            infra_recursos.append('Outros: ' + '; '.join(i['recurso'] for i in infra_outros_items))
+        else:
+            infra_recursos.append('Outros')
+
     inscricao = {
         'proponente': {
             'tipo': tipo_prop,
@@ -494,6 +530,13 @@ def home():
             'idade_minima': dados.get('idadeMinima'),
             'idade_maxima': dados.get('idadeMaxima'),
             'recursos_acessibilidade': dados.get('recursosAcessibilidade'),
+            'infra_recursos': infra_recursos,
+            'infra_projecao': dados.get('infra_projecao') == 'sim',
+            'infra_som': dados.get('infra_som') == 'sim',
+            'infra_microfones': dados.get('infra_microfones') == 'sim',
+            'infra_internet': dados.get('infra_internet') == 'sim',
+            'infra_outros': dados.get('infra_outros') == 'sim',
+            'infra_outros_items': infra_outros_items,
             'observacoes': dados.get('infoExtras'),
             'oficina': {
                 'qtd_publico': dados.get('oficina_qtd_publico'),
@@ -514,7 +557,7 @@ def home():
     # INÍCIO: Persistência e Fila
     # ──────────────────────────────────────────────
 
-    # 1. Salvar no Supabase (Fonte da Verdade) — não bloqueia o fluxo caso falhe
+    # 1. Salvar no Supabase (Fonte da Verdade)
     supabase_id = None
     if SUPABASE_URL and SUPABASE_SERVICE_KEY:
         supabase_id = save_to_supabase(inscricao)
@@ -536,7 +579,6 @@ def home():
             return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 500
     else:
         print("⚠️ Upstash não configurado. Dados não foram enfileirados.")
-        # Se nem Supabase nem Upstash estão disponíveis, pelo menos um precisa funcionar
         if not supabase_id:
             flash('Sistema de persistência não configurado. Contate o suporte.', 'error')
             return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 500
