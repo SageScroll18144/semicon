@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import os
 import re
 import json
@@ -32,11 +32,11 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 EXTENSOES_PERMITIDAS = {'png', 'jpg', 'jpeg', 'webp'}
 
 CAMPOS_OBRIGATORIOS_BASE = [
-    'tipoProponente', 'nomeInstituicao', 'cidadeProponente',
+    'tipoProponente', 'nomeInstituicao',
     'nomeRepresentante', 'telefoneRepresentante', 'emailRepresentante',
     'tituloAtividade', 'formatoAtividade', 'tempoDuracao',
     'objetivoAtividade', 'justificativaTematica', 'metodologiaAplicada',
-    'descricaoAtividade', 'eixo', 'publicoAlvo', 'restricaoEtaria',
+    'descricaoAtividade', 'eixo', 'publicoAlvo',
     'acessoAtividade'
 ]
 
@@ -183,7 +183,43 @@ def converter_foto_base64(arquivo_foto):
         print(f"Erro ao converter imagem: {e}")
         return None
 
+def salvar_uploads_temporarios(request_files):
+    """
+    Salva uploads temporariamente na sessão.
+    Evita perda das imagens quando ocorre erro de validação.
+    """
 
+    uploads = session.get('temp_uploads', {})
+
+    # Logo do proponente
+    foto_prop = request_files.get('fotoProponente')
+
+    if foto_prop and foto_prop.filename:
+        foto_base64 = converter_foto_base64(foto_prop)
+
+        if foto_base64:
+            uploads['fotoProponente'] = foto_base64
+
+    # Fotos integrantes
+    for i in range(1, 6):
+        foto_conv = request_files.get(f'convidado{i}_foto')
+
+        if foto_conv and foto_conv.filename:
+            foto_base64 = converter_foto_base64(foto_conv)
+
+            if foto_base64:
+                uploads[f'convidado{i}_foto'] = foto_base64
+
+    session['temp_uploads'] = uploads
+
+
+def obter_upload_temporario(chave):
+    uploads = session.get('temp_uploads', {})
+    return uploads.get(chave)
+
+
+def limpar_uploads_temporarios():
+    session.pop('temp_uploads', None)
 # ──────────────────────────────────────────────
 # INÍCIO: Funções de Segurança
 # ──────────────────────────────────────────────
@@ -256,11 +292,21 @@ def validate_origin():
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'GET':
-        return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY)
+        return render_template('index.html', dados={}, guest_data_json='{}', turnstile_site_key=TURNSTILE_SITE_KEY)
 
     dados = request.form
     arquivo_foto = request.files.get('fotoProponente')
+    salvar_uploads_temporarios(request.files)
     erros = []
+
+    # Função auxiliar para renderizar com dados preservados
+    def render_with_data(code=400):
+        form_dict = dict(dados)
+        guest_data = {}
+        for key in dados:
+            if key.startswith('convidado'):
+                guest_data[key] = dados[key]
+        return render_template('index.html', dados=form_dict, guest_data_json=json.dumps(guest_data, ensure_ascii=False), turnstile_site_key=TURNSTILE_SITE_KEY), code
 
     # INÍCIO: Verificações de Segurança
     honeypot_value = dados.get(HONEYPOT_FIELD_NAME, '').strip()
@@ -271,7 +317,7 @@ def home():
 
     if not validate_origin():
         flash('Origem da requisição não autorizada.', 'error')
-        return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 403
+        return render_with_data(403)
 
     turnstile_token = dados.get('cf-turnstile-response', '').strip()
     if TURNSTILE_SECRET_KEY:
@@ -283,10 +329,11 @@ def home():
     if erros:
         for erro in erros:
             flash(erro, 'error')
-        return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 400
+        return render_with_data(400)
     # FIM: Verificações de Segurança
 
     tipo_prop = dados.get('tipoProponente', '')
+    categoria_prop = dados.get('categoria', '')
 
     for campo in CAMPOS_OBRIGATORIOS_BASE:
         valor = dados.get(campo, '').strip()
@@ -295,15 +342,17 @@ def home():
             erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
 
     if tipo_prop == 'pj':
-        cat = dados.get('categoria', '').strip()
+        cat = categoria_prop.strip()
         if not cat: erros.append('O campo "Categoria" é obrigatório.')
         cnpj = dados.get('cnpjProponente', '').strip()
         if not cnpj: erros.append('O CNPJ é obrigatório.')
         elif not validar_cnpj(cnpj): erros.append('O CNPJ informado não é válido.')
-        if not arquivo_foto or arquivo_foto.filename.strip() == '':
-            erros.append('A Logo Marca é obrigatória para Pessoa Jurídica.')
-        elif not extensao_permitida(arquivo_foto.filename):
-            erros.append('Formato de Logo Marca não permitido. Use: png, jpg, jpeg, webp')
+        logo_temporaria = obter_upload_temporario('fotoProponente')
+
+        if ((not arquivo_foto or arquivo_foto.filename.strip() == '') and not logo_temporaria ):
+            erros.append('A logo da instituição é obrigatória para Pessoa Jurídica.')
+        elif arquivo_foto and arquivo_foto.filename and not extensao_permitida(arquivo_foto.filename):
+            erros.append('Formato de logo não permitido. Use: png, jpg, jpeg, webp')
     else:
         nat_prop = dados.get('nacionalidadeProponente', '').strip()
         if not nat_prop: erros.append('A Nacionalidade é obrigatória.')
@@ -316,6 +365,11 @@ def home():
 
     if dados.get('emailRepresentante') and not validar_email(dados.get('emailRepresentante')):
         erros.append('O e-mail do representante não é válido.')
+
+    # Validação do checkbox de responsabilidade quando acesso é por inscrição
+    if dados.get('acessoAtividade') == 'inscricao':
+        if dados.get('inscricaoResponsabilidade') != 'sim':
+            erros.append('É necessário aceitar a responsabilidade sobre o processo de inscrição e a segurança dos dados conforme a LGPD.')
 
     tags_val = dados.get('tags', '').strip()
     suggestion = dados.get('tagSuggestion', '').strip()
@@ -333,15 +387,19 @@ def home():
         if len(dados.get(campo, '')) > limite:
             erros.append(f'O campo "{campo}" excedeu o limite de {limite} caracteres.')
 
+    # Validação não obrigatória para restrição etária (apenas se marcar "Sim")
     if dados.get('restricaoEtaria') == 'sim':
         idade_min = dados.get('idadeMinima', '').strip()
         idade_max = dados.get('idadeMaxima', '').strip()
         if not idade_min or not idade_max: erros.append('Preencha a idade mínima e máxima.')
         elif int(idade_min) > int(idade_max): erros.append('A idade mínima não pode ser maior que a máxima.')
-    elif not dados.get('restricaoEtaria'):
-        erros.append('Selecione se há restrição de faixa etária.')
 
     formato = dados.get('formatoAtividade')
+    
+    # Variável de controle para exibição de ajudas de custo (PF, ONG, Coletivo)
+    mostrar_ajuda_custo = (tipo_prop == 'pf') or (tipo_prop == 'pj' and categoria_prop in ['ong', 'coletivo'])
+    
+    # Validação condicional para recurso de material na oficina
     if formato == 'oficina':
         if not dados.get('oficina_qtd_publico'): erros.append('Selecione a quantidade máxima de público.')
         if not dados.get('oficina_internet'): erros.append('Informe sobre internet.')
@@ -352,15 +410,25 @@ def home():
             if not dados.get('oficina_soft_req'): erros.append('Informe sobre software.')
             elif dados.get('oficina_soft_req') == 'sim' and not dados.get('oficina_soft_desc'): erros.append('Descreva o software.')
             if len(dados.get('oficina_soft_desc', '')) > 200: erros.append('Descrição do software: máximo 200 caracteres.')
-        if not dados.get('oficina_material_ajuda'): erros.append('Informe sobre ajuda de custo com material.')
+        
+        # Mobiliário é obrigatório para todos em oficina
         if not dados.get('oficina_mobiliario'): erros.append('Selecione o mobiliário necessário.')
-        if dados.get('oficina_material_ajuda') in ('sim', 'indispensavel'):
-            has_items = False
-            for key in dados:
-                if key.startswith('mat_item_') and dados[key].strip():
-                    has_items = True
-                    break
-            if not has_items: erros.append('Liste pelo menos um material com previsão de custo.')
+        
+        # Verifica se a seção de materiais é exibida (PF ou PJ(ONG/Coletivo))
+        if mostrar_ajuda_custo:
+            if not dados.get('oficina_material_ajuda'): erros.append('Informe sobre ajuda de custo com material.')
+            if dados.get('oficina_material_ajuda') in ('sim', 'indispensavel'):
+                has_items = False
+                for key in dados:
+                    if key.startswith('mat_item_') and dados[key].strip():
+                        has_items = True
+                        break
+                if not has_items: erros.append('Liste pelo menos um material com previsão de custo.')
+                # Validação da justificativa dos materiais
+                if not dados.get('oficina_justificativa_materiais', '').strip():
+                    erros.append('A justificativa dos materiais é obrigatória quando há ajuda de custo.')
+                elif len(dados.get('oficina_justificativa_materiais', '')) > 500:
+                    erros.append('Justificativa dos materiais: máximo 500 caracteres.')
 
     if len(dados.get('recursosAcessibilidade', '')) > 200:
         erros.append('Recursos de acessibilidade: máximo 200 caracteres.')
@@ -374,6 +442,23 @@ def home():
                 break
         if not has_infra_items:
             erros.append('Liste pelo menos um recurso de infraestrutura em "Outros".')
+            
+    # Validação Ajuda de Custo Geral (Condicional à visibilidade)
+    if mostrar_ajuda_custo:
+        if not dados.get('ajuda_custo'): 
+            erros.append('Informe se precisa de recurso financeiro para ajuda de custo.')
+        elif dados.get('ajuda_custo') in ('sim', 'indispensavel'):
+            has_ac_items = False
+            for key in dados:
+                if key.startswith('ac_item_') and dados[key].strip():
+                    has_ac_items = True
+                    break
+            if not has_ac_items:
+                erros.append('Liste pelo menos um item de ajuda de custo.')
+            if not dados.get('justificativa_ajuda_custo', '').strip():
+                erros.append('A justificativa da ajuda de custo é obrigatória.')
+            elif len(dados.get('justificativa_ajuda_custo', '')) > 500:
+                erros.append('Justificativa da ajuda de custo: máximo 500 caracteres.')
 
     convidados = []
     tem_convidado = False
@@ -385,58 +470,64 @@ def home():
             foto_conv = request.files.get(f'{prefixo}foto')
             foto_conv_base64 = None
 
-            if not foto_conv or foto_conv.filename.strip() == '':
-                erros.append(f'A foto do convidado {i} ({nome}) é obrigatória.')
-            elif not extensao_permitida(foto_conv.filename):
-                erros.append(f'Formato de foto do convidado {i} não permitido.')
+            foto_temporaria = obter_upload_temporario(f'convidado{i}_foto')
+
+            if ( (not foto_conv or foto_conv.filename.strip() == '') and not foto_temporaria):
+                erros.append(f'A foto do integrante {i} ({nome}) é obrigatória.')
+            elif foto_conv and foto_conv.filename and not extensao_permitida(foto_conv.filename):
+                erros.append(f'Formato de foto do integrante {i} não permitido.')
             else:
-                foto_conv_base64 = converter_foto_base64(foto_conv)
+                if foto_conv and foto_conv.filename:
+                    foto_conv_base64 = converter_foto_base64(foto_conv)
+                else:
+                    foto_conv_base64 = obter_upload_temporario(f'convidado{i}_foto')
 
             email = dados.get(f'{prefixo}email', '').strip()
-            if not email: erros.append(f'E-mail do convidado {i} é obrigatório.')
-            elif not validar_email(email): erros.append(f'O e-mail do convidado {i} ({nome}) é inválido.')
+            if not email: erros.append(f'E-mail do integrante {i} é obrigatório.')
+            elif not validar_email(email): erros.append(f'O e-mail do integrante {i} ({nome}) é inválido.')
 
             papel = dados.get(f'{prefixo}papel', '').strip()
-            if not papel: erros.append(f'Selecione o papel do convidado {i}.')
+            if not papel: erros.append(f'Selecione o papel do integrante {i}.')
             nacionalidade = dados.get(f'{prefixo}nacionalidade', '').strip()
-            if not nacionalidade: erros.append(f'Nacionalidade do convidado {i} é obrigatória.')
+            if not nacionalidade: erros.append(f'Nacionalidade do integrante {i} é obrigatória.')
             telefone = dados.get(f'{prefixo}telefone', '').strip()
-            if not telefone: erros.append(f'Telefone do convidado {i} é obrigatório.')
+            if not telefone: erros.append(f'Telefone do integrante {i} é obrigatório.')
+            
+            # A faixa etária não é mais obrigatória, apenas captura se preenchida
+            idade = dados.get(f'{prefixo}idade', '').strip()
 
             estado = dados.get(f'{prefixo}estado', '').strip()
             cidade_c = dados.get(f'{prefixo}cidade', '').strip()
             bairro_c = dados.get(f'{prefixo}bairro', '').strip()
 
             if nacionalidade == 'brasileiro' and (not estado or not cidade_c):
-                erros.append(f'Estado e cidade do convidado {i} são obrigatórios.')
-            if estado == 'PE' and cidade_c and 'recife' in cidade_c.lower():
-                if not bairro_c: erros.append(f'O bairro do convidado {i} é obrigatório quando a cidade é Recife.')
+                erros.append(f'Estado e cidade do integrante {i} são obrigatórios.')
             elif nacionalidade == 'estrangeiro':
-                if not dados.get(f'{prefixo}passaporte', '').strip(): erros.append(f'Passaporte do convidado estrangeiro {i} é obrigatório.')
-                if not dados.get(f'{prefixo}pais_origem', '').strip(): erros.append(f'País de origem do convidado {i} é obrigatório.')
+                if not dados.get(f'{prefixo}passaporte', '').strip(): erros.append(f'Passaporte do integrante estrangeiro {i} é obrigatório.')
+                if not dados.get(f'{prefixo}pais_origem', '').strip(): erros.append(f'País de origem do integrante {i} é obrigatório.')
 
             cpf_conv = dados.get(f'{prefixo}cpf', '').strip()
-            if cpf_conv and not validar_cpf(cpf_conv): erros.append(f'O CPF do convidado {i} ({nome}) não é válido.')
+            if cpf_conv and not validar_cpf(cpf_conv): erros.append(f'O CPF do integrante {i} ({nome}) não é válido.')
 
             inst = dados.get(f'{prefixo}instituicao', '').strip()
             tipo_inst = dados.get(f'{prefixo}tipo_instituicao', '').strip()
-            if not inst: erros.append(f'Instituição do convidado {i} é obrigatória.')
-            if not tipo_inst: erros.append(f'Tipo de instituição do convidado {i} é obrigatório.')
+            if not inst: erros.append(f'Instituição do integrante {i} é obrigatória.')
+            if not tipo_inst: erros.append(f'Tipo de instituição do integrante {i} é obrigatório.')
             minibio = dados.get(f'{prefixo}minibio', '').strip()
-            if not minibio: erros.append(f'Minibio do convidado {i} é obrigatória.')
+            if not minibio: erros.append(f'Minibio del integrante {i} é obrigatória.')
+            
             raca = dados.get(f'{prefixo}raca', '').strip()
             genero = dados.get(f'{prefixo}genero', '').strip()
-            if not raca: erros.append(f'Raça/Cor do convidado {i} é obrigatória.')
-            if not genero: erros.append(f'Gênero do convidado {i} é obrigatório.')
 
             if dados.get(f'{prefixo}acessibilidade') == 'sim':
-                if not dados.get(f'{prefixo}acessibilidade_desc', '').strip(): erros.append(f'Descreva os recursos de acessibilidade do convidado {i}.')
+                if not dados.get(f'{prefixo}acessibilidade_desc', '').strip(): erros.append(f'Descreva os recursos de acessibilidade do integrante {i}.')
 
             convidados.append({
                 'nome': nome, 'email': email, 'nacionalidade': nacionalidade,
                 'cpf': cpf_conv, 'passaporte': dados.get(f'{prefixo}passaporte'),
                 'telefone': telefone, 'instituicao': inst, 'tipo_instituicao': tipo_inst,
                 'minibio': minibio, 'papel': papel, 'raca': raca, 'genero': genero,
+                'idade': idade,
                 'acessibilidade': dados.get(f'{prefixo}acessibilidade') == 'sim',
                 'acessibilidade_desc': dados.get(f'{prefixo}acessibilidade_desc'),
                 'social_linkedin': dados.get(f'{prefixo}social_linkedin'),
@@ -446,15 +537,30 @@ def home():
                 'foto_base64': foto_conv_base64
             })
 
-    if not tem_convidado: erros.append('Adicione pelo menos 1 convidado obrigatório.')
+    # Validação de quantidade mínima de integrantes por formato
+    min_convidados = 2 if formato in ('debate', 'roda_de_conversa') else 1
+    if not tem_convidado:
+        if min_convidados > 1:
+            nome_formato = 'Debate' if formato == 'debate' else 'Roda de conversa'
+            erros.append(f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes.')
+        else:
+            erros.append('Adicione pelo menos 1 integrante.')
+    elif len(convidados) < min_convidados:
+        nome_formato = 'Debate' if formato == 'debate' else 'Roda de conversa'
+        erros.append(f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes. Você adicionou apenas {len(convidados)}.')
 
     if erros:
         for erro in erros: flash(erro, 'error')
-        return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 400
+        return render_with_data(400)
 
     foto_proponente_base64 = None
+
     if tipo_prop == 'pj':
-        foto_proponente_base64 = converter_foto_base64(arquivo_foto)
+
+        if arquivo_foto and arquivo_foto.filename:
+            foto_proponente_base64 = converter_foto_base64(arquivo_foto)
+        else:
+            foto_proponente_base64 = obter_upload_temporario('fotoProponente')
 
     nat_prop_val = dados.get('nacionalidadeProponente', '') if tipo_prop == 'pf' else ''
 
@@ -484,6 +590,20 @@ def home():
                         'observacoes': dados.get(f'infra_obs_{idx}', '').strip(),
                     })
 
+    # Coletar itens de Ajuda de Custo
+    ajuda_custo_items = []
+    if mostrar_ajuda_custo and dados.get('ajuda_custo') in ('sim', 'indispensavel'):
+        for key in sorted(dados.keys()):
+            if key.startswith('ac_item_'):
+                idx = key.split('_')[-1]
+                item = dados.get(f'ac_item_{idx}', '').strip()
+                if item:
+                    ajuda_custo_items.append({
+                        'item': item,
+                        'quantidade': dados.get(f'ac_qtd_{idx}', '1'),
+                        'valor_unitario': dados.get(f'ac_valor_{idx}', '0'),
+                    })
+
     # Montar lista de recursos de infraestrutura selecionados
     infra_recursos = []
     if dados.get('infra_projecao') == 'sim': infra_recursos.append('Recursos básicos de projeção')
@@ -500,8 +620,7 @@ def home():
         'proponente': {
             'tipo': tipo_prop,
             'nome_instituicao': dados.get('nomeInstituicao'),
-            'categoria': dados.get('categoria') if tipo_prop == 'pj' else None,
-            'cidade': dados.get('cidadeProponente'),
+            'categoria': categoria_prop if tipo_prop == 'pj' else None,
             'nacionalidade': nat_prop_val,
             'cpf': dados.get('cpfProponente') if tipo_prop == 'pf' else None,
             'passaporte': dados.get('passaporteProponente') if tipo_prop == 'pf' else None,
@@ -518,6 +637,7 @@ def home():
             'formato': dados.get('formatoAtividade'),
             'duracao_prevista': dados.get('tempoDuracao'),
             'acesso': dados.get('acessoAtividade'),
+            'inscricao_responsabilidade': dados.get('inscricaoResponsabilidade') == 'sim',
             'objetivo': dados.get('objetivoAtividade'),
             'justificativa': dados.get('justificativaTematica'),
             'metodologia': dados.get('metodologiaAplicada'),
@@ -537,6 +657,9 @@ def home():
             'infra_internet': dados.get('infra_internet') == 'sim',
             'infra_outros': dados.get('infra_outros') == 'sim',
             'infra_outros_items': infra_outros_items,
+            'ajuda_custo': dados.get('ajuda_custo') if mostrar_ajuda_custo else None,
+            'ajuda_custo_items': ajuda_custo_items,
+            'justificativa_ajuda_custo': dados.get('justificativa_ajuda_custo') if mostrar_ajuda_custo else None,
             'observacoes': dados.get('infoExtras'),
             'oficina': {
                 'qtd_publico': dados.get('oficina_qtd_publico'),
@@ -547,6 +670,7 @@ def home():
                 'software_desc': dados.get('oficina_soft_desc'),
                 'material_ajuda': dados.get('oficina_material_ajuda'),
                 'materiais': materiais,
+                'justificativa_materiais': dados.get('oficina_justificativa_materiais'),
                 'mobiliario': dados.get('oficina_mobiliario'),
             } if formato == 'oficina' else None
         },
@@ -572,16 +696,17 @@ def home():
             payload_json = json.dumps(inscricao, ensure_ascii=False, default=str)
             redis_client.lpush('fila_inscricoes', payload_json)
             print(f"✅ Inscrição enviada para a fila Upstash: {inscricao['proponente']['nome_instituicao']}")
+            limpar_uploads_temporarios()
             flash('Proposta enviada com sucesso!', 'success')
         except Exception as e:
             print(f"❌ Erro ao enviar para o Upstash: {e}")
             flash('Erro interno ao processar a inscrição. Tente novamente mais tarde.', 'error')
-            return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 500
+            return render_with_data(500)
     else:
         print("⚠️ Upstash não configurado. Dados não foram enfileirados.")
         if not supabase_id:
             flash('Sistema de persistência não configurado. Contate o suporte.', 'error')
-            return render_template('index.html', dados={}, turnstile_site_key=TURNSTILE_SITE_KEY), 500
+            return render_with_data(500)
         flash('Proposta registrada! Processamento pendente.', 'success')
 
     # ──────────────────────────────────────────────
