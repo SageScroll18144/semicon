@@ -8,6 +8,10 @@ import urllib.parse
 import urllib.error
 from urllib.parse import urlparse
 import copy
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 
 # ──────────────────────────────────────────────
 # INÍCIO: Configurações Anti-Spam / Segurança
@@ -27,7 +31,7 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'chave-padrao-apenas-para-dev-local')
 
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # Aumentado para suportar PDF + Imagens
 
 EXTENSOES_PERMITIDAS = {'png', 'jpg', 'jpeg', 'webp'}
 
@@ -174,6 +178,8 @@ def converter_foto_base64(arquivo_foto):
     if not extensao_permitida(arquivo_foto.filename):
         return None
     try:
+        # CORREÇÃO: Resetar o ponteiro do arquivo para evitar erro de leitura vazio
+        arquivo_foto.seek(0)
         dados_bytes = arquivo_foto.read()
         encoded_string = base64.b64encode(dados_bytes).decode('utf-8')
         ext = arquivo_foto.filename.rsplit('.', 1)[1].lower()
@@ -220,6 +226,65 @@ def obter_upload_temporario(chave):
 
 def limpar_uploads_temporarios():
     session.pop('temp_uploads', None)
+    
+# ──────────────────────────────────────────────
+# FUNÇÃO DE ENVIO DE EMAIL
+# ──────────────────────────────────────────────
+def enviar_email_com_anexo(destinatario, nome_atividade, pdf_file):
+    """
+    Envia email com o PDF anexado.
+    Configurações de SMTP devem ser definidas nas variáveis de ambiente.
+    """
+    SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+    SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
+    SMTP_USER = os.environ.get("SMTP_USER")
+    SMTP_PASS = os.environ.get("SMTP_PASS")
+    EMAIL_FROM = os.environ.get("EMAIL_FROM", "naoresponda@recnplay.com.br")
+
+    if not SMTP_USER or not SMTP_PASS:
+        print("⚠️ Credenciais SMTP não configuradas. Email NÃO será enviado, mas simulado no log.")
+        print(f"📧 [SIMULAÇÃO EMAIL] Para: {destinatario}")
+        print(f"📧 [SIMULAÇÃO EMAIL] Assunto: Confirmação de inscrição: {nome_atividade}")
+        print(f"📧 [SIMULAÇÃO EMAIL] Anexo: PDF gerado ({len(pdf_file.read())} bytes)")
+        pdf_file.seek(0) # Reset pointer
+        return
+
+    msg = MIMEMultipart()
+    msg['From'] = EMAIL_FROM
+    msg['To'] = destinatario
+    msg['Subject'] = f"Confirmação de Inscrição - REC'n'Play 2026: {nome_atividade}"
+
+    body = f"""
+    Olá,
+
+    Recebemos sua proposta para a atividade "{nome_atividade}" com sucesso.
+    
+    Em anexo, segue o comprovante em PDF dos dados enviados.
+
+    Atenciosamente,
+    Equipe REC'n'Play 2026.
+    """
+    
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Anexar PDF
+    part = MIMEApplication(pdf_file.read(), Name="proposta_recnplay_2026.pdf")
+    part['Content-Disposition'] = f'attachment; filename="proposta_recnplay_2026.pdf"'
+    msg.attach(part)
+
+    try:
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SMTP_USER, SMTP_PASS)
+        text = msg.as_string()
+        server.sendmail(EMAIL_FROM, destinatario, text)
+        server.quit()
+        print(f"✅ Email enviado com sucesso para {destinatario}")
+    except Exception as e:
+        print(f"❌ Erro ao enviar email: {e}")
+# ──────────────────────────────────────────────
+
+
 # ──────────────────────────────────────────────
 # INÍCIO: Funções de Segurança
 # ──────────────────────────────────────────────
@@ -296,6 +361,8 @@ def home():
 
     dados = request.form
     arquivo_foto = request.files.get('fotoProponente')
+    pdf_file = request.files.get('pdf_comprovante') # Recebe o PDF do Frontend
+    
     salvar_uploads_temporarios(request.files)
     erros = []
 
@@ -493,7 +560,6 @@ def home():
             telefone = dados.get(f'{prefixo}telefone', '').strip()
             if not telefone: erros.append(f'Telefone do integrante {i} é obrigatório.')
             
-            # A faixa etária não é mais obrigatória, apenas captura se preenchida
             idade = dados.get(f'{prefixo}idade', '').strip()
 
             estado = dados.get(f'{prefixo}estado', '').strip()
@@ -563,7 +629,6 @@ def home():
     foto_proponente_base64 = None
 
     if tipo_prop == 'pj':
-
         if arquivo_foto and arquivo_foto.filename:
             foto_proponente_base64 = converter_foto_base64(arquivo_foto)
         else:
@@ -583,7 +648,6 @@ def home():
                     'valor_unitario': dados.get(f'mat_valor_{idx}', '0'),
                 })
 
-    # Coletar itens de infraestrutura "Outros"
     infra_outros_items = []
     if dados.get('infra_outros') == 'sim':
         for key in sorted(dados.keys()):
@@ -597,7 +661,6 @@ def home():
                         'observacoes': dados.get(f'infra_obs_{idx}', '').strip(),
                     })
 
-    # Coletar itens de Ajuda de Custo
     ajuda_custo_items = []
     if mostrar_ajuda_custo and dados.get('ajuda_custo') in ('sim', 'indispensavel'):
         for key in sorted(dados.keys()):
@@ -611,7 +674,6 @@ def home():
                         'valor_unitario': dados.get(f'ac_valor_{idx}', '0'),
                     })
 
-    # Montar lista de recursos de infraestrutura selecionados
     infra_recursos = []
     if dados.get('infra_projecao') == 'sim': infra_recursos.append('Recursos básicos de projeção')
     if dados.get('infra_som') == 'sim': infra_recursos.append('Sistema básico de som')
@@ -704,7 +766,6 @@ def home():
             redis_client.lpush('fila_inscricoes', payload_json)
             print(f"✅ Inscrição enviada para a fila Upstash: {inscricao['proponente']['nome_instituicao']}")
             limpar_uploads_temporarios()
-            flash('Proposta enviada com sucesso!', 'success')
         except Exception as e:
             print(f"❌ Erro ao enviar para o Upstash: {e}")
             flash('Erro interno ao processar a inscrição. Tente novamente mais tarde.', 'error')
@@ -716,10 +777,23 @@ def home():
             return render_with_data(500)
         flash('Proposta registrada! Processamento pendente.', 'success')
 
+    email_representante = dados.get('emailRepresentante')
+    nome_atividade = dados.get('tituloAtividade')
+
+    if pdf_file and email_representante:
+        try:
+            enviar_email_com_anexo(email_representante, nome_atividade, pdf_file)
+        except Exception as e:
+            print(f"⚠️ Erro crítico ao enviar email (mas dados salvos): {e}")
+    elif not pdf_file:
+        print("⚠️ PDF não foi recebido do frontend. Email não será enviado.")
+
     # ──────────────────────────────────────────────
-    # FIM: Persistência e Fila
+    # FIM: Envio do Email
     # ──────────────────────────────────────────────
 
+
+    flash('Proposta enviada com sucesso!', 'success')
     return redirect(url_for('home'))
 
 app = app
