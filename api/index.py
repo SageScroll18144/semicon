@@ -31,7 +31,7 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'chave-padrao-apenas-para-dev-local')
 
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # Aumentado para suportar PDF + Imagens
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Aumentado para suportar PDF + Imagens
 
 EXTENSOES_PERMITIDAS = {'png', 'jpg', 'jpeg', 'webp'}
 
@@ -69,6 +69,7 @@ else:
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
 
+
 def strip_base64_for_supabase(data):
     """Remove strings base64 para não estourar o limite de payload do Supabase."""
     clean = copy.deepcopy(data)
@@ -80,20 +81,21 @@ def strip_base64_for_supabase(data):
                 conv['foto_base64'] = '[ENVIADO VIA WORKER]'
     return clean
 
+
 def save_to_supabase(inscricao):
     """Salva o payload no Supabase como fonte da verdade (usando urllib nativo)."""
     if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
         print("⚠️ Supabase não configurado. Pulando salvamento.")
         return None
-        
+
     try:
         clean_payload = strip_base64_for_supabase(inscricao)
-        
+
         body = json.dumps({
             "status": "pending",
             "payload": clean_payload
         }, ensure_ascii=False, default=str)
-        
+
         req = urllib.request.Request(
             f"{SUPABASE_URL}/rest/v1/inscricoes",
             data=body.encode('utf-8'),
@@ -105,7 +107,7 @@ def save_to_supabase(inscricao):
                 "Prefer": "return=representation"
             }
         )
-        
+
         with urllib.request.urlopen(req, timeout=15) as resp:
             result = json.loads(resp.read().decode('utf-8'))
             if result and len(result) > 0 and 'id' in result[0]:
@@ -115,7 +117,7 @@ def save_to_supabase(inscricao):
             else:
                 print(f"❌ Supabase retornou resposta inesperada: {result}")
                 return None
-                
+
     except urllib.error.HTTPError as e:
         error_body = e.read().decode('utf-8', errors='replace')
         print(f"❌ Erro Supabase HTTP {e.code}: {error_body}")
@@ -123,6 +125,8 @@ def save_to_supabase(inscricao):
     except Exception as e:
         print(f"❌ Exceção ao salvar no Supabase: {type(e).__name__}: {e}")
         return None
+
+
 # ──────────────────────────────────────────────
 # FIM: Configuração Supabase
 # ──────────────────────────────────────────────
@@ -178,7 +182,6 @@ def converter_foto_base64(arquivo_foto):
     if not extensao_permitida(arquivo_foto.filename):
         return None
     try:
-        # CORREÇÃO: Resetar o ponteiro do arquivo para evitar erro de leitura vazio
         arquivo_foto.seek(0)
         dados_bytes = arquivo_foto.read()
         encoded_string = base64.b64encode(dados_bytes).decode('utf-8')
@@ -189,33 +192,20 @@ def converter_foto_base64(arquivo_foto):
         print(f"Erro ao converter imagem: {e}")
         return None
 
+
 def salvar_uploads_temporarios(request_files):
-    """
-    Salva uploads temporariamente na sessão.
-    Evita perda das imagens quando ocorre erro de validação.
-    """
-
     uploads = session.get('temp_uploads', {})
-
-    # Logo do proponente
     foto_prop = request_files.get('fotoProponente')
-
     if foto_prop and foto_prop.filename:
         foto_base64 = converter_foto_base64(foto_prop)
-
         if foto_base64:
             uploads['fotoProponente'] = foto_base64
-
-    # Fotos integrantes
     for i in range(1, 6):
         foto_conv = request_files.get(f'convidado{i}_foto')
-
         if foto_conv and foto_conv.filename:
             foto_base64 = converter_foto_base64(foto_conv)
-
             if foto_base64:
                 uploads[f'convidado{i}_foto'] = foto_base64
-
     session['temp_uploads'] = uploads
 
 
@@ -226,14 +216,15 @@ def obter_upload_temporario(chave):
 
 def limpar_uploads_temporarios():
     session.pop('temp_uploads', None)
-    
+
+
 # ──────────────────────────────────────────────
-# FUNÇÃO DE ENVIO DE EMAIL
+# FUNÇÃO DE ENVIO DE EMAIL (CORRIGIDA E MELHORADA)
 # ──────────────────────────────────────────────
-def enviar_email_com_anexo(destinatario, nome_atividade, pdf_file):
+def enviar_email_com_anexo(destinatario, nome_atividade, nome_proponente, pdf_file):
     """
-    Envia email com o PDF anexado.
-    Configurações de SMTP devem ser definidas nas variáveis de ambiente.
+    Envia email HTML profissional com o PDF anexado.
+    Retorna True se enviado com sucesso, False caso contrário.
     """
     SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
     SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
@@ -241,47 +232,176 @@ def enviar_email_com_anexo(destinatario, nome_atividade, pdf_file):
     SMTP_PASS = os.environ.get("SMTP_PASS")
     EMAIL_FROM = os.environ.get("EMAIL_FROM", "naoresponda@recnplay.com.br")
 
+    # ── Verificação de credenciais ──
     if not SMTP_USER or not SMTP_PASS:
-        print("⚠️ Credenciais SMTP não configuradas. Email NÃO será enviado, mas simulado no log.")
-        print(f"📧 [SIMULAÇÃO EMAIL] Para: {destinatario}")
-        print(f"📧 [SIMULAÇÃO EMAIL] Assunto: Confirmação de inscrição: {nome_atividade}")
-        print(f"📧 [SIMULAÇÃO EMAIL] Anexo: PDF gerado ({len(pdf_file.read())} bytes)")
-        pdf_file.seek(0) # Reset pointer
-        return
-
-    msg = MIMEMultipart()
-    msg['From'] = EMAIL_FROM
-    msg['To'] = destinatario
-    msg['Subject'] = f"Confirmação de Inscrição - REC'n'Play 2026: {nome_atividade}"
-
-    body = f"""
-    Olá,
-
-    Recebemos sua proposta para a atividade "{nome_atividade}" com sucesso.
-    
-    Em anexo, segue o comprovante em PDF dos dados enviados.
-
-    Atenciosamente,
-    Equipe REC'n'Play 2026.
-    """
-    
-    msg.attach(MIMEText(body, 'plain'))
-
-    # Anexar PDF
-    part = MIMEApplication(pdf_file.read(), Name="proposta_recnplay_2026.pdf")
-    part['Content-Disposition'] = f'attachment; filename="proposta_recnplay_2026.pdf"'
-    msg.attach(part)
+        print("=" * 60)
+        print("⚠️  CREDENCIAIS SMTP NÃO CONFIGURADAS!")
+        print("⚠️  Email NÃO será enviado. Configure as variáveis:")
+        print("    SMTP_SERVER, SMTP_PORT, SMTP_USER, SMTP_PASS, EMAIL_FROM")
+        print(f"📧 [SIMULAÇÃO] Para: {destinatario}")
+        print(f"📧 [SIMULAÇÃO] Assunto: Confirmação - {nome_atividade}")
+        try:
+            pdf_file.seek(0)
+            pdf_size = len(pdf_file.read())
+            print(f"📧 [SIMULAÇÃO] Anexo PDF: {pdf_size} bytes")
+            pdf_file.seek(0)
+        except Exception:
+            pass
+        print("=" * 60)
+        return False
 
     try:
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        # ── CRÍTICO: Resetar ponteiro do arquivo antes de ler ──
+        pdf_file.seek(0)
+        pdf_bytes = pdf_file.read()
+
+        if len(pdf_bytes) == 0:
+            print("❌ PDF vazio! O arquivo não contém dados. Email não enviado.")
+            return False
+
+        print(f"📧 Preparando email para {destinatario} (PDF: {len(pdf_bytes)} bytes)...")
+
+        # ── Construir mensagem ──
+        msg = MIMEMultipart('alternative')
+        msg['From'] = EMAIL_FROM
+        msg['To'] = destinatario
+        msg['Subject'] = f"Confirmação de Inscrição — REC'n'Play 2026: {nome_atividade}"
+
+        # ── Versão texto puro (fallback) ──
+        text_body = f"""Olá, {nome_proponente},
+
+Recebemos sua proposta para a atividade "{nome_atividade}" no REC'n'Play 2026 com sucesso!
+
+Em anexo, segue o comprovante em PDF com todos os dados enviados.
+
+Próximos passos:
+- Sua proposta será analisada pela equipe curadora do festival
+- Você receberá o resultado por e-mail
+- Em caso de dúvidas, entre em contato conosco
+
+Atenciosamente,
+Equipe REC'n'Play 2026
+
+---
+Este é um e-mail automático. Não responta esta mensagem.
+REC'n'Play 2026 — Festival Colaborativo de Inovação e Cultura
+"""
+
+        # ── Versão HTML (visual profissional) ──
+        html_body = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0; padding:0; font-family:Arial,Helvetica,sans-serif; color:#333; background:#f4f4f4;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4; padding:20px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.1);">
+
+    <!-- HEADER -->
+    <tr>
+        <td style="background:linear-gradient(135deg,#FF3399,#990099); padding:35px 40px; text-align:center;">
+            <h1 style="color:#fff; margin:0; font-size:28px; font-weight:700;">REC'n'Play 2026</h1>
+            <p style="color:rgba(255,255,255,0.85); margin:8px 0 0; font-size:14px;">Festival Colaborativo de Inovação e Cultura</p>
+        </td>
+    </tr>
+
+    <!-- BODY -->
+    <tr>
+        <td style="padding:35px 40px;">
+            <h2 style="color:#990099; margin:0 0 20px; font-size:22px;">✅ Proposta Registrada com Sucesso!</h2>
+            <p style="font-size:15px; line-height:1.7; margin:0 0 15px;">
+                Olá, <strong style="color:#FF3399;">{nome_proponente}</strong>!
+            </p>
+            <p style="font-size:15px; line-height:1.7; margin:0 0 15px;">
+                Recebemos sua proposta para a atividade <strong>"{nome_atividade}"</strong> no REC'n'Play 2026.
+            </p>
+            <p style="font-size:15px; line-height:1.7; margin:0 0 25px;">
+                Em anexo, segue o comprovante em PDF com todos os dados enviados na inscrição.
+            </p>
+
+            <!-- INFO BOX -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#FFF0FF; border-left:4px solid #FF3399; border-radius:8px; margin:0 0 25px;">
+                <tr>
+                    <td style="padding:18px 22px;">
+                        <p style="margin:0 0 10px; font-size:14px; font-weight:700; color:#990099;">📋 Próximos passos:</p>
+                        <ul style="margin:0; padding-left:20px; font-size:14px; line-height:1.8; color:#555;">
+                            <li>Sua proposta será analisada pela equipe curadora do festival</li>
+                            <li>Você receberá o resultado da avaliação por e-mail</li>
+                            <li>Em caso de dúvidas, entre em contato conosco</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <p style="font-size:15px; line-height:1.7; margin:0;">
+                Atenciosamente,<br>
+                <strong style="color:#990099;">Equipe REC'n'Play 2026</strong>
+            </p>
+        </td>
+    </tr>
+
+    <!-- FOOTER -->
+    <tr>
+        <td style="background:#1a1a1a; color:#999; padding:22px 40px; text-align:center; font-size:12px; line-height:1.6;">
+            <p style="margin:0;">Este é um e-mail automático. Não responta esta mensagem.</p>
+            <p style="margin:5px 0 0; color:#FF3399;">REC'n'Play 2026 — Festival Colaborativo de Inovação e Cultura</p>
+        </td>
+    </tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>"""
+
+        # ── Anexar corpos do email ──
+        msg.attach(MIMEText(text_body, 'plain', 'utf-8'))
+        msg.attach(MIMEText(html_body, 'html', 'utf-8'))
+
+        # ── Anexar PDF ──
+        pdf_part = MIMEApplication(pdf_bytes, Name="proposta_recnplay_2026.pdf")
+        pdf_part['Content-Disposition'] = 'attachment; filename="proposta_recnplay_2026.pdf"'
+        msg.attach(pdf_part)
+
+        # ── Enviar via SMTP ──
+        print(f"📧 Conectando ao SMTP {SMTP_SERVER}:{SMTP_PORT}...")
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=30)
+        server.ehlo()
         server.starttls()
+        server.ehlo()
         server.login(SMTP_USER, SMTP_PASS)
-        text = msg.as_string()
-        server.sendmail(EMAIL_FROM, destinatario, text)
+        server.sendmail(EMAIL_FROM, destinatario, msg.as_string())
         server.quit()
+
         print(f"✅ Email enviado com sucesso para {destinatario}")
+        return True
+
+    except smtplib.SMTPAuthenticationError:
+        print("=" * 60)
+        print("❌ ERRO DE AUTENTICAÇÃO SMTP!")
+        print("❌ Verifique SMTP_USER e SMTP_PASS.")
+        print("💡 Para Gmail: use 'Senha de App', NÃO a senha normal.")
+        print("   1. Acesse myaccount.google.com/security")
+        print("   2. Ative verificação em 2 etapas")
+        print("   3. Crie uma 'Senha de App' para Gmail")
+        print("   4. Use essa senha de 16 caracteres no SMTP_PASS")
+        print("=" * 60)
+        return False
+
+    except smtplib.SMTPConnectError:
+        print(f"❌ Erro ao conectar ao servidor SMTP {SMTP_SERVER}:{SMTP_PORT}. Verifique o endereço e porta.")
+        return False
+
+    except smtplib.SMTPRecipientsRefused:
+        print(f"❌ Destinatário recusado: {destinatario}. Verifique se o e-mail é válido.")
+        return False
+
     except Exception as e:
-        print(f"❌ Erro ao enviar email: {e}")
+        print(f"❌ Erro inesperado ao enviar email: {type(e).__name__}: {e}")
+        return False
+
+
+# ──────────────────────────────────────────────
+# FIM: FUNÇÃO DE ENVIO DE EMAIL
 # ──────────────────────────────────────────────
 
 
@@ -326,6 +446,7 @@ def validate_origin():
     if not origin and not referer:
         print("⚠️ Requisição sem Origin nem Referer")
         return False
+
     def _check_domain(header_value):
         if not header_value:
             return True
@@ -341,6 +462,7 @@ def validate_origin():
             return False
         except Exception:
             return False
+
     if origin and not _check_domain(origin):
         print(f"⚠️ Origin rejeitada: {origin}")
         return False
@@ -348,6 +470,7 @@ def validate_origin():
         print(f"⚠️ Referer rejeitado: {referer}")
         return False
     return True
+
 
 # ──────────────────────────────────────────────
 # FIM: Funções de Segurança
@@ -361,19 +484,19 @@ def home():
 
     dados = request.form
     arquivo_foto = request.files.get('fotoProponente')
-    pdf_file = request.files.get('pdf_comprovante') # Recebe o PDF do Frontend
-    
+    pdf_file = request.files.get('pdf_comprovante')
+
     salvar_uploads_temporarios(request.files)
     erros = []
 
-    # Função auxiliar para renderizar com dados preservados
     def render_with_data(code=400):
         form_dict = dict(dados)
         guest_data = {}
         for key in dados:
             if key.startswith('convidado'):
                 guest_data[key] = dados[key]
-        return render_template('index.html', dados=form_dict, guest_data_json=json.dumps(guest_data, ensure_ascii=False), turnstile_site_key=TURNSTILE_SITE_KEY), code
+        return render_template('index.html', dados=form_dict, guest_data_json=json.dumps(guest_data, ensure_ascii=False),
+                               turnstile_site_key=TURNSTILE_SITE_KEY), code
 
     # INÍCIO: Verificações de Segurança
     honeypot_value = dados.get(HONEYPOT_FIELD_NAME, '').strip()
@@ -412,31 +535,36 @@ def home():
         cat = categoria_prop.strip()
         if not cat: erros.append('O campo "Categoria" é obrigatório.')
         cnpj = dados.get('cnpjProponente', '').strip()
-        if not cnpj: erros.append('O CNPJ é obrigatório.')
-        elif not validar_cnpj(cnpj): erros.append('O CNPJ informado não é válido.')
+        if not cnpj:
+            erros.append('O CNPJ é obrigatório.')
+        elif not validar_cnpj(cnpj):
+            erros.append('O CNPJ informado não é válido.')
         logo_temporaria = obter_upload_temporario('fotoProponente')
-
-        if ((not arquivo_foto or arquivo_foto.filename.strip() == '') and not logo_temporaria ):
+        if ((not arquivo_foto or arquivo_foto.filename.strip() == '') and not logo_temporaria):
             erros.append('A logo da instituição é obrigatória para Pessoa Jurídica.')
         elif arquivo_foto and arquivo_foto.filename and not extensao_permitida(arquivo_foto.filename):
             erros.append('Formato de logo não permitido. Use: png, jpg, jpeg, webp')
     else:
         nat_prop = dados.get('nacionalidadeProponente', '').strip()
-        if not nat_prop: erros.append('A Nacionalidade é obrigatória.')
+        if not nat_prop:
+            erros.append('A Nacionalidade é obrigatória.')
         elif nat_prop == 'brasileiro':
             cpf_val = dados.get('cpfProponente', '').strip()
-            if not cpf_val: erros.append('O CPF é obrigatório para brasileiros.')
-            elif not validar_cpf(cpf_val): erros.append('O CPF informado não é válido.')
+            if not cpf_val:
+                erros.append('O CPF é obrigatório para brasileiros.')
+            elif not validar_cpf(cpf_val):
+                erros.append('O CPF informado não é válido.')
         elif nat_prop == 'estrangeiro':
-            if not dados.get('passaporteProponente', '').strip(): erros.append('O Passaporte é obrigatório para estrangeiros.')
+            if not dados.get('passaporteProponente', '').strip():
+                erros.append('O Passaporte é obrigatório para estrangeiros.')
 
     if dados.get('emailRepresentante') and not validar_email(dados.get('emailRepresentante')):
         erros.append('O e-mail do representante não é válido.')
 
-    # Validação do checkbox de responsabilidade quando acesso é por inscrição
     if dados.get('acessoAtividade') == 'inscricao':
         if dados.get('inscricaoResponsabilidade') != 'sim':
-            erros.append('É necessário aceitar a responsabilidade sobre o processo de inscrição e a segurança dos dados conforme a LGPD.')
+            erros.append(
+                'É necessário aceitar a responsabilidade sobre o processo de inscrição e a segurança dos dados conforme a LGPD.')
 
     tags_val = dados.get('tags', '').strip()
     suggestion = dados.get('tagSuggestion', '').strip()
@@ -454,36 +582,34 @@ def home():
         if len(dados.get(campo, '')) > limite:
             erros.append(f'O campo "{campo}" excedeu o limite de {limite} caracteres.')
 
-    # Validação não obrigatória para restrição etária (apenas se marcar "Sim")
     if dados.get('restricaoEtaria') == 'sim':
         idade_min = dados.get('idadeMinima', '').strip()
         idade_max = dados.get('idadeMaxima', '').strip()
-        if not idade_min or not idade_max: erros.append('Preencha a idade mínima e máxima.')
-        elif int(idade_min) > int(idade_max): erros.append('A idade mínima não pode ser maior que a máxima.')
+        if not idade_min or not idade_max:
+            erros.append('Preencha a idade mínima e máxima.')
+        elif int(idade_min) > int(idade_max):
+            erros.append('A idade mínima não pode ser maior que a máxima.')
 
     formato = dados.get('formatoAtividade')
-    
-    # Variável de controle para exibição de ajudas de custo (PF, ONG, Coletivo)
     mostrar_ajuda_custo = (tipo_prop == 'pf') or (tipo_prop == 'pj' and categoria_prop in ['ong', 'coletivo'])
-    
-    # Validação condicional para recurso de material na oficina
+
     if formato == 'oficina':
         if not dados.get('oficina_qtd_publico'): erros.append('Selecione a quantidade máxima de público.')
         if not dados.get('oficina_internet'): erros.append('Informe sobre internet.')
         if not dados.get('oficina_lab'): erros.append('Informe sobre laboratório.')
         if dados.get('oficina_lab') == 'sim':
             if not dados.get('oficina_pc_specs'): erros.append('Descreva as configurações mínimas dos PCs.')
-            if len(dados.get('oficina_pc_specs', '')) > 200: erros.append('Configurações dos PCs: máximo 200 caracteres.')
+            if len(dados.get('oficina_pc_specs', '')) > 200: erros.append(
+                'Configurações dos PCs: máximo 200 caracteres.')
             if not dados.get('oficina_soft_req'): erros.append('Informe sobre software.')
-            elif dados.get('oficina_soft_req') == 'sim' and not dados.get('oficina_soft_desc'): erros.append('Descreva o software.')
-            if len(dados.get('oficina_soft_desc', '')) > 200: erros.append('Descrição do software: máximo 200 caracteres.')
-        
-        # Mobiliário é obrigatório para todos em oficina
+            elif dados.get('oficina_soft_req') == 'sim' and not dados.get('oficina_soft_desc'): erros.append(
+                'Descreva o software.')
+            if len(dados.get('oficina_soft_desc', '')) > 200: erros.append(
+                'Descrição do software: máximo 200 caracteres.')
         if not dados.get('oficina_mobiliario'): erros.append('Selecione o mobiliário necessário.')
-        
-        # Verifica se a seção de materiais é exibida (PF ou PJ(ONG/Coletivo))
         if mostrar_ajuda_custo:
-            if not dados.get('oficina_material_ajuda'): erros.append('Informe sobre ajuda de custo com material.')
+            if not dados.get('oficina_material_ajuda'): erros.append(
+                'Informe sobre ajuda de custo com material.')
             if dados.get('oficina_material_ajuda') in ('sim', 'indispensavel'):
                 has_items = False
                 for key in dados:
@@ -491,7 +617,6 @@ def home():
                         has_items = True
                         break
                 if not has_items: erros.append('Liste pelo menos um material com previsão de custo.')
-                # Validação da justificativa dos materiais
                 if not dados.get('oficina_justificativa_materiais', '').strip():
                     erros.append('A justificativa dos materiais é obrigatória quando há ajuda de custo.')
                 elif len(dados.get('oficina_justificativa_materiais', '')) > 500:
@@ -500,7 +625,6 @@ def home():
     if len(dados.get('recursosAcessibilidade', '')) > 200:
         erros.append('Recursos de acessibilidade: máximo 200 caracteres.')
 
-    # Validação infraestrutura outros
     if dados.get('infra_outros') == 'sim':
         has_infra_items = False
         for key in dados:
@@ -509,10 +633,9 @@ def home():
                 break
         if not has_infra_items:
             erros.append('Liste pelo menos um recurso de infraestrutura em "Outros".')
-            
-    # Validação Ajuda de Custo Geral (Condicional à visibilidade)
+
     if mostrar_ajuda_custo:
-        if not dados.get('ajuda_custo'): 
+        if not dados.get('ajuda_custo'):
             erros.append('Informe se precisa de recurso financeiro para ajuda de custo.')
         elif dados.get('ajuda_custo') in ('sim', 'indispensavel'):
             has_ac_items = False
@@ -536,10 +659,8 @@ def home():
             tem_convidado = True
             foto_conv = request.files.get(f'{prefixo}foto')
             foto_conv_base64 = None
-
             foto_temporaria = obter_upload_temporario(f'convidado{i}_foto')
-
-            if ( (not foto_conv or foto_conv.filename.strip() == '') and not foto_temporaria):
+            if ((not foto_conv or foto_conv.filename.strip() == '') and not foto_temporaria):
                 erros.append(f'A foto do integrante {i} ({nome}) é obrigatória.')
             elif foto_conv and foto_conv.filename and not extensao_permitida(foto_conv.filename):
                 erros.append(f'Formato de foto do integrante {i} não permitido.')
@@ -548,53 +669,48 @@ def home():
                     foto_conv_base64 = converter_foto_base64(foto_conv)
                 else:
                     foto_conv_base64 = obter_upload_temporario(f'convidado{i}_foto')
-
             email = dados.get(f'{prefixo}email', '').strip()
-            if not email: erros.append(f'E-mail do integrante {i} é obrigatório.')
-            elif not validar_email(email): erros.append(f'O e-mail do integrante {i} ({nome}) é inválido.')
-
+            if not email:
+                erros.append(f'E-mail do integrante {i} é obrigatório.')
+            elif not validar_email(email):
+                erros.append(f'O e-mail do integrante {i} ({nome}) é inválido.')
             papel = dados.get(f'{prefixo}papel', '').strip()
             if not papel: erros.append(f'Selecione o papel do integrante {i}.')
             nacionalidade = dados.get(f'{prefixo}nacionalidade', '').strip()
             if not nacionalidade: erros.append(f'Nacionalidade do integrante {i} é obrigatória.')
             telefone = dados.get(f'{prefixo}telefone', '').strip()
             if not telefone: erros.append(f'Telefone do integrante {i} é obrigatório.')
-            
             idade = dados.get(f'{prefixo}idade', '').strip()
-
             estado = dados.get(f'{prefixo}estado', '').strip()
             cidade_c = dados.get(f'{prefixo}cidade', '').strip()
             bairro_c = dados.get(f'{prefixo}bairro', '').strip()
-
             if nacionalidade == 'brasileiro' and (not estado or not cidade_c):
                 erros.append(f'Estado e cidade do integrante {i} são obrigatórios.')
             elif nacionalidade == 'estrangeiro':
-                if not dados.get(f'{prefixo}passaporte', '').strip(): erros.append(f'Passaporte do integrante estrangeiro {i} é obrigatório.')
-                if not dados.get(f'{prefixo}pais_origem', '').strip(): erros.append(f'País de origem do integrante {i} é obrigatório.')
-
+                if not dados.get(f'{prefixo}passaporte', '').strip(): erros.append(
+                    f'Passaporte do integrante estrangeiro {i} é obrigatório.')
+                if not dados.get(f'{prefixo}pais_origem', '').strip(): erros.append(
+                    f'País de origem do integrante {i} é obrigatório.')
             cpf_conv = dados.get(f'{prefixo}cpf', '').strip()
             if nacionalidade == 'brasileiro':
-                if not cpf_conv: 
+                if not cpf_conv:
                     erros.append(f'O CPF do integrante {i} ({nome}) é obrigatório.')
-                elif not validar_cpf(cpf_conv): 
+                elif not validar_cpf(cpf_conv):
                     erros.append(f'O CPF do integrante {i} ({nome}) não é válido.')
             elif nacionalidade == 'estrangeiro':
-                if not dados.get(f'{prefixo}passaporte', '').strip(): 
+                if not dados.get(f'{prefixo}passaporte', '').strip():
                     erros.append(f'O Passaporte/Documento do integrante estrangeiro {i} ({nome}) é obrigatório.')
-
             inst = dados.get(f'{prefixo}instituicao', '').strip()
             tipo_inst = dados.get(f'{prefixo}tipo_instituicao', '').strip()
             if not inst: erros.append(f'Instituição do integrante {i} é obrigatória.')
             if not tipo_inst: erros.append(f'Tipo de instituição do integrante {i} é obrigatório.')
             minibio = dados.get(f'{prefixo}minibio', '').strip()
             if not minibio: erros.append(f'Minibio del integrante {i} é obrigatória.')
-            
             raca = dados.get(f'{prefixo}raca', '').strip()
             genero = dados.get(f'{prefixo}genero', '').strip()
-
             if dados.get(f'{prefixo}acessibilidade') == 'sim':
-                if not dados.get(f'{prefixo}acessibilidade_desc', '').strip(): erros.append(f'Descreva os recursos de acessibilidade do integrante {i}.')
-
+                if not dados.get(f'{prefixo}acessibilidade_desc', '').strip(): erros.append(
+                    f'Descreva os recursos de acessibilidade do integrante {i}.')
             convidados.append({
                 'nome': nome, 'email': email, 'nacionalidade': nacionalidade,
                 'cpf': cpf_conv, 'passaporte': dados.get(f'{prefixo}passaporte'),
@@ -610,7 +726,6 @@ def home():
                 'foto_base64': foto_conv_base64
             })
 
-    # Validação de quantidade mínima de integrantes por formato
     min_convidados = 2 if formato in ('debate', 'roda_de_conversa') else 1
     if not tem_convidado:
         if min_convidados > 1:
@@ -620,14 +735,15 @@ def home():
             erros.append('Adicione pelo menos 1 integrante.')
     elif len(convidados) < min_convidados:
         nome_formato = 'Debate' if formato == 'debate' else 'Roda de conversa'
-        erros.append(f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes. Você adicionou apenas {len(convidados)}.')
+        erros.append(
+            f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes. Você adicionou apenas {len(convidados)}.')
 
     if erros:
-        for erro in erros: flash(erro, 'error')
+        for erro in erros:
+            flash(erro, 'error')
         return render_with_data(400)
 
     foto_proponente_base64 = None
-
     if tipo_prop == 'pj':
         if arquivo_foto and arquivo_foto.filename:
             foto_proponente_base64 = converter_foto_base64(arquivo_foto)
@@ -749,8 +865,6 @@ def home():
     # ──────────────────────────────────────────────
     # INÍCIO: Persistência e Fila
     # ──────────────────────────────────────────────
-
-    # 1. Salvar no Supabase (Fonte da Verdade)
     supabase_id = None
     if SUPABASE_URL and SUPABASE_SERVICE_KEY:
         supabase_id = save_to_supabase(inscricao)
@@ -759,7 +873,6 @@ def home():
         else:
             print("⚠️ Falha ao salvar no Supabase, mas continuando com a fila...")
 
-    # 2. Enfileirar no Upstash
     if redis_client:
         try:
             payload_json = json.dumps(inscricao, ensure_ascii=False, default=str)
@@ -777,23 +890,38 @@ def home():
             return render_with_data(500)
         flash('Proposta registrada! Processamento pendente.', 'success')
 
+    # ──────────────────────────────────────────────
+    # INÍCIO: Envio do Email com PDF
+    # ──────────────────────────────────────────────
     email_representante = dados.get('emailRepresentante')
     nome_atividade = dados.get('tituloAtividade')
+    nome_proponente = dados.get('nomeInstituicao', '')
 
     if pdf_file and email_representante:
         try:
-            enviar_email_com_anexo(email_representante, nome_atividade, pdf_file)
+            email_enviado = enviar_email_com_anexo(
+                destinatario=email_representante,
+                nome_atividade=nome_atividade,
+                nome_proponente=nome_proponente,
+                pdf_file=pdf_file
+            )
+            if email_enviado:
+                print("📧 Comprovante PDF enviado por email com sucesso.")
+            else:
+                print("⚠️ Email não foi enviado, mas a inscrição foi salva com sucesso.")
         except Exception as e:
             print(f"⚠️ Erro crítico ao enviar email (mas dados salvos): {e}")
-    elif not pdf_file:
-        print("⚠️ PDF não foi recebido do frontend. Email não será enviado.")
-
+    else:
+        if not pdf_file:
+            print("⚠️ PDF não foi recebido do frontend. Email não será enviado.")
+        if not email_representante:
+            print("⚠️ Email do representante não informado. Email não será enviado.")
     # ──────────────────────────────────────────────
     # FIM: Envio do Email
     # ──────────────────────────────────────────────
 
-
     flash('Proposta enviada com sucesso!', 'success')
     return redirect(url_for('home'))
+
 
 app = app
