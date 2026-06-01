@@ -507,7 +507,14 @@ def home():
                 if not dados.get(f'{prefixo}pais_origem', '').strip(): erros.append(f'País de origem do integrante {i} é obrigatório.')
 
             cpf_conv = dados.get(f'{prefixo}cpf', '').strip()
-            if cpf_conv and not validar_cpf(cpf_conv): erros.append(f'O CPF do integrante {i} ({nome}) não é válido.')
+            if nacionalidade == 'brasileiro':
+                if not cpf_conv: 
+                    erros.append(f'O CPF do integrante {i} ({nome}) é obrigatório.')
+                elif not validar_cpf(cpf_conv): 
+                    erros.append(f'O CPF do integrante {i} ({nome}) não é válido.')
+            elif nacionalidade == 'estrangeiro':
+                if not dados.get(f'{prefixo}passaporte', '').strip(): 
+                    erros.append(f'O Passaporte/Documento do integrante estrangeiro {i} ({nome}) é obrigatório.')
 
             inst = dados.get(f'{prefixo}instituicao', '').strip()
             tipo_inst = dados.get(f'{prefixo}tipo_instituicao', '').strip()

@@ -29,42 +29,14 @@
         body { font-family: 'Inter', sans-serif; background: var(--preto); min-height: 100vh; overflow-x: hidden; color: #333; }
 
         .bg-pattern {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
-            overflow: hidden;
-            background-color: #0D0D0D;
-            background-image: url('/static/plano_de_fundo.jpg');
-            background-repeat: repeat;
-            background-size: 800px auto;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;
+            background-color: #0D0D0D; background-image: url('/static/plano_de_fundo.jpg'); background-repeat: repeat; background-size: 800px auto;
         }
-
         .form-wrapper { position: relative; z-index: 1; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .logo-crop { width: 100%; overflow: hidden; border-radius: 16px 16px 0 0; position: relative; z-index: 2; background: #000; }
+        .logo-image { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 
-        .logo-crop {
-            width: 100%;
-            overflow: hidden;
-            border-radius: 16px 16px 0 0;
-            position: relative;
-            z-index: 2;
-            background: #000;
-        }
-        .logo-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            display: block;
-        }
-
-        .form-card {
-            background: #fff;
-            border-radius: 0 0 16px 16px;
-            box-shadow: var(--sombra);
-            overflow: hidden;
-            animation: cardEntry 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
-        }
+        .form-card { background: #fff; border-radius: 0 0 16px 16px; box-shadow: var(--sombra); overflow: hidden; animation: cardEntry 0.6s cubic-bezier(0.175,0.885,0.32,1.275); }
         @keyframes cardEntry { from { opacity:0; transform:translateY(30px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
 
         .card-top { background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro)); padding: 32px 40px; color: #fff; }
@@ -79,28 +51,21 @@
         .flash-messages li { padding: 14px 40px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; animation: flashIn 0.4s ease; }
         .flash-messages li.error { background: #FDE8E8; color: #B71C1C; border-bottom: 2px solid #E53935; }
         .flash-messages li.success { background: #E8F5E9; color: #1B5E20; border-bottom: 2px solid #2E7D32; }
-        @keyframes flashIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
 
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { min-width: 250px; padding: 12px 16px; background: #333; color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; animation: slideInRight 0.3s ease forwards; border-left: 4px solid var(--roxo-principal); }
         .toast.error { border-left-color: var(--vermelho-obrigatorio); }
         .toast.success { border-left-color: var(--verde-sucesso); }
-        @keyframes slideInRight { from { opacity:0; transform:translateX(50px); } to { opacity:1; transform:translateX(0); } }
 
         .form-body { padding: 32px 40px 40px; }
-
         .intro-box { background: linear-gradient(135deg, var(--roxo-50), var(--roxo-100)); border: 1px solid var(--roxo-200); border-radius: 12px; padding: 24px 28px; margin-bottom: 32px; }
         .intro-box p { font-size: 13.5px; line-height: 1.8; color: var(--roxo-600-text); margin-bottom: 10px; }
         .intro-box p:last-child { margin-bottom: 0; font-weight: 600; color: var(--roxo-principal); }
+        .intro-box a { color: var(--roxo-principal); font-weight: 600; text-decoration: underline; }
 
         .form-section { margin-bottom: 40px; padding-top: 10px; }
         .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--roxo-escuro); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--roxo-200); display: flex; align-items: center; gap: 10px; }
         .section-title i { font-size: 16px; color: var(--roxo-principal); }
-
-        .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--roxo-200); color: var(--roxo-principal); font-size: 10px; margin-left: 8px; cursor: help; position: relative; font-family: sans-serif; font-style: italic; font-weight: bold; }
-        .info-icon .tooltip-text { visibility: hidden; width: 260px; background-color: #333; color: #fff; text-align: left; border-radius: 6px; padding: 10px 12px; position: absolute; z-index: 10; bottom: 125%; left: 50%; margin-left: -130px; opacity: 0; transition: opacity 0.3s; font-size: 11px; font-weight: 400; line-height: 1.5; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-style: normal; }
-        .info-icon .tooltip-text::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #333 transparent transparent transparent; }
-        .info-icon:hover .tooltip-text { visibility: visible; opacity: 1; }
 
         .field-group { margin-bottom: 20px; position: relative; }
         .field-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
@@ -127,13 +92,14 @@
         .checkbox-option input[type="checkbox"]:checked::after { content: '✓'; position: absolute; top: -2px; left: 2px; font-size: 13px; color: #fff; font-weight: 700; }
         .checkbox-option label { font-size: 14px; color: #333; cursor: pointer; font-weight: 400; line-height: 1.5; }
 
-        .tag-chip.suggestion { background: #FFF3E0; color: #E65100; border: 1px dashed #FF9800; }
-        .suggestion-input-row { display: flex; gap: 8px; margin-top: 8px; }
-        .suggestion-input-row input { flex: 1; padding: 8px 12px; border: 1.5px solid #FF9800; border-radius: 8px; font-size: 13px; outline: none; }
-        .suggestion-input-row input:focus { box-shadow: 0 0 0 3px rgba(255,152,0,0.15); }
-        .suggestion-input-row button { background: #FF9800; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .suggestion-checkbox .checkbox-option input[type="checkbox"] { border-color: #FF9800; }
-        .suggestion-checkbox .checkbox-option input[type="checkbox"]:checked { background: #FF9800; border-color: #FF9800; }
+        .tag-chip.suggestion { background: var(--roxo-50); color: var(--roxo-escuro); border: 1px dashed var(--roxo-principal); }
+        
+        /* MODIFICAÇÃO AQUI: Tracejado envolta do campo e botão laranja */
+        .suggestion-input-row { display: flex; gap: 8px; margin-top: 8px; background: #FFFAFF; border: 2px dashed var(--roxo-200); border-radius: 12px; padding: 16px; align-items: center; }
+        .suggestion-input-row input { flex: 1; padding: 8px 12px; border: 1.5px solid var(--cinza-borda); border-radius: 8px; font-size: 13px; outline: none; background: #fff; }
+        .suggestion-input-row input:focus { border-color: var(--roxo-principal); box-shadow: 0 0 0 3px rgba(255,51,153,0.10); }
+        .suggestion-input-row button { background: #FF9800; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; }
+        .suggestion-input-row button:hover { background: #F57C00; }
 
         .type-selector { display: flex; border-radius: 10px; overflow: hidden; border: 2px solid var(--roxo-principal); margin-bottom: 24px; }
         .type-selector-btn { flex: 1; text-align: center; padding: 14px 20px; font-weight: 600; font-size: 14px; cursor: pointer; background: #fff; color: var(--roxo-principal); border: none; transition: all 0.25s; font-family: 'Space Grotesk', sans-serif; }
@@ -149,8 +115,7 @@
 
         .tags-container { position: relative; }
         .tags-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; min-height: 0; }
-        .tag-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--roxo-200); color: var(--roxo-600-text); padding: 5px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; animation: chipIn 0.2s ease; }
-        @keyframes chipIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+        .tag-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--roxo-200); color: var(--roxo-600-text); padding: 5px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; }
         .tag-chip button { background: none; border: none; cursor: pointer; color: inherit; font-size: 15px; padding: 0; line-height: 1; opacity: 0.7; transition: opacity 0.2s; }
         .tag-chip button:hover { opacity: 1; }
 
@@ -160,27 +125,28 @@
         .tags-dropdown-item { padding: 10px 14px; cursor: pointer; font-size: 13px; transition: background 0.15s; }
         .tags-dropdown-item:hover { background: var(--roxo-50); }
         .tags-dropdown-item .highlight { font-weight: 700; color: var(--roxo-principal); }
-        .tags-dropdown-item.suggestion-item { border-bottom: 1px solid #EEE; color: #E65100; font-style: italic; }
+        .tags-dropdown-item.suggestion-item { border-bottom: 1px solid #EEE; color: var(--roxo-escuro); font-weight: 600; }
         .tags-dropdown-empty { padding: 14px; font-size: 13px; color: #999; text-align: center; }
 
-        .guest-card { background: #FAFAFA; border: 1px solid #E8E8E8; border-radius: 12px; padding: 24px; margin-bottom: 20px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.3s ease; }
+        .guest-card { background: #FAFAFA; border: 1px solid #E8E8E8; border-radius: 12px; padding: 24px; margin-bottom: 20px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
         .guest-card h4 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; color: var(--roxo-escuro); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #E0E0E0; display: flex; justify-content: space-between; align-items: center; }
-        .remove-guest { background: none; border: none; color: #999; cursor: pointer; font-size: 16px; transition: color 0.2s; }
+        .remove-guest { background: none; border: none; color: #999; cursor: pointer; font-size: 16px; }
         .remove-guest:hover { color: var(--vermelho-obrigatorio); }
         .guest-subsection { background: #fff; padding: 12px; border: 1px solid #EEE; border-radius: 8px; margin-bottom: 12px; }
         .guest-subsection-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #888; margin-bottom: 10px; letter-spacing: 0.5px; }
 
-        #oficinaSection { background: #FFFAFF; border: 2px dashed var(--roxo-200); border-radius: 12px; padding: 24px; margin-top: 20px; animation: fadeIn 0.4s ease; }
-        #ajudaCustoWrapper { background: #FFFAFF; border: 2px dashed var(--roxo-200); border-radius: 12px; padding: 24px; margin-top: 20px; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        #oficinaSection { background: #FFFAFF; border: 2px dashed var(--roxo-200); border-radius: 12px; padding: 24px; margin-top: 20px; }
+        #ajudaCustoWrapper { background: #FFFAFF; border: 2px dashed var(--roxo-200); border-radius: 12px; padding: 24px; margin-top: 20px; }
         .oficina-step { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #EEE; }
         .oficina-step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .oficina-label { font-family: 'Space Grotesk', sans-serif; font-size: 15px; color: var(--roxo-escuro); font-weight: 600; margin-bottom: 12px; display: block; }
 
         .representante-box { background: var(--roxo-50); border: 1px solid var(--roxo-200); border-radius: 10px; padding: 20px; }
+        
+        .lgpd-notice { background: #FFF3E0; border: 1px solid #FFB74D; border-radius: 8px; padding: 12px 16px; margin-top: 8px; margin-bottom: 16px; font-size: 11.5px; color: #E65100; line-height: 1.5; display: flex; gap: 10px; align-items: flex-start; }
+        .lgpd-notice i { margin-top: 2px; font-size: 14px; color: #EF6C00; }
 
-        .inscricao-checkbox-box { background: #FFF8E1; border: 1px solid #FFE082; border-radius: 10px; padding: 16px 20px; margin-top: 12px; animation: fadeIn 0.3s ease; }
-        .inscricao-checkbox-box .checkbox-option label { font-size: 13px; line-height: 1.6; }
+        .inscricao-checkbox-box { background: #FFF8E1; border: 1px solid #FFE082; border-radius: 10px; padding: 16px 20px; margin-top: 12px; }
 
         .material-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
         .material-table th { background: var(--roxo-principal); color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
@@ -203,26 +169,18 @@
 
         .hidden { display: none !important; }
         .char-counter { text-align: right; font-size: 11px; color: #999; margin-top: 4px; }
-        .acessibilidade-spacing { margin-top: 30px; }
 
         .infra-checkboxes { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
-        .infra-checkboxes .checkbox-option label { font-size: 13px; }
-        .infra-outros-field { margin-top: 8px; animation: fadeIn 0.3s ease; }
+        .infra-outros-field { margin-top: 8px; }
 
         .hp-field-wrap { position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
         .turnstile-wrapper { flex: 1 1 100%; display: flex; justify-content: center; margin-bottom: 12px; }
 
-        /* Modal de Recorte 512x512 Responsivo */
-        .crop-modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index: 9998; display: none; align-items: center; justify-content: center; flex-direction: column; }
+        .crop-modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index: 9998; display: none; align-items: center; justify-content: center; }
         .crop-modal-overlay.active { display: flex; }
-        .crop-modal { background: #fff; padding: 20px; border-radius: 12px; max-width: 90vw; box-shadow: 0 12px 40px rgba(0,0,0,0.4); position: relative; text-align: center; }
-        .crop-modal h3 { font-family: 'Space Grotesk', sans-serif; margin-bottom: 12px; color: var(--roxo-escuro); font-size: 18px; }
+        .crop-modal { background: #fff; padding: 20px; border-radius: 12px; max-width: 90vw; box-shadow: 0 12px 40px rgba(0,0,0,0.4); text-align: center; }
         .crop-container { position: relative; margin: 0 auto; overflow: hidden; background: #222; border: 2px dashed var(--roxo-principal); max-width: 100%; aspect-ratio: 1/1; }
         .crop-container img { position: absolute; cursor: grab; user-select: none; }
-        .crop-container img:active { cursor: grabbing; }
-        .crop-actions { margin-top: 16px; display: flex; gap: 12px; justify-content: center; }
-        .btn-crop { background: var(--roxo-principal); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        .btn-crop-cancel { background: #eee; color: #333; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; }
 
         @media (max-width: 768px) {
             .form-wrapper { margin: 16px auto; padding: 0 10px; }
@@ -231,64 +189,51 @@
             .submit-area { flex-direction: column; }
             .btn-submit, .btn-clear { width: 100%; }
             .type-selector { flex-direction: column; }
-            .material-table { font-size: 11px; }
-            .material-table input { font-size: 11px; padding: 4px 6px; }
         }
     </style>
 </head>
 <body>
 <div class="bg-pattern"></div>
-
 <div id="toast-container"></div>
 <canvas id="cropCanvas" width="512" height="512" style="display:none"></canvas>
 
-<!-- Modal de Recorte -->
 <div class="crop-modal-overlay" id="cropModalOverlay">
     <div class="crop-modal">
         <h3>Recortar imagem (512x512)</h3>
         <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Arraste para posicionar a área visível.</p>
-        <div class="crop-container" id="cropContainer" style="width: 400px; height: 400px;">
-            <img id="cropImage" src="" alt="Recortar">
-        </div>
-        <div class="crop-actions">
-            <button type="button" class="btn-crop-cancel" onclick="closeCropModal()">Cancelar</button>
-            <button type="button" class="btn-crop" onclick="applyCrop()">Recortar e salvar</button>
+        <div class="crop-container" id="cropContainer" style="width: 400px; height: 400px;"><img id="cropImage" src="" alt="Recortar"></div>
+        <div class="crop-actions" style="margin-top: 16px; display: flex; gap: 12px; justify-content: center;">
+            <button type="button" style="background: #eee; color: #333; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer;" onclick="closeCropModal()">Cancelar</button>
+            <button type="button" style="background: var(--roxo-principal); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;" onclick="applyCrop()">Recortar e salvar</button>
         </div>
     </div>
 </div>
 
 <div class="form-wrapper">
-
-    <div class="logo-crop" id="logoCrop">
-        <img src="/static/logo.jpg" alt="REC'n'Play 2026" class="logo-image" id="logoImg">
-    </div>
-
+    <div class="logo-crop" id="logoCrop"><img src="/static/logo.jpg" alt="REC'n'Play 2026" class="logo-image" id="logoImg"></div>
     <div class="form-card">
-        <div class="card-top"><h1>CHAMADA PÚBLICA</h1><p>Participe da construção da programação oficial do REC'n'Play 2026 submetendo propostas de atividades inovadoras, colaborativas e transformadoras.</p></div>
-        <div class="step-indicator"><span class="step-badge">Etapa única</span><span class="step-text">Preencha as informações do proponente, atividade e integrantes</span></div>
+        <div class="card-top"><h1>CHAMADA PÚBLICA</h1></div>
+        <div class="step-indicator"><span class="step-text">Participe da construção da programação oficial do REC'n'Play 2026 submetendo propostas de atividades inovadoras, colaborativas e transformadoras.</span></div>
+        
         {%- with messages = get_flashed_messages(with_categories=true) -%}
         {%- if messages -%}
         <ul class="flash-messages">{%- for category, message in messages -%}<li class="{{ category }}"><i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i> {{ message }}</li>{%- endfor -%}</ul>
         {%- endif -%}{%- endwith -%}
+        
         <form id="inscricaoForm" class="form-body" method="POST" action="/" enctype="multipart/form-data" novalidate>
-
-            <div class="hp-field-wrap" aria-hidden="true">
-                <label for="website_url">Website</label>
-                <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off" placeholder="Deixe este campo vazio">
-            </div>
+            <div class="hp-field-wrap" aria-hidden="true"><label for="website_url">Website</label><input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off"></div>
 
             <div class="intro-box">
                 <p>O REC'n'Play é um festival colaborativo, e estamos felizes com seu interesse em contribuir com a programação de 2026.</p>
                 <p>Este formulário é destinado à submissão de propostas de atividades para compor parte da programação do festival.</p>
                 <p>Cada inscrição deverá corresponder a uma única atividade. Caso deseje submeter mais de uma proposta, será necessário preencher um novo formulário para cada atividade. Apenas as 5 submissões mais recentes serão consideradas para avaliação.</p>
-                <p>Antes de iniciar o preenchimento, recomendamos a leitura completa da Chamada Pública, onde você encontrará as informações necessárias.</p>
-                <p>Em caso de dúvidas, entre em contato com nosso FAQ.</p>
+                <p>Antes de iniciar o preenchimento, recomendamos a leitura completa da <a href="#" target="_blank">Chamada Pública</a>, onde você encontrará as informações necessárias.</p>
+                <p>Em caso de dúvidas, entre em contato com nosso <a href="#" target="_blank">FAQ</a>.</p>
                 <p>Agora é contigo. Lança a tua ideia!</p>
             </div>
 
-            <!-- SEÇÃO 1: DADOS DO PROPONENTE -->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-user-circle"></i> 1. Dados do proponente <span class="info-icon">i<span class="tooltip-text">Pessoa, empresa, instituição, coletivo ou organização responsável pela submissão da proposta e pela atividade inscrita.</span></span></h2>
+                <h2 class="section-title"><i class="fas fa-user-circle"></i> 1. Dados do proponente</h2>
                 <div class="type-selector" id="typeSelector">
                     <button type="button" class="type-selector-btn active" data-type="pj" onclick="setProponenteType('pj')"><i class="fas fa-building"></i> Pessoa Jurídica</button>
                     <button type="button" class="type-selector-btn" data-type="pf" onclick="setProponenteType('pf')"><i class="fas fa-user"></i> Pessoa Física</button>
@@ -298,27 +243,30 @@
                     <div class="field-group" style="grid-column:span 2"><label for="nomeInstituicao"><span id="nomeLabel">Nome da instituição</span> <span class="required">*</span></label><input type="text" id="nomeInstituicao" name="nomeInstituicao" required value="{{ dados.get('nomeInstituicao', '') }}"></div>
                 </div>
                 <div class="field-row" id="categoriaGroup">
-                    <div class="field-group"><label for="categoria">Categoria <span class="required">*</span></label><select id="categoria" name="categoria" onchange="toggleVisibilityByCategory()"><option value="">Selecione...</option><option value="empresa_startup" {{ 'selected' if dados.get('categoria') == 'empresa_startup' }}>Empresa / Startup</option><option value="ong" {{ 'selected' if dados.get('categoria') == 'ong' }}>ONG</option><option value="osc_os" {{ 'selected' if dados.get('categoria') == 'osc_os' }}>OSC / OS</option><option value="instituicao_ensino" {{ 'selected' if dados.get('categoria') == 'instituicao_ensino' }}>Instituição de Ensino</option><option value="orgao_publico" {{ 'selected' if dados.get('categoria') == 'orgao_publico' }}>Órgão Público</option><option value="fundacao_instituto" {{ 'selected' if dados.get('categoria') == 'fundacao_instituto' }}>Fundação / Instituto</option><option value="coletivo" {{ 'selected' if dados.get('categoria') == 'coletivo' }}>Coletivo</option></select></div>
+                    <div class="field-group"><label for="categoria">Categoria <span class="required">*</span></label><select id="categoria" name="categoria" onchange="toggleVisibilityByCategory()"><option value="">Selecione...</option><option value="empresa_startup" {{ 'selected' if dados.get('categoria') == 'empresa_startup' }}>Empresa / Startup</option><option value="ong" {{ 'selected' if dados.get('categoria') == 'ong' }}>Organização da Sociedade Civil (OSC/ONG)</option><option value="osc_os" {{ 'selected' if dados.get('categoria') == 'osc_os' }}>Organização Social (OS)</option><option value="instituicao_ensino" {{ 'selected' if dados.get('categoria') == 'instituicao_ensino' }}>Instituição de Ensino</option><option value="orgao_publico" {{ 'selected' if dados.get('categoria') == 'orgao_publico' }}>Órgão Público</option><option value="fundacao_instituto" {{ 'selected' if dados.get('categoria') == 'fundacao_instituto' }}>Fundação / Instituto</option><option value="coletivo" {{ 'selected' if dados.get('categoria') == 'coletivo' }}>Coletivo</option></select></div>
                     <div class="field-group"><label for="cnpjProponente">CNPJ <span class="required">*</span></label><input type="text" id="cnpjProponente" name="cnpjProponente" placeholder="00.000.000/0000-00" value="{{ dados.get('cnpjProponente', '') }}" maxlength="18" oninput="maskCNPJ(this)"></div>
                 </div>
-                <div class="field-group" id="logoMarcaGroup"><label>Logo da instituição<span class="required">*</span></label><div class="photo-upload-area"><div class="photo-preview square" id="photoPreview"><i class="fas fa-image"></i></div><div class="photo-input-wrapper"><input type="file" id="fotoProponente" name="fotoProponente" accept="image/png,image/jpeg,image/webp"><div class="helper-text">Tamanho 512x512. Formatos: PNG, JPG, WebP. Máx 5MB. Obrigatório. Clique para selecionar e recortar.</div></div></div></div>
+                <div class="field-group" id="logoMarcaGroup"><label>Logo da instituição<span class="required">*</span></label><div class="photo-upload-area"><div class="photo-preview square" id="photoPreview"><i class="fas fa-image"></i></div><div class="photo-input-wrapper"><input type="file" id="fotoProponente" name="fotoProponente" accept="image/png,image/jpeg,image/webp"><div class="helper-text">Tamanho 512x512. Formatos: PNG, JPG, WebP. Máx 5MB.</div></div></div></div>
+                
                 <div class="field-row hidden" id="nacionalidadeGroup">
                     <div class="field-group"><label for="nacionalidadeProponente">Nacionalidade <span class="required">*</span></label><select id="nacionalidadeProponente" name="nacionalidadeProponente" onchange="toggleProponenteDocs()"><option value="brasileiro" {{ 'selected' if dados.get('nacionalidadeProponente') != 'estrangeiro' }}>Brasileiro</option><option value="estrangeiro" {{ 'selected' if dados.get('nacionalidadeProponente') == 'estrangeiro' }}>Estrangeiro</option></select></div>
-                    <div class="field-group" id="docCpfField"><label for="cpfProponente">CPF <span class="required">*</span></label><input type="text" id="cpfProponente" name="cpfProponente" placeholder="000.000.000-00" value="{{ dados.get('cpfProponente', '') }}" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)"></div>
-                    <div class="field-group hidden" id="docPassaporteField"><label for="passaporteProponente">Passaporte <span class="required">*</span></label><input type="text" id="passaporteProponente" name="passaporteProponente" value="{{ dados.get('passaporteProponente', '') }}"></div>
+                    <div class="field-group" id="docCpfField"><label for="cpfProponente">CPF <span class="required">*</span></label><input type="text" id="cpfProponente" name="cpfProponente" placeholder="000.000.000-00" value="{{ dados.get('cpfProponente', '') }}" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)" required></div>
+                    <div class="field-group hidden" id="docPassaporteField"><label for="passaporteProponente">Passaporte ou Documento de Identidade Internacional / RNM<span class="required">*</span></label><input type="text" id="passaporteProponente" name="passaporteProponente" value="{{ dados.get('passaporteProponente', '') }}" required></div>
+                </div>
+                <div class="lgpd-notice hidden" id="proponentLgpdNotice">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>O CPF (para brasileiros) ou Passaporte/Documento equivalente (para estrangeiros) é coletado exclusivamente para fins de controle operacional interno, prevenção de homônimos, duplicidade de cadastros e conflitos de horários na programação do Festival. Garantimos que este dado não será divulgado publicamente e será armazenado de forma segura, em estrita conformidade com a LGPD.</span>
                 </div>
             </div>
 
-            <!-- SEÇÃO 2: RESPONSÁVEL PELA INSCRIÇÃO -->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-id-badge"></i> 2. Responsável pela inscrição <span class="info-icon">i<span class="tooltip-text">Pessoa responsável pelo acompanhamento da proposta. Será contactado para comunicações, ajustes, dúvidas e retorno sobre o processo.</span></span></h2>
+                <h2 class="section-title"><i class="fas fa-id-badge"></i> 2. Responsável pela inscrição</h2>
                 <div class="representante-box">
                     <div class="field-row"><div class="field-group"><label for="nomeRepresentante">Nome do responsável <span class="required">*</span></label><input type="text" id="nomeRepresentante" name="nomeRepresentante" required value="{{ dados.get('nomeRepresentante', '') }}"></div><div class="field-group"><label for="telefoneRepresentante">Telefone <span class="required">*</span></label><input type="text" id="telefoneRepresentante" name="telefoneRepresentante" placeholder="(00) 00000-0000" required value="{{ dados.get('telefoneRepresentante', '') }}"></div></div>
                     <div class="field-row"><div class="field-group" style="grid-column:span 2"><label for="emailRepresentante">E-mail <span class="required">*</span></label><input type="email" id="emailRepresentante" name="emailRepresentante" required value="{{ dados.get('emailRepresentante', '') }}"></div></div>
                 </div>
             </div>
 
-            <!-- SEÇÃO 3: DADOS DA ATIVIDADE -->
             <div class="form-section">
                 <h2 class="section-title"><i class="fas fa-lightbulb"></i> 3. Dados da atividade</h2>
                 <div class="field-row"><div class="field-group" style="grid-column:span 2"><label for="tituloAtividade">Nome da atividade <span class="required">*</span></label><input type="text" id="tituloAtividade" name="tituloAtividade" required value="{{ dados.get('tituloAtividade', '') }}"></div></div>
@@ -327,52 +275,40 @@
                     <div class="field-group"><label for="tempoDuracao">Duração prevista <span class="required">*</span></label><select id="tempoDuracao" name="tempoDuracao" required><option value="">Selecione o formato primeiro...</option></select></div>
                 </div>
                 <div class="field-row">
-                    <div class="field-group"><label for="eixo">Eixo temático <span class="required">*</span></label><select id="eixo" name="eixo" required><option value="">Selecione...</option><option value="cidade_sustentabilidade" {{ 'selected' if dados.get('eixo') == 'cidade_sustentabilidade' }}>Cidade e sustentabilidade</option><option value="tecnologia" {{ 'selected' if dados.get('eixo') == 'tecnologia' }}>Tecnologia</option><option value="cultura_sociedade" {{ 'selected' if dados.get('eixo') == 'cultura_sociedade' }}>Cultura e sociedade</option><option value="negocios" {{ 'selected' if dados.get('eixo') == 'negocios' }}>Negócios</option><option value="criatividade_midias" {{ 'selected' if dados.get('eixo') == 'criatividade_midias' }}>Criatividade e mídias</option></select></div>
+                    <div class="field-group"><label for="eixo">Eixo temático <span class="required">*</span></label><select id="eixo" name="eixo" required><option value="">Selecione...</option><option value="cidade_sustentabilidade" {{ 'selected' if dados.get('eixo') == 'cidade_sustentabilidade' }}>Cidade e sustentabilidade</option><option value="tecnologia" {{ 'selected' if dados.get('eixo') == 'tecnologia' }}>Tecnologia</option><option value="cultura_sociedade" {{ 'selected' if dados.get('eixo') == 'culture_sociedade' }}>Cultura e sociedade</option><option value="negocios" {{ 'selected' if dados.get('eixo') == 'negocios' }}>Negócios</option><option value="criatividade_midias" {{ 'selected' if dados.get('eixo') == 'criatividade_midias' }}>Criatividade e mídias</option></select></div>
                     <div class="field-group"><label for="publicoAlvo">Público-alvo <span class="required">*</span></label><select id="publicoAlvo" name="publicoAlvo" required><option value="">Selecione...</option><option value="publico_geral" {{ 'selected' if dados.get('publicoAlvo') == 'publico_geral' }}>Público geral</option><option value="publico_especialista" {{ 'selected' if dados.get('publicoAlvo') == 'publico_especialista' }}>Público especialista</option><option value="professores" {{ 'selected' if dados.get('publicoAlvo') == 'professores' }}>Professores</option><option value="infantil" {{ 'selected' if dados.get('publicoAlvo') == 'infantil' }}>Infantil</option><option value="adolescente" {{ 'selected' if dados.get('publicoAlvo') == 'adolescente' }}>Adolescente</option><option value="apenas_mulheres" {{ 'selected' if dados.get('publicoAlvo') == 'apenas_mulheres' }}>Apenas mulheres</option></select></div>
                 </div>
                 <div class="field-group"><label for="acessoAtividade">Acesso à atividade <span class="required">*</span></label><select id="acessoAtividade" name="acessoAtividade" required onchange="toggleInscricaoCheckbox()"><option value="">Selecione...</option><option value="ordem_chegada" {{ 'selected' if dados.get('acessoAtividade') == 'ordem_chegada' }}>Acesso por ordem de chegada</option><option value="inscricao" {{ 'selected' if dados.get('acessoAtividade') == 'inscricao' }}>Acesso por inscrição</option></select></div>
+                <div class="field-group hidden" id="inscricaoCheckboxGroup"><div class="inscricao-checkbox-box"><div class="checkbox-option"><input type="checkbox" id="inscricaoResponsabilidade" name="inscricaoResponsabilidade" value="sim" {{ 'checked' if dados.get('inscricaoResponsabilidade') == 'sim' }}><label for="inscricaoResponsabilidade">Declaro que me responsabilizo por enviar o link de inscrição para a equipe do festival, por todos os processos de seleção e pela segurança dos dados dos participantes, em conformidade com a LGPD. <span class="required">*</span></label></div></div></div>
 
-                <div class="field-group hidden" id="inscricaoCheckboxGroup">
-                    <div class="inscricao-checkbox-box">
-                        <div class="checkbox-option">
-                            <input type="checkbox" id="inscricaoResponsabilidade" name="inscricaoResponsabilidade" value="sim" {{ 'checked' if dados.get('inscricaoResponsabilidade') == 'sim' }}>
-                            <label for="inscricaoResponsabilidade">Declaro que me responsabilizo por enviar o link de inscrição para a equipe do festival, por todos os processos de seleção e pela segurança dos dados dos participantes, em conformidade com a LGPD. <span class="required">*</span></label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field-group"><label for="objetivoAtividade">Objetivo da atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span> <span class="info-icon">i<span class="tooltip-text">Descreva de forma objetiva o propósito principal da atividade e o que ela pretende promover, discutir, desenvolver ou compartilhar com o público.</span></span></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required>{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
-                <div class="field-group"><label for="justificativaTematica">Justificativa temática <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700 caracteres)</span> <span class="info-icon">i<span class="tooltip-text">Explique como a proposta se relaciona com os eixos temáticos, diretrizes curatoriais ou discussões contemporâneas abordadas pelo REC'n'Play 2026.</span></span></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required>{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
-                <div class="field-group"><label for="metodologiaAplicada">Metodologia aplicada à atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span> <span class="info-icon">i<span class="tooltip-text">Descreva como a atividade será conduzida, incluindo dinâmica de participação, interação com o público e estrutura prevista para sua realização.</span></span></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required>{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
-                <div class="field-group"><label for="descricaoAtividade">Descrição para publicação da atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700 caracteres)</span> <span class="info-icon">i<span class="tooltip-text">Texto resumido que aparecerá para o público. Priorize linguagem clara, objetiva e convidativa para o público geral.</span></span></label><textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="700" required>{{ dados.get('descricaoAtividade', '') }}</textarea><div class="char-counter" id="charCounterDesc">0 / 700</div></div>
+                <div class="field-group"><label for="objetivoAtividade">Objetivo da atividade <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required>{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
+                <div class="field-group"><label for="justificativaTematica">Justificativa temática <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required>{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
+                <div class="field-group"><label for="metodologiaAplicada">Metodologia aplicada <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required>{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
+                <div class="field-group"><label for="descricaoAtividade">Descrição para publicação <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span></label><textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="700" required>{{ dados.get('descricaoAtividade', '') }}</textarea><div class="char-counter" id="charCounterDesc">0 / 700</div></div>
 
                 <div class="field-group"><label for="tagsInput">Palavra-chave <span class="required">*</span> <span style="font-weight:400;color:#999">(Mínimo 3, Máximo 5)</span></label><div class="tags-container" id="tagsContainer"><div class="tags-chips" id="tagsChips"></div><div class="tags-input-wrapper"><input type="text" id="tagsInput" placeholder="Buscar e selecionar palavras-chave..." autocomplete="off"><input type="hidden" id="tagsHidden" name="tags" value="{{ dados.get('tags', '') }}"><input type="hidden" id="tagSuggestionHidden" name="tagSuggestion" value="{{ dados.get('tagSuggestion', '') }}"><div class="tags-dropdown" id="tagsDropdown"></div></div><div class="suggestion-input-row hidden" id="suggestionInputRow"><input type="text" id="suggestionInput" placeholder="Digite sua sugestão de palavra-chave..." maxlength="50"><button type="button" onclick="addSuggestionTag()">Adicionar</button></div></div></div>
 
                 <div class="field-group"><label>Restrição de faixa etária?</label><div class="radio-group"><div class="radio-option"><input type="radio" id="restricaoSim" name="restricaoEtaria" value="sim" onchange="toggleRestricao()" {{ 'checked' if dados.get('restricaoEtaria') == 'sim' }}><label for="restricaoSim">Sim</label></div><div class="radio-option"><input type="radio" id="restricaoNao" name="restricaoEtaria" value="nao" onchange="toggleRestricao()" {{ 'checked' if dados.get('restricaoEtaria') == 'nao' }}><label for="restricaoNao">Não</label></div></div><div class="field-row hidden" id="faixaEtariaGroup" style="margin-top:10px"><div class="field-group"><label for="idadeMinima">Idade mínima</label><input type="number" id="idadeMinima" name="idadeMinima" min="0" max="100" placeholder="Ex: 14" value="{{ dados.get('idadeMinima', '') }}"></div><div class="field-group"><label for="idadeMaxima">Idade máxima</label><input type="number" id="idadeMaxima" name="idadeMaxima" min="0" max="100" placeholder="Ex: 60" value="{{ dados.get('idadeMaxima', '') }}"></div></div></div>
 
-                <!-- SEÇÃO OFICINA -->
                 <div id="oficinaSection" class="hidden">
                     <div class="oficina-step"><span class="oficina-label">1. Capacidade e infraestrutura básica</span><div class="field-group"><label>Quantidade máxima de público <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="pub20" name="oficina_qtd_publico" value="ate_20" {{ 'checked' if dados.get('oficina_qtd_publico') == 'ate_20' }}><label for="pub20">Até 20</label></div><div class="radio-option"><input type="radio" id="pub30" name="oficina_qtd_publico" value="ate_30" {{ 'checked' if dados.get('oficina_qtd_publico') == 'ate_30' }}><label for="pub30">Até 30</label></div><div class="radio-option"><input type="radio" id="pub50" name="oficina_qtd_publico" value="ate_50" {{ 'checked' if dados.get('oficina_qtd_publico') == 'ate_50' }}><label for="pub50">Até 50</label></div><div class="radio-option"><input type="radio" id="pub80" name="oficina_qtd_publico" value="ate_80" {{ 'checked' if dados.get('oficina_qtd_publico') == 'ate_80' }}><label for="pub80">Até 80</label></div></div></div><div class="field-group"><label>Internet para público é indispensável? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="netSim" name="oficina_internet" value="sim" {{ 'checked' if dados.get('oficina_internet') == 'sim' }}><label for="netSim">Sim</label></div><div class="radio-option"><input type="radio" id="netNao" name="oficina_internet" value="nao" {{ 'checked' if dados.get('oficina_internet') == 'nao' }}><label for="netNao">Não</label></div></div></div><div class="field-group"><label>Sua atividade precisa acontecer em laboratório de informática? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="labSim" name="oficina_lab" value="sim" onchange="toggleLabFields()" {{ 'checked' if dados.get('oficina_lab') == 'sim' }}><label for="labSim">Sim</label></div><div class="radio-option"><input type="radio" id="labNao" name="oficina_lab" value="nao" onchange="toggleLabFields()" {{ 'checked' if dados.get('oficina_lab') == 'nao' }}><label for="labNao">Não</label></div></div></div></div>
-                    <div id="labDetails" class="oficina-step hidden"><span class="oficina-label">1.2. Detalhes do laboratório <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></span><div class="field-group"><label>Configurações mínimas dos PCs <span class="required">*</span></label><input type="text" name="oficina_pc_specs" maxlength="200" placeholder="Ex: 8GB RAM, Windows 10..." value="{{ dados.get('oficina_pc_specs', '') }}"></div><div class="field-group"><label>Instalar software? <span style="font-weight:400;color:#999">(O software deve ser gratuito)</span> <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="softSim" name="oficina_soft_req" value="sim" onchange="toggleSoftwareFields()" {{ 'checked' if dados.get('oficina_soft_req') == 'sim' }}><label for="softSim">Sim</label></div><div class="radio-option"><input type="radio" id="softNao" name="oficina_soft_req" value="nao" onchange="toggleSoftwareFields()" {{ 'checked' if dados.get('oficina_soft_req') == 'nao' }}><label for="softNao">Não</label></div></div></div><div id="softwareDetails" class="hidden"><div class="field-group"><label>Descreva o software <span class="required">*</span></label><textarea name="oficina_soft_desc" maxlength="200" style="min-height:60px">{{ dados.get('oficina_soft_desc', '') }}</textarea></div></div></div>
+                    <div id="labDetails" class="oficina-step hidden"><span class="oficina-label">1.2. Detalhes do laboratório</span><div class="field-group"><label>Configurações mínimas dos PCs <span class="required">*</span></label><input type="text" name="oficina_pc_specs" maxlength="200" placeholder="Ex: 8GB RAM, Windows 10..." value="{{ dados.get('oficina_pc_specs', '') }}"></div><div class="field-group"><label>Instalar software? <span style="font-weight:400;color:#999">(O software deve ser gratuito)</span> <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" id="softSim" name="oficina_soft_req" value="sim" onchange="toggleSoftwareFields()" {{ 'checked' if dados.get('oficina_soft_req') == 'sim' }}><label for="softSim">Sim</label></div><div class="radio-option"><input type="radio" id="softNao" name="oficina_soft_req" value="nao" onchange="toggleSoftwareFields()" {{ 'checked' if dados.get('oficina_soft_req') == 'nao' }}><label for="softNao">Não</label></div></div></div><div id="softwareDetails" class="hidden"><div class="field-group"><label>Descreva o software <span class="required">*</span></label><textarea name="oficina_soft_desc" maxlength="200" style="min-height:60px">{{ dados.get('oficina_soft_desc', '') }}</textarea></div></div></div>
                     
-                    <!-- ORDEM ALTERADA: MOBILIÁRIO ANTES DOS MATERIAIS -->
-                    <div class="oficina-step" id="oficinaMaterialStep">
-                        <span class="oficina-label">2. Materiais e mobiliário</span>
-                        <div class="field-group"><label for="mobiliario">Mobiliário necessário <span class="required">*</span></label><select id="mobiliario" name="oficina_mobiliario"><option value="">Selecione...</option><option value="mesas_individuais" {{ 'selected' if dados.get('oficina_mobiliario') == 'mesas_individuais' }}>Mesas individuais</option><option value="mesas_grupo" {{ 'selected' if dados.get('oficina_mobiliario') == 'mesas_grupo' }}>Mesas em grupo</option><option value="apenas_cadeiras" {{ 'selected' if dados.get('oficina_mobiliario') == 'apenas_cadeiras' }}>Apenas cadeiras</option><option value="espaco_sem_mobiliario" {{ 'selected' if dados.get('oficina_mobiliario') == 'espaco_sem_mobiliario' }}>Espaço sem mobiliário</option></select></div>
-                        
+                    <div class="oficina-step">
+                        <span class="oficina-label">2. Mobiliário necessário</span>
+                        <div class="field-group"><label for="mobiliario">Mobiliário <span class="required">*</span></label><select id="mobiliario" name="oficina_mobiliario"><option value="">Selecione...</option><option value="mesas_individuais" {{ 'selected' if dados.get('oficina_mobiliario') == 'mesas_individuais' }}>Mesas individuais</option><option value="mesas_grupo" {{ 'selected' if dados.get('oficina_mobiliario') == 'mesas_grupo' }}>Mesas em grupo</option><option value="apenas_cadeiras" {{ 'selected' if dados.get('oficina_mobiliario') == 'apenas_cadeiras' }}>Apenas cadeiras</option><option value="espaco_sem_mobiliario" {{ 'selected' if dados.get('oficina_mobiliario') == 'espaco_sem_mobiliario' }}>Espaço sem mobiliário</option></select></div>
+                    </div>
+
+                    <div class="oficina-step hidden" id="oficinaMaterialStep">
+                        <span class="oficina-label">3. Materiais</span>
                         <div class="field-group" id="materialAjudaGroup"><label>Você precisa de recurso financeiro para aquisição de material?<span class="required">*</span></label><select id="materialAjuda" name="oficina_material_ajuda" onchange="toggleMaterialTable()"><option value="nao" {{ 'selected' if dados.get('oficina_material_ajuda') == 'nao' or not dados.get('oficina_material_ajuda') }}>Não</option><option value="sim" {{ 'selected' if dados.get('oficina_material_ajuda') == 'sim' }}>Sim</option><option value="indispensavel" {{ 'selected' if dados.get('oficina_material_ajuda') == 'indispensavel' }}>Indispensável</option></select></div>
                         <div id="materialTableSection" class="hidden"><label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Lista de materiais e previsão de custo</label><table class="material-table" id="materialTable"><thead><tr><th style="width:40%">Material</th><th style="width:20%">Qtd</th><th style="width:20%">Valor unit. (R$)</th><th style="width:20%">Subtotal (R$)</th><th></th></tr></thead><tbody id="materialTableBody"></tbody><tfoot><tr class="material-total-row"><td colspan="3" style="text-align:right">TOTAL</td><td id="materialTotal">R$ 0,00</td><td></td></tr></tfoot></table><button type="button" class="btn-add-row" onclick="addMaterialRow()"><i class="fas fa-plus"></i> Adicionar item</button>
-                        
-                        <div class="field-group" style="margin-top: 16px;">
-                            <label for="justificativaMateriais">Justificativa dos materiais <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label>
-                            <textarea id="justificativaMateriais" name="oficina_justificativa_materiais" maxlength="500" style="min-height: 80px;" required placeholder="Explique o porquê da necessidade dos materiais listados acima...">{{ dados.get('oficina_justificativa_materiais', '') }}</textarea>
-                        </div>
+                        <div class="field-group" style="margin-top: 16px;"><label for="justificativaMateriais">Justificativa dos materiais <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="justificativaMateriais" name="oficina_justificativa_materiais" maxlength="500" style="min-height: 80px;" required placeholder="Explique o porquê da necessidade dos materiais listados acima...">{{ dados.get('oficina_justificativa_materiais', '') }}</textarea></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- RECURSOS DE INFRAESTRUTURA NECESSÁRIOS -->
-                <div class="field-group acessibilidade-spacing">
+                <div class="field-group" style="margin-top: 30px;">
                     <label>Recursos de infraestrutura necessários</label>
                     <div class="infra-checkboxes">
                         <div class="checkbox-option"><input type="checkbox" id="infra_projecao" name="infra_projecao" value="sim" {{ 'checked' if dados.get('infra_projecao') == 'sim' }}><label for="infra_projecao">Recursos básicos de projeção</label></div>
@@ -381,18 +317,11 @@
                         <div class="checkbox-option"><input type="checkbox" id="infra_internet" name="infra_internet" value="sim" {{ 'checked' if dados.get('infra_internet') == 'sim' }}><label for="infra_internet">Internet</label></div>
                         <div class="checkbox-option"><input type="checkbox" id="infra_outros" name="infra_outros" value="sim" onchange="toggleInfraOutros()" {{ 'checked' if dados.get('infra_outros') == 'sim' }}><label for="infra_outros">Outros</label></div>
                     </div>
-                    <div class="infra-outros-field hidden" id="infraOutrosField">
-                        <label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Outros recursos de infraestrutura</label>
-                        <table class="material-table" id="infraTable">
-                            <thead><tr><th style="width:40%">Recurso</th><th style="width:15%">Quantidade</th><th style="width:35%">Observações</th><th style="width:10%"></th></tr></thead>
-                            <tbody id="infraTableBody"></tbody>
-                        </table>
-                        <button type="button" class="btn-add-row" onclick="addInfraRow()"><i class="fas fa-plus"></i> Adicionar recurso</button>
-                    </div>
+                    <div class="infra-outros-field hidden" id="infraOutrosField"><label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Outros recursos</label><table class="material-table" id="infraTable"><thead><tr><th style="width:40%">Recurso</th><th style="width:15%">Quantidade</th><th style="width:35%">Observações</th><th style="width:10%"></th></tr></thead><tbody id="infraTableBody"></tbody></table><button type="button" class="btn-add-row" onclick="addInfraRow()"><i class="fas fa-plus"></i> Adicionar recurso</button></div>
                 </div>
 
-                <!-- AJUDA DE CUSTO - Condicionado a PF, ONG e Coletivo -->
                 <div class="field-group hidden" id="ajudaCustoWrapper" style="margin-top: 30px;">
+                    <h2 class="section-title" style="border-bottom: none; margin-bottom: 16px; padding-bottom: 0;"><i class="fas fa-hand-holding-usd"></i> Ajuda de Custo</h2>
                     <label>Você precisa de recurso financeiro para ajuda de custo? <span class="required">*</span></label>
                     <select id="ajudaCustoSelect" name="ajuda_custo" onchange="toggleAjudaCustoTable()" required>
                         <option value="">Selecione...</option>
@@ -402,40 +331,28 @@
                     </select>
                     <div id="ajudaCustoSection" class="hidden" style="margin-top: 12px;">
                         <label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Lista de ajuda de custo e previsão de valor</label>
-                        <table class="material-table" id="ajudaCustoTable">
-                            <thead><tr><th style="width:40%">Item</th><th style="width:20%">Quantidade</th><th style="width:20%">Valor unit. (R$)</th><th style="width:20%">Subtotal (R$)</th><th></th></tr></thead>
-                            <tbody id="ajudaCustoTableBody"></tbody>
-                            <tfoot><tr class="material-total-row"><td colspan="3" style="text-align:right">TOTAL</td><td id="ajudaCustoTotal">R$ 0,00</td><td></td></tr></tfoot>
-                        </table>
+                        <table class="material-table" id="ajudaCustoTable"><thead><tr><th style="width:40%">Item</th><th style="width:20%">Quantidade</th><th style="width:20%">Valor unit. (R$)</th><th style="width:20%">Subtotal (R$)</th><th></th></tr></thead><tbody id="ajudaCustoTableBody"></tbody><tfoot><tr class="material-total-row"><td colspan="3" style="text-align:right">TOTAL</td><td id="ajudaCustoTotal">R$ 0,00</td><td></td></tr></tfoot></table>
                         <button type="button" class="btn-add-row" onclick="addAjudaCustoRow()"><i class="fas fa-plus"></i> Adicionar item</button>
-                        
-                        <div class="field-group" style="margin-top: 16px;">
-                            <label for="justificativaAjudaCusto">Justifique cada ponto elencado <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label>
-                            <textarea id="justificativaAjudaCusto" name="justificativa_ajuda_custo" maxlength="500" style="min-height: 80px;" required placeholder="Descreva a justificativa para cada item listado acima...">{{ dados.get('justificativa_ajuda_custo', '') }}</textarea>
-                        </div>
+                        <div class="field-group" style="margin-top: 16px;"><label for="justificativaAjudaCusto">Justifique cada ponto elencado <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="justificativaAjudaCusto" name="justificativa_ajuda_custo" maxlength="500" style="min-height: 80px;" required placeholder="Descreva a justificativa para cada item listado acima...">{{ dados.get('justificativa_ajuda_custo', '') }}</textarea></div>
                     </div>
                 </div>
 
                 <div class="field-group"><label for="recursosAcessibilidade">Quais recursos de acessibilidade são indispensáveis? <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></label><textarea id="recursosAcessibilidade" name="recursosAcessibilidade" maxlength="200" style="min-height:70px" placeholder="Ex: intérprete de Libras, rampas de acesso, audiodescrição...">{{ dados.get('recursosAcessibilidade', '') }}</textarea></div>
             </div>
 
-            <!-- SEÇÃO 4: INTEGRANTES -->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-users"></i> 4. Integrantes da atividade <span class="info-icon">i<span class="tooltip-text">Pessoas que participarão da condução, mediação, facilitação ou composição da atividade. (Mínimo 1, Máximo 5 — para Debate e Roda de conversa, mínimo 2)</span></span></h2>
+                <h2 class="section-title"><i class="fas fa-users"></i> 4. Integrantes da atividade</h2>
                 <div id="guestsList"></div>
                 <button type="button" class="btn-add" id="btnAddGuest" onclick="addGuest()"><i class="fas fa-plus"></i> Adicionar integrante</button>
             </div>
 
-            <!-- SEÇÃO 5: INFORMAÇÕES EXTRAS -->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-info-circle"></i> 5. Informações extras <span class="info-icon">i<span class="tooltip-text">O proponente pode elencar quaisquer pontos relevantes sobre a realização da atividade.</span></span></h2>
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> 5. Informações extras</h2>
                 <div class="field-group"><label for="infoExtras">Observações</label><textarea id="infoExtras" name="infoExtras" maxlength="700" style="min-height:80px">{{ dados.get('infoExtras', '') }}</textarea><div class="char-counter" id="charCounterExtra">0 / 700</div></div>
             </div>
 
             {% if turnstile_site_key %}
-            <div class="turnstile-wrapper">
-                <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-theme="light" data-callback="onTurnstileSuccess" data-error-callback="onTurnstileError"></div>
-            </div>
+            <div class="turnstile-wrapper"><div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-theme="light"></div></div>
             {% endif %}
 
             <div class="submit-area">
@@ -449,11 +366,17 @@
 <template id="guestTemplate">
     <div class="guest-card" data-id="">
         <h4><span class="guest-title">Integrante <span class="num"></span></span><button type="button" class="remove-guest" onclick="removeGuest(this)" title="Remover"><i class="fas fa-trash"></i></button></h4>
-        <div class="guest-subsection"><div class="guest-subsection-title">Foto (512x512) <span style="color:var(--vermelho-obrigatorio);font-weight:700">*</span></div><div class="photo-upload-area"><div class="photo-preview square g-photo-preview"><i class="fas fa-user"></i></div><div class="photo-input-wrapper"><input type="file" class="g-foto" name="convidadoX_foto" accept="image/png,image/jpeg,image/webp" required><div class="helper-text">Tamanho 512x512. Formatos: PNG, JPG, WebP. Máx 5MB. Obrigatória.</div></div></div></div>
+        <div class="guest-subsection"><div class="guest-subsection-title">Foto (512x512) <span style="color:var(--vermelho-obrigatorio);font-weight:700">*</span></div><div class="photo-upload-area"><div class="photo-preview square g-photo-preview"><i class="fas fa-user"></i></div><div class="photo-input-wrapper"><input type="file" class="g-foto" name="convidadoX_foto" accept="image/png,image/jpeg,image/webp" required><div class="helper-text">Tamanho 512x512. Formatos: PNG, JPG, WebP. Máx 5MB.</div></div></div></div>
         <div class="guest-subsection"><div class="guest-subsection-title">Identificação</div>
             <div class="field-row"><div class="field-group" style="grid-column:span 2"><label>Nome completo <span class="required">*</span></label><input type="text" class="g-nome" name="convidadoX_nome" required></div></div>
             <div class="field-row"><div class="field-group"><label>Papel na atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="palestrante">Palestrante</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
-            <div class="field-row"><div class="field-group g-doc-cpf"><label>CPF</label><input type="text" class="g-cpf" name="convidadoX_cpf" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)"></div><div class="field-group g-doc-passaporte hidden"><label>Passaporte <span class="required">*</span></label><input type="text" class="g-passaporte" name="convidadoX_passaporte"></div></div>
+            
+            <div class="lgpd-notice">
+                <i class="fas fa-shield-alt"></i>
+                <span>O CPF (para brasileiros) ou Passaporte/Documento equivalente (para estrangeiros) é coletado exclusivamente para fins de controle operacional interno, prevenção de homônimos, duplicidade de cadastros e conflitos de horários na programação do Festival. Garantimos que este dado não será divulgado publicamente e será armazenado de forma segura, em estrita conformidade com a LGPD.</span>
+            </div>
+
+            <div class="field-row"><div class="field-group g-doc-cpf"><label>CPF <span class="required">*</span></label><input type="text" class="g-cpf" name="convidadoX_cpf" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)" required></div><div class="field-group g-doc-passaporte hidden"><label>Passaporte ou Documento de Identidade Internacional / RNM <span class="required">*</span></label><input type="text" class="g-passaporte" name="convidadoX_passaporte" required></div></div>
             <div class="field-row g-doc-br">
                 <div class="field-group"><label>Estado <span class="required">*</span></label><select class="g-estado" name="convidadoX_estado" required onchange="checkGuestBairro(this)"><option value="">Selecione...</option><option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option></select></div>
                 <div class="field-group"><label>Cidade <span class="required">*</span></label><input type="text" class="g-cidade" name="convidadoX_cidade" required oninput="checkGuestBairro(this)"></div>
@@ -466,12 +389,12 @@
             <div class="field-row"><div class="field-group"><label>LinkedIn</label><input type="text" class="g-linkedin" name="convidadoX_social_linkedin" placeholder="linkedin.com/in/..."></div><div class="field-group"><label>Instagram</label><input type="text" class="g-insta" name="convidadoX_social_instagram" placeholder="@usuario"></div></div>
         </div>
         <div class="guest-subsection"><div class="guest-subsection-title">Perfil profissional</div>
-            <div class="field-row"><div class="field-group"><label>Instituição representada <span class="required">*</span></label><input type="text" class="g-inst" name="convidadoX_instituicao" required></div><div class="field-group"><label>Tipo de instituição <span class="required">*</span></label><select class="g-tipo-inst" name="convidadoX_tipo_instituicao" required><option value="">Selecione...</option><option value="empresa_startup">Empresa / Startup</option><option value="ong">ONG</option><option value="osc_os">OSC / OS</option><option value="instituicao_ensino">Instituição de Ensino</option><option value="orgao_publico">Órgão Público</option><option value="fundacao_instituto">Fundação / Instituto</option><option value="coletivo">Coletivo</option></select></div></div>
+            <div class="field-row"><div class="field-group"><label>Instituição representada <span class="required">*</span></label><input type="text" class="g-inst" name="convidadoX_instituicao" required></div><div class="field-group"><label>Tipo de instituição <span class="required">*</span></label><select class="g-tipo-inst" name="convidadoX_tipo_instituicao" required><option value="">Selecione...</option><option value="empresa_startup">Empresa / Startup</option><option value="ong">Organização da Sociedade Civil (OSC/ONG)</option><option value="osc_os">Organização Social (OS)</option><option value="instituicao_ensino">Instituição de Ensino</option><option value="orgao_publico">Órgão Público</option><option value="fundacao_instituto">Fundação / Instituto</option><option value="coletivo">Coletivo</option></select></div></div>
             <div class="field-group"><label>Minibio <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 600)</span></label><input type="text" class="g-bio" name="convidadoX_minibio" maxlength="600" required></div>
         </div>
         <div class="guest-subsection"><div class="guest-subsection-title">Demografia & acessibilidade</div>
             <div class="field-row"><div class="field-group"><label>Raça / Cor</label><select class="g-raca" name="convidadoX_raca"><option value="">Selecione...</option><option value="branca">Branca</option><option value="preta">Preta</option><option value="parda">Parda</option><option value="amarela">Amarela</option><option value="indigena">Indígena</option></select></div><div class="field-group"><label>Gênero</label><select class="g-genero" name="convidadoX_genero"><option value="">Selecione...</option><option value="mulher_cis">Mulher Cis</option><option value="homem_cis">Homem Cis</option><option value="mulher_trans">Mulher Trans</option><option value="homem_trans">Homem Trans</option><option value="nao_binario">Não Binário</option></select></div></div>
-            <div class="field-row" style="margin-top: 10px;"><div class="field-group"><label>Faixa etária (idade)</label><select class="g-idade" name="convidadoX_idade"><option value="">Selecione a faixa...</option></select></div></div>
+            <div class="field-row" style="margin-top: 10px;"><div class="field-group"><label>Faixa etária</label><select class="g-idade" name="convidadoX_idade"><option value="">Selecione a faixa...</option></select></div></div>
             <div style="margin-top:10px"><div class="checkbox-option"><input type="checkbox" class="g-acess" name="convidadoX_acessibilidade" value="sim" onchange="toggleGuestAcessibilidade(this)"><label>Necessita de recursos de acessibilidade?</label></div><div class="field-group hidden g-acess-detail" style="margin-top:8px"><label>Quais recursos? <span class="required">*</span></label><input type="text" class="g-acess-desc" name="convidadoX_acessibilidade_desc"></div></div>
         </div>
     </div>
@@ -479,543 +402,110 @@
 
 <script>
 // ===== LOGO CROP =====
-(function(){
-    var logoImg = document.getElementById('logoImg');
-    var logoCrop = document.getElementById('logoCrop');
-    if (!logoImg || !logoCrop) return;
-    function applyCrop() {
-        var natW = logoImg.naturalWidth;
-        var natH = logoImg.naturalHeight;
-        if (!natW || !natH) return;
-        var containerW = logoCrop.offsetWidth;
-        var aspect = natW / natH;
-        var fullH = containerW / aspect;
-        var visibleH = fullH * 0.6;
-        logoCrop.style.height = Math.round(visibleH) + 'px';
-    }
-    if (logoImg.complete && logoImg.naturalWidth) { applyCrop(); }
-    else { logoImg.addEventListener('load', applyCrop); }
-    window.addEventListener('resize', applyCrop);
-})();
+(function(){var a=document.getElementById('logoImg'),b=document.getElementById('logoCrop');if(!a||!b)return;function c(){var d=a.naturalWidth,e=a.naturalHeight;if(!d||!e)return;var f=b.offsetWidth,g=d/e,h=f/g*0.6;b.style.height=Math.round(h)+'px'}if(a.complete&&a.naturalWidth)c();else a.addEventListener('load',c);window.addEventListener('resize',c)})();
 
-// ===== CROP MODAL LOGIC =====
-let cropState = { targetFileInput: null, targetPreview: null, imgSrc: '', natW: 0, natH: 0, offsetX: 0, offsetY: 0, isDragging: false, startX: 0, startY: 0, modalSize: 400 };
+let cropState={targetFileInput:null,targetPreview:null,imgSrc:'',natW:0,natH:0,offsetX:0,offsetY:0,isDragging:false,startX:0,startY:0,modalSize:400};
+function openCropModal(file,targetInput,targetPreview){const r=new FileReader();r.onload=function(e){const img=new Image();img.onload=function(){cropState.targetFileInput=targetInput;cropState.targetPreview=targetPreview;cropState.imgSrc=e.target.result;cropState.natW=img.width;cropState.natH=img.height;const ci=document.getElementById('cropImage');ci.src=e.target.result;cropState.modalSize=document.getElementById('cropContainer').offsetWidth||400;const s=Math.max(cropState.modalSize/img.width,cropState.modalSize/img.height);const dW=img.width*s,dH=img.height*s;ci.style.width=dW+'px';ci.style.height=dH+'px';cropState.offsetX=(cropState.modalSize-dW)/2;cropState.offsetY=(cropState.modalSize-dH)/2;ci.style.left=cropState.offsetX+'px';ci.style.top=cropState.offsetY+'px';document.getElementById('cropModalOverlay').classList.add('active')};img.src=e.target.result};r.readAsDataURL(file)}
+function closeCropModal(){document.getElementById('cropModalOverlay').classList.remove('active');document.getElementById('cropImage').src='';if(cropState.targetFileInput)cropState.targetFileInput.value=''}
+function applyCrop(){const ci=document.getElementById('cropImage'),cv=document.getElementById('cropCanvas'),ctx=cv.getContext('2d');const dW=parseFloat(ci.style.width),dH=parseFloat(ci.style.height),dX=parseFloat(ci.style.left),dY=parseFloat(ci.style.top);const sX=cropState.natW/dW,sY=cropState.natH/dH;let srcX=(-dX)*sX,srcY=(-dY)*sY,srcW=cropState.modalSize*sX,srcH=cropState.modalSize*sY;cv.width=512;cv.height=512;ctx.clearRect(0,0,512,512);const img=new Image();img.onload=function(){ctx.drawImage(img,srcX,srcY,srcW,srcH,0,0,512,512);const u=cv.toDataURL('image/jpeg',0.9);if(cropState.targetPreview){cropState.targetPreview.innerHTML='<img src="'+u+'" alt="Foto">';cropState.targetPreview.classList.remove('error-border')}closeCropModal()};img.src=cropState.imgSrc}
+const ci=document.getElementById('cropImage');ci.addEventListener('mousedown',function(e){cropState.isDragging=true;cropState.startX=e.clientX-parseFloat(ci.style.left);cropState.startY=e.clientY-parseFloat(ci.style.top);e.preventDefault()});document.addEventListener('mousemove',function(e){if(!cropState.isDragging)return;let x=e.clientX-cropState.startX,y=e.clientY-cropState.startY;const w=parseFloat(ci.style.width),h=parseFloat(ci.style.height);if(x>0)x=0;if(y>0)y=0;if(x+w<cropState.modalSize)x=cropState.modalSize-w;if(y+h<cropState.modalSize)y=cropState.modalSize-h;ci.style.left=x+'px';ci.style.top=y+'px'});document.addEventListener('mouseup',function(){cropState.isDragging=false});ci.addEventListener('touchstart',function(e){cropState.isDragging=true;const t=e.touches[0];cropState.startX=t.clientX-parseFloat(ci.style.left);cropState.startY=t.clientY-parseFloat(ci.style.top);e.preventDefault()},{passive:false});document.addEventListener('touchmove',function(e){if(!cropState.isDragging)return;const t=e.touches[0];let x=t.clientX-cropState.startX,y=t.clientY-cropState.startY;const w=parseFloat(ci.style.width),h=parseFloat(ci.style.height);if(x>0)x=0;if(y>0)y=0;if(x+w<cropState.modalSize)x=cropState.modalSize-w;if(y+h<cropState.modalSize)y=cropState.modalSize-h;ci.style.left=x+'px';ci.style.top=y+'px'},{passive:false});document.addEventListener('touchend',function(){cropState.isDragging=false});
 
-function openCropModal(file, targetInput, targetPreview) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            cropState.targetFileInput = targetInput;
-            cropState.targetPreview = targetPreview;
-            cropState.imgSrc = e.target.result;
-            cropState.natW = img.width;
-            cropState.natH = img.height;
+function toggleVisibilityByCategory(){toggleMaterialAjudaOficina();toggleAjudaCustoVisibility()}
+function toggleMaterialAjudaOficina(){const t=document.getElementById('tipoProponente').value,c=document.getElementById('categoria').value,s=document.getElementById('oficinaMaterialStep');if(t==='pf'||(t==='pj'&&(c==='ong'||c==='coletivo')))s.classList.remove('hidden');else{s.classList.add('hidden');document.getElementById('materialAjuda').value='nao';toggleMaterialTable()}}
+function toggleAjudaCustoVisibility(){const t=document.getElementById('tipoProponente').value,c=document.getElementById('categoria').value,w=document.getElementById('ajudaCustoWrapper');if(t==='pf'||(t==='pj'&&(c==='ong'||c==='coletivo')))w.classList.remove('hidden');else{w.classList.add('hidden');document.getElementById('ajudaCustoSelect').value='';toggleAjudaCustoTable()}}
 
-            const cropImg = document.getElementById('cropImage');
-            cropImg.src = e.target.result;
-            
-            const containerNode = document.getElementById('cropContainer');
-            cropState.modalSize = containerNode.offsetWidth || 400;
-            
-            const scale = Math.max(cropState.modalSize / img.width, cropState.modalSize / img.height);
-            const displayW = img.width * scale;
-            const displayH = img.height * scale;
-            
-            cropImg.style.width = displayW + 'px';
-            cropImg.style.height = displayH + 'px';
-            cropState.offsetX = (cropState.modalSize - displayW) / 2;
-            cropState.offsetY = (cropState.modalSize - displayH) / 2;
-            cropImg.style.left = cropState.offsetX + 'px';
-            cropImg.style.top = cropState.offsetY + 'px';
+let infraRowCount=0;function toggleInfraOutros(){var cb=document.getElementById('infra_outros'),f=document.getElementById('infraOutrosField');if(cb.checked){f.classList.remove('hidden');if(infraRowCount===0)addInfraRow()}else{f.classList.add('hidden');document.getElementById('infraTableBody').innerHTML='';infraRowCount=0}}
+function addInfraRow(){infraRowCount++;const tb=document.getElementById('infraTableBody'),tr=document.createElement('tr');tr.id='infraRow'+infraRowCount;tr.innerHTML=`<td><input type="text" name="infra_item_${infraRowCount}" maxlength="100" required></td><td><input type="number" name="infra_qtd_${infraRowCount}" min="1" value="1" required style="width:70px"></td><td><input type="text" name="infra_obs_${infraRowCount}" maxlength="200"></td><td><button type="button" class="btn-remove-row" onclick="removeInfraRow('infraRow${infraRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr)}
+function removeInfraRow(id){document.getElementById(id).remove()}
 
-            document.getElementById('cropModalOverlay').classList.add('active');
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
+let ajudaCustoRowCount=0;function toggleAjudaCustoTable(){const v=document.getElementById('ajudaCustoSelect').value,s=document.getElementById('ajudaCustoSection');if(v==='sim'||v==='indispensavel'){s.classList.remove('hidden');if(ajudaCustoRowCount===0)addAjudaCustoRow()}else s.classList.add('hidden')}
+function addAjudaCustoRow(){ajudaCustoRowCount++;const tb=document.getElementById('ajudaCustoTableBody'),tr=document.createElement('tr');tr.id='acRow'+ajudaCustoRowCount;tr.innerHTML=`<td><input type="text" name="ac_item_${ajudaCustoRowCount}" required></td><td><input type="number" name="ac_qtd_${ajudaCustoRowCount}" min="1" value="1" required onchange="calcAjudaCustoTotal()" oninput="calcAjudaCustoTotal()"></td><td><input type="number" name="ac_valor_${ajudaCustoRowCount}" min="0" step="0.01" value="0" required onchange="calcAjudaCustoTotal()" oninput="calcAjudaCustoTotal()"></td><td class="ac-subtotal">R$ 0,00</td><td><button type="button" class="btn-remove-row" onclick="removeAjudaCustoRow('acRow${ajudaCustoRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr);calcAjudaCustoTotal()}
+function removeAjudaCustoRow(id){document.getElementById(id).remove();calcAjudaCustoTotal()}
+function calcAjudaCustoTotal(){let t=0;document.querySelectorAll('#ajudaCustoTableBody tr').forEach(tr=>{const q=parseFloat(tr.querySelector('input[name^="ac_qtd"]')?.value)||0,v=parseFloat(tr.querySelector('input[name^="ac_valor"]')?.value)||0,s=q*v;tr.querySelector('.ac-subtotal').textContent='R$ '+s.toFixed(2).replace('.',',');t+=s});document.getElementById('ajudaCustoTotal').textContent='R$ '+t.toFixed(2).replace('.',',')}
 
-function closeCropModal() {
-    document.getElementById('cropModalOverlay').classList.remove('active');
-    const cropImg = document.getElementById('cropImage');
-    cropImg.src = '';
-    if (cropState.targetFileInput) {
-        cropState.targetFileInput.value = '';
-    }
-}
+function showToast(m,t='info'){const c=document.getElementById('toast-container'),e=document.createElement('div');e.className=`toast ${t}`;e.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-triangle':'info-circle'}"></i> ${m}`;c.appendChild(e);setTimeout(()=>{e.style.opacity='0';e.style.transition='opacity 0.3s';setTimeout(()=>e.remove(),300)},3500)}
 
-function applyCrop() {
-    const cropImg = document.getElementById('cropImage');
-    const canvas = document.getElementById('cropCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    const displayW = parseFloat(cropImg.style.width);
-    const displayH = parseFloat(cropImg.style.height);
-    const displayX = parseFloat(cropImg.style.left);
-    const displayY = parseFloat(cropImg.style.top);
-
-    const scaleX = cropState.natW / displayW;
-    const scaleY = cropState.natH / displayH;
-
-    let srcX = (-displayX) * scaleX;
-    let srcY = (-displayY) * scaleY;
-    let srcW = cropState.modalSize * scaleX;
-    let srcH = cropState.modalSize * scaleY;
-
-    canvas.width = 512;
-    canvas.height = 512;
-    ctx.clearRect(0, 0, 512, 512);
-
-    const img = new Image();
-    img.onload = function() {
-        ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, 512, 512);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-        
-        if (cropState.targetPreview) {
-            cropState.targetPreview.innerHTML = '<img src="'+dataUrl+'" alt="Foto 512x512">';
-            cropState.targetPreview.classList.remove('error-border');
-        }
-        closeCropModal();
-    };
-    img.src = cropState.imgSrc;
-}
-
-const cropContainer = document.getElementById('cropContainer');
-const cropImageEl = document.getElementById('cropImage');
-
-cropImageEl.addEventListener('mousedown', function(e) {
-    cropState.isDragging = true;
-    cropState.startX = e.clientX - parseFloat(cropImageEl.style.left);
-    cropState.startY = e.clientY - parseFloat(cropImageEl.style.top);
-    e.preventDefault();
-});
-
-document.addEventListener('mousemove', function(e) {
-    if (!cropState.isDragging) return;
-    let newX = e.clientX - cropState.startX;
-    let newY = e.clientY - cropState.startY;
-
-    const w = parseFloat(cropImageEl.style.width);
-    const h = parseFloat(cropImageEl.style.height);
-    
-    if (newX > 0) newX = 0;
-    if (newY > 0) newY = 0;
-    if (newX + w < cropState.modalSize) newX = cropState.modalSize - w;
-    if (newY + h < cropState.modalSize) newY = cropState.modalSize - h;
-
-    cropImageEl.style.left = newX + 'px';
-    cropImageEl.style.top = newY + 'px';
-});
-
-document.addEventListener('mouseup', function() { cropState.isDragging = false; });
-
-cropImageEl.addEventListener('touchstart', function(e) {
-    cropState.isDragging = true;
-    const touch = e.touches[0];
-    cropState.startX = touch.clientX - parseFloat(cropImageEl.style.left);
-    cropState.startY = touch.clientY - parseFloat(cropImageEl.style.top);
-    e.preventDefault();
-}, {passive: false});
-
-document.addEventListener('touchmove', function(e) {
-    if (!cropState.isDragging) return;
-    const touch = e.touches[0];
-    let newX = touch.clientX - cropState.startX;
-    let newY = touch.clientY - cropState.startY;
-
-    const w = parseFloat(cropImageEl.style.width);
-    const h = parseFloat(cropImageEl.style.height);
-    
-    if (newX > 0) newX = 0;
-    if (newY > 0) newY = 0;
-    if (newX + w < cropState.modalSize) newX = cropState.modalSize - w;
-    if (newY + h < cropState.modalSize) newY = cropState.modalSize - h;
-
-    cropImageEl.style.left = newX + 'px';
-    cropImageEl.style.top = newY + 'px';
-}, {passive: false});
-
-document.addEventListener('touchend', function() { cropState.isDragging = false; });
-
-// ===== TOGGLE VISIBILITY BY CATEGORY =====
-function toggleVisibilityByCategory() {
-    toggleMaterialAjudaOficina();
-    toggleAjudaCustoVisibility();
-}
-
-function toggleMaterialAjudaOficina() {
-    const type = document.getElementById('tipoProponente').value;
-    const cat = document.getElementById('categoria').value;
-    const step = document.getElementById('oficinaMaterialStep');
-    
-    // Mostra apenas para PF ou PJ (ONG/Coletivo)
-    if (type === 'pf' || (type === 'pj' && (cat === 'ong' || cat === 'coletivo'))) {
-        step.classList.remove('hidden');
-    } else {
-        step.classList.add('hidden');
-        document.getElementById('materialAjuda').value = 'nao';
-        toggleMaterialTable();
-    }
-}
-
-function toggleAjudaCustoVisibility() {
-    const type = document.getElementById('tipoProponente').value;
-    const cat = document.getElementById('categoria').value;
-    const wrapper = document.getElementById('ajudaCustoWrapper');
-    
-    // Mostra apenas para PF ou PJ (ONG/Coletivo)
-    if (type === 'pf' || (type === 'pj' && (cat === 'ong' || cat === 'coletivo'))) {
-        wrapper.classList.remove('hidden');
-    } else {
-        wrapper.classList.add('hidden');
-        document.getElementById('ajudaCustoSelect').value = '';
-        toggleAjudaCustoTable();
-    }
-}
-
-// ===== INFRA OUTROS TOGGLE & TABLE =====
-let infraRowCount = 0;
-
-function toggleInfraOutros() {
-    var cb = document.getElementById('infra_outros');
-    var field = document.getElementById('infraOutrosField');
-    if (cb.checked) {
-        field.classList.remove('hidden');
-        if (infraRowCount === 0) addInfraRow();
-    } else {
-        field.classList.add('hidden');
-        document.getElementById('infraTableBody').innerHTML = '';
-        infraRowCount = 0;
-    }
-}
-
-function addInfraRow() {
-    infraRowCount++;
-    const tb = document.getElementById('infraTableBody');
-    const tr = document.createElement('tr');
-    tr.id = 'infraRow' + infraRowCount;
-    tr.innerHTML = `
-        <td><input type="text" name="infra_item_${infraRowCount}" maxlength="100" required placeholder="Ex: Projetor 4K"></td>
-        <td><input type="number" name="infra_qtd_${infraRowCount}" min="1" value="1" required style="width:70px"></td>
-        <td><input type="text" name="infra_obs_${infraRowCount}" maxlength="200" placeholder="Detalhes adicionais"></td>
-        <td><button type="button" class="btn-remove-row" onclick="removeInfraRow('infraRow${infraRowCount}')"><i class="fas fa-times"></i></button></td>
-    `;
-    tb.appendChild(tr);
-}
-
-function removeInfraRow(id) { document.getElementById(id).remove(); }
-
-// ===== AJUDA DE CUSTO TABLE =====
-let ajudaCustoRowCount = 0;
-
-function toggleAjudaCustoTable() {
-    const v = document.getElementById('ajudaCustoSelect').value;
-    const s = document.getElementById('ajudaCustoSection');
-    if (v === 'sim' || v === 'indispensavel') {
-        s.classList.remove('hidden');
-        if (ajudaCustoRowCount === 0) addAjudaCustoRow();
-    } else {
-        s.classList.add('hidden');
-    }
-}
-
-function addAjudaCustoRow() {
-    ajudaCustoRowCount++;
-    const tb = document.getElementById('ajudaCustoTableBody');
-    const tr = document.createElement('tr');
-    tr.id = 'acRow' + ajudaCustoRowCount;
-    tr.innerHTML = `
-        <td><input type="text" name="ac_item_${ajudaCustoRowCount}" required></td>
-        <td><input type="number" name="ac_qtd_${ajudaCustoRowCount}" min="1" value="1" required onchange="calcAjudaCustoTotal()" oninput="calcAjudaCustoTotal()"></td>
-        <td><input type="number" name="ac_valor_${ajudaCustoRowCount}" min="0" step="0.01" value="0" required onchange="calcAjudaCustoTotal()" oninput="calcAjudaCustoTotal()"></td>
-        <td class="ac-subtotal">R$ 0,00</td>
-        <td><button type="button" class="btn-remove-row" onclick="removeAjudaCustoRow('acRow${ajudaCustoRowCount}')"><i class="fas fa-times"></i></button></td>
-    `;
-    tb.appendChild(tr);
-    calcAjudaCustoTotal();
-}
-
-function removeAjudaCustoRow(id) { document.getElementById(id).remove(); calcAjudaCustoTotal(); }
-
-function calcAjudaCustoTotal() {
-    let total = 0;
-    document.querySelectorAll('#ajudaCustoTableBody tr').forEach(tr => {
-        const q = parseFloat(tr.querySelector('input[name^="ac_qtd"]')?.value) || 0;
-        const v = parseFloat(tr.querySelector('input[name^="ac_valor"]')?.value) || 0;
-        const sub = q * v;
-        tr.querySelector('.ac-subtotal').textContent = 'R$ ' + sub.toFixed(2).replace('.',',');
-        total += sub;
-    });
-    document.getElementById('ajudaCustoTotal').textContent = 'R$ ' + total.toFixed(2).replace('.',',');
-}
-
-function showToast(m,t='info'){const c=document.getElementById('toast-container');const e=document.createElement('div');e.className=`toast ${t}`;e.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-triangle':'info-circle'}"></i> ${m}`;c.appendChild(e);setTimeout(()=>{e.style.opacity='0';e.style.transition='opacity 0.3s';setTimeout(()=>e.remove(),300);},3500);}
-
-let turnstileVerified = false;
-function onTurnstileSuccess(token) { turnstileVerified = true; }
-function onTurnstileError(code) { turnstileVerified = false; showToast('Erro na verificação de segurança. Recarregue a página.', 'error'); }
-
-const MIN_TAGS=3,MAX_TAGS=5;
-const AVAILABLE_TAGS=["Economia Circular","Energia Renovável","Gestão de Resíduos","Logística Reversa","Meio Ambiente","Mudanças Climáticas","ODS","Arquitetura","Intervenções Urbanas","ESG","Responsabilidade Social","Cidadania Digital","Geopolítica","Mobilidade Urbana","Turismo","Urbanismo","Saúde","Agritech","Cleantech","Construtech","Ecotech","Edutech","Fintech","Foodtech","Govtech","Healthtech","Lawtech","Retailtech","Sportech","Dados","Blockchain","Cibersegurança","LGPD","Cloud","Programação","XR / Realidade Virtual e Aumentada","Deep Learning","Engenharia de Prompt","Inteligência Artificial","LLM","Machine Learning","Metaverso","Processamento de Linguagem Natural","Visão Computacional","Internet das Coisas","Sistemas Embarcados","Computação Quântica","Automação","Robótica","Tecnologias de Conectividade","Acessibilidade","50+","PcD","Equidade Racial","LGBTQIAPN+","Mulheres","Neurodivergência","Periferias","Diversidade e Inclusão","Cultura Popular","Patrimônio Imaterial","Artes","Impacto Social","Legislação","Educação e Formação","Infância","Empreendedorismo","Inovação","Empresa Júnior","Gestão de Comunidades","Internacionalização","Modelagem de Negócios","Startup","Transformação Digital","Carreira Profissional","Cultura Organizacional","Desenvolvimento de Times","RH","Captação por Editais","Investimentos","Agilidade","Atacado e Varejo","Branding","Canais de Venda","Comportamento do Consumidor","Marketing","Vendas B2B e B2C","Artes Visuais","Audiovisual","Cultura Maker","Dança","Fotografia","Gastronomia","Literatura","Moda","Música","Teatro","Comunicação","Criação de Conteúdo","Design Gráfico/ Industrial","Podcast","e-Sports","Experiência do Usuário (UX / CX)","Gameficação","Interface do Usuário (UI)","Simulação e Modelagem","Desenvolvimento de Jogos","Economia Criativa"];
-let selectedTags=[];
-let hasSuggestion=false;
-
-(function(){const v=document.getElementById('tagsHidden').value;if(v&&v.trim()){selectedTags=v.split(',').map(t=>t.trim()).filter(t=>t);renderTagChips();}
-const sv=document.getElementById('tagSuggestionHidden').value;if(sv&&sv.trim()){hasSuggestion=true;}})();
-
+const MIN_TAGS=3,MAX_TAGS=5;const AVAILABLE_TAGS=["Economia Circular","Energia Renovável","Gestão de Resíduos","Logística Reversa","Meio Ambiente","Mudanças Climáticas","ODS","Arquitetura","Intervenções Urbanas","ESG","Responsabilidade Social","Cidadania Digital","Geopolítica","Mobilidade Urbana","Turismo","Urbanismo","Saúde","Agritech","Cleantech","Construtech","Ecotech","Edutech","Fintech","Foodtech","Govtech","Healthtech","Lawtech","Retailtech","Sportech","Dados","Blockchain","Cibersegurança","LGPD","Cloud","Programação","XR / Realidade Virtual e Aumentada","Deep Learning","Engenharia de Prompt","Inteligência Artificial","LLM","Machine Learning","Metaverso","Processamento de Linguagem Natural","Visão Computacional","Internet das Coisas","Sistemas Embarcados","Computação Quântica","Automação","Robótica","Tecnologias de Conectividade","Acessibilidade","50+","PcD","Equidade Racial","LGBTQIAPN+","Mulheres","Neurodivergência","Periferias","Diversidade e Inclusão","Cultura Popular","Patrimônio Imaterial","Artes","Impacto Social","Legislação","Educação e Formação","Infância","Empreendedorismo","Inovação","Empresa Júnior","Gestão de Comunidades","Internacionalização","Modelagem de Negócios","Startup","Transformação Digital","Carreira Profissional","Cultura Organizacional","Desenvolvimento de Times","RH","Captação por Editais","Investimentos","Agilidade","Atacado e Varejo","Branding","Canais de Venda","Comportamento do Consumidor","Marketing","Vendas B2B e B2C","Artes Visuais","Audiovisual","Cultura Maker","Dança","Fotografia","Gastronomia","Literatura","Moda","Música","Teatro","Comunicação","Criação de Conteúdo","Design Gráfico/ Industrial","Podcast","e-Sports","Experiência do Usuário (UX / CX)","Gameficação","Interface do Usuário (UI)","Simulação e Modelagem","Desenvolvimento de Jogos","Economia Criativa"];let selectedTags=[];let hasSuggestion=false;
+(function(){const v=document.getElementById('tagsHidden').value;if(v&&v.trim()){selectedTags=v.split(',').map(t=>t.trim()).filter(t=>t);renderTagChips()}const sv=document.getElementById('tagSuggestionHidden').value;if(sv&&sv.trim())hasSuggestion=true})();
 const tagsInput=document.getElementById('tagsInput'),tagsDropdown=document.getElementById('tagsDropdown');
-tagsInput.addEventListener('input',function(){filterAndShowTags(this.value.toLowerCase().trim());});
-tagsInput.addEventListener('focus',function(){filterAndShowTags(this.value.toLowerCase().trim()||'');});
-document.addEventListener('click',function(e){if(!document.getElementById('tagsContainer').contains(e.target))tagsDropdown.classList.remove('active');});
+tagsInput.addEventListener('input',function(){filterAndShowTags(this.value.toLowerCase().trim())});tagsInput.addEventListener('focus',function(){filterAndShowTags(this.value.toLowerCase().trim()||'')});document.addEventListener('click',function(e){if(!document.getElementById('tagsContainer').contains(e.target))tagsDropdown.classList.remove('active')});
 
-function filterAndShowTags(q){const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){tagsDropdown.innerHTML='<div class="tags-dropdown-empty">Máximo de '+MAX_TAGS+' tags atingido</div>';tagsDropdown.classList.add('active');return;}let items='';if(!hasSuggestion){items='<div class="tags-dropdown-item suggestion-item" onclick="showSuggestionInput()"><i class="fas fa-pen"></i> ✏️ Sugestão (personalizada)</div>';}const f=AVAILABLE_TAGS.filter(t=>(q===''||t.toLowerCase().includes(q))&&!selectedTags.includes(t));if(f.length===0&&q!==''&&!hasSuggestion){tagsDropdown.innerHTML=items+'<div class="tags-dropdown-empty">Nenhuma tag encontrada</div>';tagsDropdown.classList.add('active');return;}if(f.length===0&&q===''){if(items){tagsDropdown.innerHTML=items;tagsDropdown.classList.add('active');}else{tagsDropdown.classList.remove('active');}return;}items+=f.slice(0,30).map(t=>{let d=t;if(q){const i=t.toLowerCase().indexOf(q);if(i>=0)d=t.substring(0,i)+'<span class="highlight">'+t.substring(i,i+q.length)+'</span>'+t.substring(i+q.length);}return`<div class="tags-dropdown-item" onclick="addTag('${t.replace(/'/g,"\\'")}')">${d}</div>`;}).join('');tagsDropdown.innerHTML=items;tagsDropdown.classList.add('active');}
-function addTag(t){const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return;}if(!selectedTags.includes(t)){selectedTags.push(t);renderTagChips();updateHiddenTags();}tagsInput.value='';tagsDropdown.classList.remove('active');}
-function removeTag(t){selectedTags=selectedTags.filter(x=>x!==t);renderTagChips();updateHiddenTags();}
-function showSuggestionInput(){document.getElementById('suggestionInputRow').classList.remove('hidden');tagsDropdown.classList.remove('active');tagsInput.value='';}
-function addSuggestionTag(){if(hasSuggestion){showToast('Apenas uma sugestão é permitida.','error');return;}const v=document.getElementById('suggestionInput').value.trim();if(!v){showToast('Digite a sugestão.','error');return;}const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return;}hasSuggestion=true;document.getElementById('tagSuggestionHidden').value=v;document.getElementById('suggestionInputRow').classList.add('hidden');renderTagChips();updateHiddenTags();}
-function removeSuggestionTag(){hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();}
-function renderTagChips(){const total=selectedTags.length+(hasSuggestion?1:0);let html=selectedTags.map(t=>`<span class="tag-chip">${t} <button type="button" onclick="removeTag('${t.replace(/'/g,"\\'")}')">&times;</button></span>`).join('');if(hasSuggestion){html+=`<span class="tag-chip suggestion">✏️ ${document.getElementById('tagSuggestionHidden').value} <button type="button" onclick="removeSuggestionTag()">&times;</button></span>`;}document.getElementById('tagsChips').innerHTML=html;if(total>=MAX_TAGS){tagsInput.disabled=true;tagsInput.placeholder='Máximo de '+MAX_TAGS+' atingido';}else{tagsInput.disabled=false;tagsInput.placeholder='Buscar e selecionar palavras-chave...';}}
-function updateHiddenTags(){document.getElementById('tagsHidden').value=selectedTags.join(',');}
+function filterAndShowTags(q){const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){tagsDropdown.innerHTML='<div class="tags-dropdown-empty">Máximo de '+MAX_TAGS+' tags atingido</div>';tagsDropdown.classList.add('active');return}let items='';if(!hasSuggestion){items='<div class="tags-dropdown-item suggestion-item" onclick="showSuggestionInput()"><i class="fas fa-pen"></i> Dê a sua sugestão </div>'}const f=AVAILABLE_TAGS.filter(t=>(q===''||t.toLowerCase().includes(q))&&!selectedTags.includes(t));if(f.length===0&&q!==''&&!hasSuggestion){tagsDropdown.innerHTML=items+'<div class="tags-dropdown-empty">Nenhuma tag encontrada</div>';tagsDropdown.classList.add('active');return}if(f.length===0&&q===''){if(items){tagsDropdown.innerHTML=items;tagsDropdown.classList.add('active')}else tagsDropdown.classList.remove('active');return}items+=f.slice(0,30).map(t=>{let d=t;if(q){const i=t.toLowerCase().indexOf(q);if(i>=0)d=t.substring(0,i)+'<span class="highlight">'+t.substring(i,i+q.length)+'</span>'+t.substring(i+q.length)}return`<div class="tags-dropdown-item" onclick="addTag('${t.replace(/'/g,"\\'")}')">${d}</div>`}).join('');tagsDropdown.innerHTML=items;tagsDropdown.classList.add('active')}
+function addTag(t){const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return}if(!selectedTags.includes(t)){selectedTags.push(t);renderTagChips();updateHiddenTags()}tagsInput.value='';tagsDropdown.classList.remove('active')}
+function removeTag(t){selectedTags=selectedTags.filter(x=>x!==t);renderTagChips();updateHiddenTags()}
+function showSuggestionInput(){document.getElementById('suggestionInputRow').classList.remove('hidden');tagsDropdown.classList.remove('active');tagsInput.value=''}
+function addSuggestionTag(){if(hasSuggestion){showToast('Apenas uma sugestão é permitida.','error');return}const v=document.getElementById('suggestionInput').value.trim();if(!v){showToast('Digite a sugestão.','error');return}const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return}hasSuggestion=true;document.getElementById('tagSuggestionHidden').value=v;document.getElementById('suggestionInputRow').classList.add('hidden');renderTagChips();updateHiddenTags()}
+function removeSuggestionTag(){hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags()}
+function renderTagChips(){const total=selectedTags.length+(hasSuggestion?1:0);let html=selectedTags.map(t=>`<span class="tag-chip">${t} <button type="button" onclick="removeTag('${t.replace(/'/g,"\\'")}')">&times;</button></span>`).join('');if(hasSuggestion){html+=`<span class="tag-chip suggestion">✏️ ${document.getElementById('tagSuggestionHidden').value} <button type="button" onclick="removeSuggestionTag()">&times;</button></span>`}document.getElementById('tagsChips').innerHTML=html;if(total>=MAX_TAGS){tagsInput.disabled=true;tagsInput.placeholder='Máximo de '+MAX_TAGS+' atingido'}else{tagsInput.disabled=false;tagsInput.placeholder='Buscar e selecionar palavras-chave...'}}
+function updateHiddenTags(){document.getElementById('tagsHidden').value=selectedTags.join(',')}
 
-let currentType='pj';
-function setProponenteType(type){currentType=type;document.getElementById('tipoProponente').value=type;document.querySelectorAll('.type-selector-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));const catG=document.getElementById('categoriaGroup'),natG=document.getElementById('nacionalidadeGroup'),logoG=document.getElementById('logoMarcaGroup'),nomeL=document.getElementById('nomeLabel');if(type==='pj'){catG.classList.remove('hidden');logoG.classList.remove('hidden');natG.classList.add('hidden');nomeL.innerText='Nome da instituição';}else{catG.classList.add('hidden');logoG.classList.add('hidden');natG.classList.remove('hidden');nomeL.innerText='Nome do proponente';toggleProponenteDocs();}toggleVisibilityByCategory();}
-function toggleProponenteDocs(){if(currentType!=='pf')return;const nat=document.getElementById('nacionalidadeProponente').value;document.getElementById('docCpfField').classList.toggle('hidden',nat!=='brasileiro');document.getElementById('docPassaporteField').classList.toggle('hidden',nat==='brasileiro');}
+let currentType='pj';function setProponenteType(type){currentType=type;document.getElementById('tipoProponente').value=type;document.querySelectorAll('.type-selector-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));const cG=document.getElementById('categoriaGroup'),nG=document.getElementById('nacionalidadeGroup'),lG=document.getElementById('logoMarcaGroup'),nL=document.getElementById('nomeLabel'),lN=document.getElementById('proponentLgpdNotice');if(type==='pj'){cG.classList.remove('hidden');lG.classList.remove('hidden');nG.classList.add('hidden');lN.classList.add('hidden');nL.innerText='Nome da instituição'}else{cG.classList.add('hidden');lG.classList.add('hidden');nG.classList.remove('hidden');lN.classList.remove('hidden');nL.innerText='Nome do proponente';toggleProponenteDocs()}toggleVisibilityByCategory()}
+function toggleProponenteDocs(){if(currentType!=='pf')return;const nat=document.getElementById('nacionalidadeProponente').value;document.getElementById('docCpfField').classList.toggle('hidden',nat!=='brasileiro');document.getElementById('docPassaporteField').classList.toggle('hidden',nat==='brasileiro')}
+(function(){const s=document.getElementById('tipoProponente').value||'pj';setProponenteType(s)})();
 
-(function(){
-    const savedType = document.getElementById('tipoProponente').value || 'pj';
-    setProponenteType(savedType);
-})();
+function checkGuestBairro(input){const card=input.closest('.guest-card');if(!card)return;const bf=card.querySelector('.g-bairro-field'),es=card.querySelector('.g-estado'),ci=card.querySelector('.g-cidade');const e=es?es.value:'',c=ci?ci.value.trim().toLowerCase():'';if(e==='PE'&&c==='recife')bf.classList.remove('hidden');else bf.classList.add('hidden')}
 
-function checkGuestBairro(input){const card=input.closest('.guest-card');if(!card)return;const bairroField=card.querySelector('.g-bairro-field');const estadoSelect=card.querySelector('.g-estado');const cidadeInput=card.querySelector('.g-cidade');const estado=estadoSelect?estadoSelect.value:'';const cidade=cidadeInput?cidadeInput.value.trim().toLowerCase():'';if(estado==='PE'&&cidade==='recife'){bairroField.classList.remove('hidden');}else{bairroField.classList.add('hidden');}}
-
-// 1h30 REMOVIDO DAS DURAÇÕES
 const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'roda_de_conversa':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'oficina':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'2h30',label:'2h30'},{value:'3h',label:'3h'}]};
-function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value;const s=document.getElementById('tempoDuracao');const cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op);});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv;}}
-function toggleActivityFields(){const f=document.getElementById('formatoAtividade').value;updateDuracaoOptions();const s=document.getElementById('oficinaSection');if(f==='oficina'){s.classList.remove('hidden');toggleLabFields();toggleSoftwareFields();toggleVisibilityByCategory();}else{s.classList.add('hidden');}}
-toggleActivityFields();
+function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value,s=document.getElementById('tempoDuracao'),cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op)});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv}}
+function toggleActivityFields(){const f=document.getElementById('formatoAtividade').value;updateDuracaoOptions();const s=document.getElementById('oficinaSection');if(f==='oficina'){s.classList.remove('hidden');toggleLabFields();toggleSoftwareFields();toggleVisibilityByCategory()}else s.classList.add('hidden')}
+toggleActivityFields();function toggleInscricaoCheckbox(){const v=document.getElementById('acessoAtividade').value,g=document.getElementById('inscricaoCheckboxGroup');if(v==='inscricao')g.classList.remove('hidden');else{g.classList.add('hidden');document.getElementById('inscricaoResponsabilidade').checked=false}}
+toggleInscricaoCheckbox();function toggleLabFields(){const v=document.querySelector('input[name="oficina_lab"]:checked');document.getElementById('labDetails').classList.toggle('hidden',!(v&&v.value==='sim'))}
+function toggleSoftwareFields(){const v=document.querySelector('input[name="oficina_soft_req"]:checked');document.getElementById('softwareDetails').classList.toggle('hidden',!(v&&v.value==='sim'))}
+function toggleRestricao(){document.getElementById('faixaEtariaGroup').classList.toggle('hidden',!document.getElementById('restricaoSim').checked)}
 
-function toggleInscricaoCheckbox(){const v=document.getElementById('acessoAtividade').value;const g=document.getElementById('inscricaoCheckboxGroup');if(v==='inscricao'){g.classList.remove('hidden');}else{g.classList.add('hidden');document.getElementById('inscricaoResponsabilidade').checked=false;}}
-toggleInscricaoCheckbox();
+const savedFormato="{{ dados.get('formatoAtividade', '') }}",savedDuracao="{{ dados.get('tempoDuracao', '') }}";if(savedFormato){document.getElementById('formatoAtividade').value=savedFormato;updateDuracaoOptions();if(savedDuracao)document.getElementById('tempoDuracao').value=savedDuracao}
 
-function toggleLabFields(){const v=document.querySelector('input[name="oficina_lab"]:checked');document.getElementById('labDetails').classList.toggle('hidden',!(v&&v.value==='sim'));}
-function toggleSoftwareFields(){const v=document.querySelector('input[name="oficina_soft_req"]:checked');document.getElementById('softwareDetails').classList.toggle('hidden',!(v&&v.value==='sim'));}
-function toggleRestricao(){document.getElementById('faixaEtariaGroup').classList.toggle('hidden',!document.getElementById('restricaoSim').checked);}
+let materialRowCount=0;function addMaterialRow(){materialRowCount++;const tb=document.getElementById('materialTableBody'),tr=document.createElement('tr');tr.id='matRow'+materialRowCount;tr.innerHTML=`<td><input type="text" name="mat_item_${materialRowCount}" required></td><td><input type="number" name="mat_qtd_${materialRowCount}" min="1" value="1" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td><input type="number" name="mat_valor_${materialRowCount}" min="0" step="0.01" value="0" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td class="mat-subtotal">R$ 0,00</td><td><button type="button" class="btn-remove-row" onclick="removeMaterialRow('matRow${materialRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr);calcMaterialTotal()}
+function removeMaterialRow(id){document.getElementById(id).remove();calcMaterialTotal()}
+function calcMaterialTotal(){let t=0;document.querySelectorAll('#materialTableBody tr').forEach(tr=>{const q=parseFloat(tr.querySelector('input[name^="mat_qtd"]')?.value)||0,v=parseFloat(tr.querySelector('input[name^="mat_valor"]')?.value)||0,s=q*v;tr.querySelector('.mat-subtotal').textContent='R$ '+s.toFixed(2).replace('.',',');t+=s});document.getElementById('materialTotal').textContent='R$ '+t.toFixed(2).replace('.',',')}
+function toggleMaterialTable(){const v=document.getElementById('materialAjuda').value,s=document.getElementById('materialTableSection');if(v==='sim'||v==='indispensavel'){s.classList.remove('hidden');if(materialRowCount===0)addMaterialRow()}else s.classList.add('hidden')}
 
-const savedFormato="{{ dados.get('formatoAtividade', '') }}";const savedDuracao="{{ dados.get('tempoDuracao', '') }}";
-if(savedFormato){document.getElementById('formatoAtividade').value=savedFormato;updateDuracaoOptions();if(savedDuracao)document.getElementById('tempoDuracao').value=savedDuracao;}
+function maskCPF(i){let v=i.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>9)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6,9)+'-'+v.substring(9);else if(v.length>6)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6);else if(v.length>3)v=v.substring(0,3)+'.'+v.substring(3);i.value=v}
+function maskCNPJ(i){let v=i.value.replace(/\D/g,'');if(v.length>14)v=v.substring(0,14);if(v.length>12)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8,12)+'-'+v.substring(12);else if(v.length>8)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8);else if(v.length>5)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5);else if(v.length>2)v=v.substring(0,2)+'.'+v.substring(2);i.value=v}
+document.getElementById('cnpjProponente').addEventListener('paste',function(e){e.preventDefault();const p=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').substring(0,14);e.target.value=p;maskCNPJ(e.target)});document.getElementById('cpfProponente').addEventListener('paste',function(e){e.preventDefault();const p=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').substring(0,11);e.target.value=p;maskCPF(e.target)});
 
-let materialRowCount=0;
-function addMaterialRow(){materialRowCount++;const tb=document.getElementById('materialTableBody');const tr=document.createElement('tr');tr.id='matRow'+materialRowCount;tr.innerHTML=`<td><input type="text" name="mat_item_${materialRowCount}" required></td><td><input type="number" name="mat_qtd_${materialRowCount}" min="1" value="1" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td><input type="number" name="mat_valor_${materialRowCount}" min="0" step="0.01" value="0" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td class="mat-subtotal">R$ 0,00</td><td><button type="button" class="btn-remove-row" onclick="removeMaterialRow('matRow${materialRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr);calcMaterialTotal();}
-function removeMaterialRow(id){document.getElementById(id).remove();calcMaterialTotal();}
-function calcMaterialTotal(){let total=0;document.querySelectorAll('#materialTableBody tr').forEach(tr=>{const q=parseFloat(tr.querySelector('input[name^="mat_qtd"]')?.value)||0;const v=parseFloat(tr.querySelector('input[name^="mat_valor"]')?.value)||0;const sub=q*v;tr.querySelector('.mat-subtotal').textContent='R$ '+sub.toFixed(2).replace('.',',');total+=sub;});document.getElementById('materialTotal').textContent='R$ '+total.toFixed(2).replace('.',',');}
-function toggleMaterialTable(){const v=document.getElementById('materialAjuda').value;const s=document.getElementById('materialTableSection');if(v==='sim'||v==='indispensavel'){s.classList.remove('hidden');if(materialRowCount===0)addMaterialRow();}else{s.classList.add('hidden');}}
+function validateCPF(c){c=c.replace(/\D/g,'');if(c.length!==11)return false;if(/^(\d)\1{10}$/.test(c))return false;let s=0;for(let i=0;i<9;i++)s+=parseInt(c.charAt(i))*(10-i);let r=11-(s%11);if(r===10||r===11)r=0;if(r!==parseInt(c.charAt(9)))return false;s=0;for(let i=0;i<10;i++)s+=parseInt(c.charAt(i))*(11-i);r=11-(s%11);if(r===10||r===11)r=0;return r===parseInt(c.charAt(10))}
+function validateCPFfrontend(i){const v=i.value.replace(/\D/g,'');if(v.length===0){i.classList.remove('error');return true}if(v.length<11){i.classList.add('error');showToast('CPF incompleto — são necessários 11 dígitos.','error');return false}if(!validateCPF(i.value)){i.classList.add('error');showToast('CPF inválido.','error');return false}i.classList.remove('error');return true}
 
-function maskCPF(i){let v=i.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>9)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6,9)+'-'+v.substring(9);else if(v.length>6)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6);else if(v.length>3)v=v.substring(0,3)+'.'+v.substring(3);i.value=v;}
-function maskCNPJ(i){let v=i.value.replace(/\D/g,'');if(v.length>14)v=v.substring(0,14);if(v.length>12)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8,12)+'-'+v.substring(12);else if(v.length>8)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5,8)+'/'+v.substring(8);else if(v.length>5)v=v.substring(0,2)+'.'+v.substring(2,5)+'.'+v.substring(5);else if(v.length>2)v=v.substring(0,2)+'.'+v.substring(2);i.value=v;}
-function handlePaste(e,maskFn,maxDigits){e.preventDefault();const pasted=(e.clipboardData||window.clipboardData).getData('text');const digits=pasted.replace(/\D/g,'').substring(0,maxDigits);e.target.value=digits;maskFn(e.target);}
-document.getElementById('cnpjProponente').addEventListener('paste',function(e){handlePaste(e,maskCNPJ,14);});
-document.getElementById('cpfProponente').addEventListener('paste',function(e){handlePaste(e,maskCPF,11);});
-
-function validateCPF(c){c=c.replace(/\D/g,'');if(c.length!==11)return false;if(/^(\d)\1{10}$/.test(c))return false;let s=0;for(let i=0;i<9;i++)s+=parseInt(c.charAt(i))*(10-i);let r=11-(s%11);if(r===10||r===11)r=0;if(r!==parseInt(c.charAt(9)))return false;s=0;for(let i=0;i<10;i++)s+=parseInt(c.charAt(i))*(11-i);r=11-(s%11);if(r===10||r===11)r=0;return r===parseInt(c.charAt(10));}
-function validateCNPJ(c){c=c.replace(/\D/g,'');if(c.length!==14)return false;if(/^(\d)\1{13}$/.test(c))return false;let pesos1=[5,4,3,2,9,8,7,6,5,4,3,2];let soma=0;for(let i=0;i<12;i++)soma+=parseInt(c.charAt(i))*pesos1[i];let resto=11-(soma%11);if(resto>=10)resto=0;if(resto!==parseInt(c.charAt(12)))return false;let pesos2=[6,5,4,3,2,9,8,7,6,5,4,3,2];soma=0;for(let i=0;i<13;i++)soma+=parseInt(c.charAt(i))*pesos2[i];resto=11-(soma%11);if(resto>=10)resto=0;return resto===parseInt(c.charAt(13));}
-
-function validateCPFfrontend(i){const v=i.value.replace(/\D/g,'');if(v.length===0){i.classList.remove('error');return true;}if(v.length<11){i.classList.add('error');showToast('CPF incompleto — são necessários 11 dígitos. Você digitou apenas '+v.length+'.','error');return false;}if(!validateCPF(i.value)){i.classList.add('error');showToast('CPF inválido — os dígitos verificadores não conferem. Verifique o número digitado.','error');return false;}i.classList.remove('error');return true;}
-function validateCNPJfrontend(i){const v=i.value.replace(/\D/g,'');if(v.length===0){i.classList.remove('error');return true;}if(v.length<14){i.classList.add('error');showToast('CNPJ incompleto — são necessários 14 dígitos. Você digitou apenas '+v.length+'.','error');return false;}if(!validateCNPJ(i.value)){i.classList.add('error');showToast('CNPJ inválido — os dígitos verificadores não conferem.','error');return false;}i.classList.remove('error');return true;}
-
-function maskPhone(e){var v=e.target.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>6)e.target.value='('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7);else if(v.length>2)e.target.value='('+v.substring(0,2)+') '+v.substring(2);else if(v.length>0)e.target.value='('+v;}
+function maskPhone(e){var v=e.target.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>6)e.target.value='('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7);else if(v.length>2)e.target.value='('+v.substring(0,2)+') '+v.substring(2);else if(v.length>0)e.target.value='('+v}
 document.getElementById('telefoneRepresentante').addEventListener('input',maskPhone);
-
-function setupCounter(id,max){var el=document.getElementById(id);if(!el)return;var cnt=el.parentElement.querySelector('.char-counter');if(!cnt)return;el.addEventListener('input',function(){cnt.innerText=this.value.length+' / '+max;});cnt.innerText=el.value.length+' / '+max;}
+function setupCounter(id,max){var el=document.getElementById(id);if(!el)return;var cnt=el.parentElement.querySelector('.char-counter');if(!cnt)return;el.addEventListener('input',function(){cnt.innerText=this.value.length+' / '+max});cnt.innerText=el.value.length+' / '+max}
 setupCounter('objetivoAtividade',500);setupCounter('justificativaTematica',700);setupCounter('metodologiaAplicada',500);setupCounter('descricaoAtividade',700);setupCounter('infoExtras',700);
 
-document.getElementById('fotoProponente').addEventListener('change',function(e){
-    var p=document.getElementById('photoPreview');
-    p.classList.remove('error-border');
-    if(this.files&&this.files[0]){
-        openCropModal(this.files[0], this, p);
-    }else{
-        p.innerHTML='<i class="fas fa-image"></i>';
-    }
-});
+document.getElementById('fotoProponente').addEventListener('change',function(e){var p=document.getElementById('photoPreview');p.classList.remove('error-border');if(this.files&&this.files[0])openCropModal(this.files[0],this,p);else p.innerHTML='<i class="fas fa-image"></i>'});
 
 let guestCount=0;const maxGuests=5;
+function populateAgeDropdowns(){const f=[{value:'0 a 18',label:'0 a 18'},{value:'19 a 25',label:'19 a 25'},{value:'26 a 35',label:'26 a 35'},{value:'36 a 60',label:'36 a 60'}];document.querySelectorAll('.g-idade').forEach(s=>{if(s.options.length<=1)f.forEach(x=>{const o=document.createElement('option');o.value=x.value;o.textContent=x.label;s.appendChild(o)})})}
 
-function populateAgeDropdowns() {
-    const faixas = [
-        { value: '0 a 18', label: '0 a 18' },
-        { value: '19 a 25', label: '19 a 25' },
-        { value: '26 a 35', label: '26 a 35' },
-        { value: '36 a 60', label: '36 a 60' }
-    ];
-    document.querySelectorAll('.g-idade').forEach(select => {
-        if(select.options.length <= 1) {
-            faixas.forEach(f => {
-                const option = document.createElement('option');
-                option.value = f.value;
-                option.textContent = f.label;
-                select.appendChild(option);
-            });
-        }
-    });
-}
+function addGuest(scroll=true,data=null){if(guestCount>=maxGuests){showToast('Máximo de 5 integrantes.','error');return}guestCount++;const c=document.getElementById('guestTemplate').content.cloneNode(true),card=c.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount)});const ti=card.querySelector('.g-telefone');if(ti)ti.addEventListener('input',maskPhone);const gi=card.querySelector('.g-cpf');if(gi)gi.addEventListener('paste',function(e){e.preventDefault();const p=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').substring(0,11);e.target.value=p;maskCPF(e.target)});
+if(data){card.querySelectorAll('input, select').forEach(i=>{if(i.name&&data[i.name]!==undefined){if(i.type==='checkbox'){i.checked=(data[i.name]==='sim'||data[i.name]===true);if(i.name.endsWith('_acessibilidade')&&i.checked)toggleGuestAcessibilidade(i)}else if(i.type==='radio')i.checked=(i.value===data[i.name]);else i.value=data[i.name]}});const ns=card.querySelector('.g-nacionalidade');if(ns)toggleGuestDocs(ns);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
+document.getElementById('guestsList').appendChild(card);populateAgeDropdowns();document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);const fi=card.querySelector('.g-foto');if(fi){const pr=fi.closest('.guest-subsection').querySelector('.g-photo-preview');fi.addEventListener('change',function(e){pr.classList.remove('error-border');if(this.files&&this.files[0])openCropModal(this.files[0],this,pr);else pr.innerHTML='<i class="fas fa-user"></i>'})}
+if(scroll&&!data)card.scrollIntoView({behavior:'smooth',block:'center'})}
 
-function addGuest(scroll=true, data=null){if(guestCount>=maxGuests){showToast('Máximo de 5 integrantes.','error');return;}guestCount++;const clone=document.getElementById('guestTemplate').content.cloneNode(true);const card=clone.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount);});const telInput=card.querySelector('.g-telefone');if(telInput)telInput.addEventListener('input',maskPhone);const guestCpfInput=card.querySelector('.g-cpf');if(guestCpfInput)guestCpfInput.addEventListener('paste',function(e){handlePaste(e,maskCPF,11);});
-    
-    if(data){
-        const prefix = 'convidado'+guestCount+'_';
-        card.querySelectorAll('input, select').forEach(i => {
-            if(i.name){
-                const key = i.name;
-                if(data[key] !== undefined){
-                    if(i.type === 'checkbox'){
-                        i.checked = (data[key] === 'sim' || data[key] === true);
-                        if(i.name.endsWith('_acessibilidade') && i.checked) toggleGuestAcessibilidade(i);
-                    } else if(i.type === 'radio'){
-                        i.checked = (i.value === data[key]);
-                    } else {
-                        i.value = data[key];
-                    }
-                }
-            }
-        });
-        const nacSel = card.querySelector('.g-nacionalidade');
-        if(nacSel) toggleGuestDocs(nacSel);
-        checkGuestBairro(card.querySelector('.g-estado') || card.querySelector('.g-cidade'));
-    }
-    
-    document.getElementById('guestsList').appendChild(card);
-    populateAgeDropdowns();
-    document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);
-    
-    const fi=card.querySelector('.g-foto');
-    if(fi){
-        const pr=fi.closest('.guest-subsection').querySelector('.g-photo-preview');
-        fi.addEventListener('change',function(e){
-            pr.classList.remove('error-border');
-            if(this.files&&this.files[0]){
-                openCropModal(this.files[0], this, pr);
-            }else{
-                pr.innerHTML='<i class="fas fa-user"></i>';
-            }
-        });
-    }
-    
-    if(scroll && !data)card.scrollIntoView({behavior:'smooth',block:'center'});
-}
+function removeGuest(btn){const card=btn.closest('.guest-card');card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();guestCount--;document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests)},300)}
+function toggleGuestDocs(sel){const card=sel.closest('.guest-card'),isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>f.classList.toggle('hidden',!isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>f.classList.toggle('hidden',isBR));card.querySelectorAll('.g-doc-br').forEach(f=>f.classList.toggle('hidden',!isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>f.classList.toggle('hidden',isBR))}
+function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card'),d=card.querySelector('.g-acess-detail');d.classList.toggle('hidden',!cb.checked);const desc=d.querySelector('.g-acess-desc');if(cb.checked)desc.required=true;else{desc.required=false;desc.value=''}}
 
-function removeGuest(btn){const card=btn.closest('.guest-card');card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();guestCount--;document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);},300);}
-function toggleGuestDocs(sel){const card=sel.closest('.guest-card');const isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>f.classList.toggle('hidden',!isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>f.classList.toggle('hidden',isBR));card.querySelectorAll('.g-doc-br').forEach(f=>f.classList.toggle('hidden',!isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>f.classList.toggle('hidden',isBR));if(!isBR){card.querySelectorAll('.g-doc-passaporte input').forEach(i=>i.required=true);card.querySelectorAll('.g-doc-cpf input').forEach(i=>i.required=false);}else{card.querySelectorAll('.g-doc-passaporte input').forEach(i=>i.required=false);}}
-function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card');const d=card.querySelector('.g-acess-detail');d.classList.toggle('hidden',!cb.checked);const desc=d.querySelector('.g-acess-desc');if(cb.checked)desc.required=true;else{desc.required=false;desc.value='';}}
-
-(function(){
-    const guestDataRaw = '{{ guest_data_json | safe }}';
-    try {
-        const guestData = JSON.parse(guestDataRaw);
-        const keys = Object.keys(guestData);
-        const guestIndexes = new Set();
-        keys.forEach(k => {
-            const match = k.match(/^convidado(\d+)_/);
-            if(match) guestIndexes.add(parseInt(match[1]));
-        });
-        
-        if(guestIndexes.size > 0){
-            const sortedIndexes = Array.from(guestIndexes).sort((a,b) => a-b);
-            sortedIndexes.forEach(idx => {
-                const prefix = 'convidado' + idx + '_';
-                const specificData = {};
-                keys.filter(k => k.startsWith(prefix)).forEach(k => {
-                    specificData[k] = guestData[k];
-                });
-                addGuest(false, specificData);
-            });
-        } else {
-            addGuest(false);
-        }
-    } catch(e) {
-        addGuest(false);
-    }
-})();
+(function(){const r='{{ guest_data_json | safe }}';try{const g=JSON.parse(r),k=Object.keys(g),idx=new Set();k.forEach(x=>{const m=x.match(/^convidado(\d+)_/);if(m)idx.add(parseInt(m[1]))});if(idx.size>0)Array.from(idx).sort((a,b)=>a-b).forEach(i=>{const p='convidado'+i+'_',sd={};k.filter(x=>x.startsWith(p)).forEach(x=>sd[x]=g[x]);addGuest(false,sd)});else addGuest(false)}catch(e){addGuest(false)}})();
 
 document.getElementById('inscricaoForm').addEventListener('submit',function(e){
-    const honeypotField=document.getElementById('website_url');if(honeypotField&&honeypotField.value.trim()){e.preventDefault();showToast('Proposta enviada com sucesso!','success');setTimeout(()=>{window.location.href='/';},1500);return;}
-    const turnstileResponse=document.querySelector('[name="cf-turnstile-response"]');if(turnstileResponse&&!turnstileResponse.value){e.preventDefault();showToast('Complete a verificação de segurança (CAPTCHA) antes de enviar.','error');return;}
-    const totalTags=selectedTags.length+(hasSuggestion?1:0);if(totalTags<MIN_TAGS){e.preventDefault();showToast('Selecione pelo menos '+MIN_TAGS+' palavras-chave.','error');return;}if(totalTags>MAX_TAGS){e.preventDefault();showToast('O limite máximo de palavras-chave é '+MAX_TAGS+'.','error');return;}
-    
-    const formato = document.getElementById('formatoAtividade').value;
-    const minGuests = (formato === 'debate' || formato === 'roda_de_conversa') ? 2 : 1;
-    if(guestCount < minGuests){e.preventDefault();const nomeFormato = formato === 'debate' ? 'Debate' : 'Roda de conversa';showToast(`Para ${nomeFormato}, é necessário no mínimo ${minGuests} integrantes.`,'error');return;}
-    
-    if(document.getElementById('acessoAtividade').value === 'inscricao' && !document.getElementById('inscricaoResponsabilidade').checked){e.preventDefault();showToast('Aceite a responsabilidade sobre o processo de inscrição e LGPD.','error');return;}
-    
-        if(currentType==='pj'){
-
-        const fotoInput = document.getElementById('fotoProponente');
-        const preview = document.getElementById('photoPreview');
-
-        const hasPreview =
-            preview &&
-            preview.querySelector('img');
-
-        const hasNewFile =
-            fotoInput &&
-            fotoInput.files &&
-            fotoInput.files[0];
-
-        if(!hasPreview && !hasNewFile){
-
-            e.preventDefault();
-
-            showToast(
-                'A logo da instituição é obrigatória para Pessoa Jurídica.',
-                'error'
-            );
-
-            if(preview){
-                preview.classList.add('error-border');
-            }
-
-            if(fotoInput){
-                fotoInput.focus();
-            }
-
-            return;
-        }
-    }
-    if(currentType==='pf'){const ci=document.getElementById('cpfProponente');const cg=document.getElementById('docCpfField');if(!cg.classList.contains('hidden')&&ci.value.trim()){if(!validateCPFfrontend(ci)){e.preventDefault();ci.focus();return;}}}
-    
-    // Validação Ajuda de Custo (se visível)
-    const ajudaCustoWrapper = document.getElementById('ajudaCustoWrapper');
-    if(!ajudaCustoWrapper.classList.contains('hidden')){
-        const acVal = document.getElementById('ajudaCustoSelect').value;
-        if(!acVal){ e.preventDefault(); showToast('Informe se precisa de recurso financeiro para ajuda de custo.','error'); return; }
-        if(acVal === 'sim' || acVal === 'indispensavel'){
-            let hasAcItems = false;
-            document.querySelectorAll('input[name^="ac_item_"]').forEach(i => { if(i.value.trim()) hasAcItems = true; });
-            if(!hasAcItems){ e.preventDefault(); showToast('Liste pelo menos um item de ajuda de custo.','error'); return; }
-            if(!document.getElementById('justificativaAjudaCusto').value.trim()){ e.preventDefault(); showToast('A justificativa da ajuda de custo é obrigatória.','error'); return; }
-        }
-    }
-
-    let cpfError=false;
-    document.querySelectorAll('.guest-card').forEach(card=>{if(cpfError)return;const num=card.dataset.id;const nome=card.querySelector('.g-nome').value.trim();const fotoInput=card.querySelector('.g-foto');const preview=card.querySelector('.g-photo-preview');const hasPreview =
-    preview &&
-    preview.querySelector('img');
-
-const hasNewFile =
-    fotoInput &&
-    fotoInput.files &&
-    fotoInput.files[0];
-
-if(!hasPreview && !hasNewFile){e.preventDefault();showToast('A foto do integrante '+num+' ('+(nome||'sem nome')+') é obrigatória.','error');preview.classList.add('error-border');fotoInput.focus();cpfError=true;return;}
-
-const cpfInp=card.querySelector('.g-cpf');if(cpfInp&&!cpfInp.closest('.g-doc-cpf').classList.contains('hidden')){const v=cpfInp.value.replace(/\D/g,'');if(v.length>0&&v.length<11){e.preventDefault();cpfInp.classList.add('error');showToast('CPF do integrante '+num+' incompleto — são necessários 11 dígitos.','error');cpfInp.focus();cpfError=true;return;}if(v.length===11&&!validateCPF(cpfInp.value)){e.preventDefault();cpfInp.classList.add('error');showToast('CPF do integrante '+num+' inválido — dígitos verificadores não conferem.','error');cpfInp.focus();cpfError=true;return;}cpfInp.classList.remove('error');}});
-    if(cpfError)return;
-    if(currentType==='pj'){if(!document.getElementById('categoria').value){e.preventDefault();showToast('Selecione a categoria.','error');document.getElementById('categoria').focus();return;}const cnpjInput=document.getElementById('cnpjProponente');const cnpjVal=cnpjInput.value.replace(/\D/g,'');if(!cnpjVal){e.preventDefault();showToast('O CNPJ é obrigatório.','error');cnpjInput.focus();return;}if(cnpjVal.length<14){e.preventDefault();showToast('CNPJ incompleto — são necessários 14 dígitos.','error');cnpjInput.classList.add('error');cnpjInput.focus();return;}if(!validateCNPJfrontend(cnpjInput)){e.preventDefault();cnpjInput.focus();return;}}
-    if(document.getElementById('restricaoSim').checked){const min=parseInt(document.getElementById('idadeMinima').value);const max=parseInt(document.getElementById('idadeMaxima').value);if(isNaN(min)||isNaN(max)){e.preventDefault();showToast('Preencha a idade mínima e máxima.','error');return;}if(min>max){e.preventDefault();showToast('Idade mínima não pode ser maior.','error');return;}}
+    const hp=document.getElementById('website_url');if(hp&&hp.value.trim()){e.preventDefault();showToast('Proposta enviada com sucesso!','success');setTimeout(()=>window.location.href='/',1500);return}
+    const tr=document.querySelector('[name="cf-turnstile-response"]');if(tr&&!tr.value){e.preventDefault();showToast('Complete a verificação de segurança (CAPTCHA).','error');return}
+    const tt=selectedTags.length+(hasSuggestion?1:0);if(tt<MIN_TAGS){e.preventDefault();showToast('Selecione pelo menos '+MIN_TAGS+' palavras-chave.','error');return}if(tt>MAX_TAGS){e.preventDefault();showToast('O limite máximo de palavras-chave é '+MAX_TAGS+'.','error');return}
+    const f=document.getElementById('formatoAtividade').value,mg=(f==='debate'||f==='roda_de_conversa')?2:1;if(guestCount<mg){e.preventDefault();showToast(`Para ${f==='debate'?'Debate':'Roda de conversa'}, é necessário no mínimo ${mg} integrantes.`,'error');return}
+    if(document.getElementById('acessoAtividade').value==='inscricao'&&!document.getElementById('inscricaoResponsabilidade').checked){e.preventDefault();showToast('Aceite a responsabilidade sobre o processo de inscrição e LGPD.','error');return}
+    if(currentType==='pj'){const fi=document.getElementById('fotoProponente'),pr=document.getElementById('photoPreview');if(!pr.querySelector('img')&&!(fi.files&&fi.files[0])){e.preventDefault();showToast('A logo da instituição é obrigatória para Pessoa Jurídica.','error');pr.classList.add('error-border');fi.focus();return}}
+    if(currentType==='pf'){const ci=document.getElementById('cpfProponente'),cg=document.getElementById('docCpfField');if(!cg.classList.contains('hidden')&&ci.value.trim()){if(!validateCPFfrontend(ci)){e.preventDefault();ci.focus();return}}}
+    const aw=document.getElementById('ajudaCustoWrapper');if(!aw.classList.contains('hidden')){const av=document.getElementById('ajudaCustoSelect').value;if(!av){e.preventDefault();showToast('Informe se precisa de recurso financeiro para ajuda de custo.','error');return}if(av==='sim'||av==='indispensavel'){let hi=false;document.querySelectorAll('input[name^="ac_item_"]').forEach(i=>{if(i.value.trim())hi=true});if(!hi){e.preventDefault();showToast('Liste pelo menos um item de ajuda de custo.','error');return}if(!document.getElementById('justificativaAjudaCusto').value.trim()){e.preventDefault();showToast('A justificativa da ajuda de custo é obrigatória.','error');return}}}
+    let err=false;document.querySelectorAll('.guest-card').forEach(card=>{if(err)return;const num=card.dataset.id,nome=card.querySelector('.g-nome').value.trim(),fi=card.querySelector('.g-foto'),pr=card.querySelector('.g-photo-preview');if(!pr.querySelector('img')&&!(fi.files&&fi.files[0])){e.preventDefault();showToast('A foto do integrante '+num+' ('+nome+') é obrigatória.','error');pr.classList.add('error-border');fi.focus();err=true;return}
+    const ci=card.querySelector('.g-cpf');if(ci&&!ci.closest('.g-doc-cpf').classList.contains('hidden')){if(!ci.value.trim()){e.preventDefault();ci.classList.add('error');showToast('O CPF do integrante '+num+' é obrigatório.','error');ci.focus();err=true;return}const v=ci.value.replace(/\D/g,'');if(v.length<11){e.preventDefault();ci.classList.add('error');showToast('CPF do integrante '+num+' incompleto.','error');ci.focus();err=true;return}if(!validateCPF(ci.value)){e.preventDefault();ci.classList.add('error');showToast('CPF do integrante '+num+' inválido.','error');ci.focus();err=true;return}ci.classList.remove('error')}
+    const pi=card.querySelector('.g-passaporte');if(pi&&!pi.closest('.g-doc-passaporte').classList.contains('hidden')){if(!pi.value.trim()){e.preventDefault();pi.classList.add('error');showToast('O Passaporte do integrante '+num+' é obrigatório.','error');pi.focus();err=true;return}pi.classList.remove('error')}});
+    if(err)return;
+    if(currentType==='pj'){if(!document.getElementById('categoria').value){e.preventDefault();showToast('Selecione a categoria.','error');document.getElementById('categoria').focus();return}const ci=document.getElementById('cnpjProponente'),cv=ci.value.replace(/\D/g,'');if(!cv){e.preventDefault();showToast('O CNPJ é obrigatório.','error');ci.focus();return}if(cv.length<14){e.preventDefault();showToast('CNPJ incompleto.','error');ci.classList.add('error');ci.focus();return}}
+    if(document.getElementById('restricaoSim').checked){const mi=parseInt(document.getElementById('idadeMinima').value),ma=parseInt(document.getElementById('idadeMaxima').value);if(isNaN(mi)||isNaN(ma)){e.preventDefault();showToast('Preencha a idade mínima e máxima.','error');return}if(mi>ma){e.preventDefault();showToast('Idade mínima não pode ser maior.','error');return}}
 });
 
-function limparFormulario(){document.getElementById('inscricaoForm').reset();document.getElementById('guestsList').innerHTML='';guestCount=0;selectedTags=[];hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();setProponenteType('pj');toggleActivityFields();toggleInscricaoCheckbox();document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';document.getElementById('photoPreview').classList.remove('error-border');document.getElementById('materialTableBody').innerHTML='';materialRowCount=0;document.getElementById('infraTableBody').innerHTML='';infraRowCount=0;document.getElementById('ajudaCustoTableBody').innerHTML='';ajudaCustoRowCount=0;document.querySelectorAll('input.error').forEach(i=>i.classList.remove('error'));document.getElementById('infraOutrosField').classList.add('hidden');document.getElementById('inscricaoCheckboxGroup').classList.add('hidden');document.getElementById('ajudaCustoSection').classList.add('hidden');addGuest();if(typeof turnstile!=='undefined'){turnstile.reset();}turnstileVerified=false;showToast('Formulário limpo.','info');}
+function limparFormulario(){document.getElementById('inscricaoForm').reset();document.getElementById('guestsList').innerHTML='';guestCount=0;selectedTags=[];hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();setProponenteType('pj');toggleActivityFields();toggleInscricaoCheckbox();document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';document.getElementById('photoPreview').classList.remove('error-border');document.getElementById('materialTableBody').innerHTML='';materialRowCount=0;document.getElementById('infraTableBody').innerHTML='';infraRowCount=0;document.getElementById('ajudaCustoTableBody').innerHTML='';ajudaCustoRowCount=0;document.querySelectorAll('input.error').forEach(i=>i.classList.remove('error'));document.getElementById('infraOutrosField').classList.add('hidden');document.getElementById('inscricaoCheckboxGroup').classList.add('hidden');document.getElementById('ajudaCustoSection').classList.add('hidden');addGuest();showToast('Formulário limpo.','info')}
 </script>
 </body>
 </html>
