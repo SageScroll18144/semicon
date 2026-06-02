@@ -44,8 +44,22 @@
         .form-card { background: #fff; border-radius: 0 0 16px 16px; box-shadow: var(--sombra); overflow: hidden; animation: cardEntry 0.6s cubic-bezier(0.175,0.885,0.32,1.275); }
         @keyframes cardEntry { from { opacity:0; transform:translateY(30px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
 
-        .card-top { background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro)); padding: 32px 40px; color: #fff; }
-        .card-top h1 { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .card-top { 
+            background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro)); 
+            padding: 31px 40px; 
+            color: #fff; 
+            display: flex;             /* Adicionado: transforma a caixa em flex */
+            align-items: center;       /* Adicionado: centraliza verticalmente */
+            
+        }
+
+        .card-top h1 { 
+            font-family: 'Space Grotesk', sans-serif; 
+            font-size: 32px; 
+            font-weight: 700; 
+            margin: 0;                 /* Adicionado: remove a margem que impedia o centro exato */
+            text-align: center;        /* Adicionado: garante o alinhamento do texto */
+        }
         .card-top p { font-size: 14px; line-height: 1.6; opacity: 0.9; }
 
         .step-indicator { display: flex; align-items: center; gap: 12px; padding: 20px 40px; background: var(--roxo-50); border-bottom: 1px solid var(--roxo-200); }
@@ -62,7 +76,7 @@
         .toast.error { border-left-color: var(--vermelho-obrigatorio); }
         .toast.success { border-left-color: var(--verde-sucesso); }
 
-        .form-body { padding: 32px 40px 40px; }
+        .form-body { padding: 40px 40px 40px; }
         .intro-box { background: linear-gradient(135deg, var(--roxo-50), var(--roxo-100)); border: 1px solid var(--roxo-200); border-radius: 12px; padding: 24px 28px; margin-bottom: 32px; }
         .intro-box p { font-size: 13.5px; line-height: 1.8; color: var(--roxo-600-text); margin-bottom: 10px; }
         .intro-box p:last-child { margin-bottom: 0; font-weight: 600; color: var(--roxo-principal); }
@@ -76,7 +90,7 @@
         .field-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
         .field-group label .required { color: var(--vermelho-obrigatorio); font-weight: 700; margin-left: 2px; }
         .field-group .helper-text { font-size: 11px; color: #999; margin-top: 4px; }
-        .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="number"], .field-group select, .field-group textarea { width: 100%; padding: 10px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: #333; background: #fff; border: 1.5px solid var(--cinza-borda); border-radius: 8px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="number"], .field-group input[type="url"], .field-group select, .field-group textarea { width: 100%; padding: 10px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: #333; background: #fff; border: 1.5px solid var(--cinza-borda); border-radius: 8px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
         .field-group input:disabled, .field-group select:disabled, .field-group textarea:disabled { background: #F0F0F0; color: #999; cursor: not-allowed; }
         .field-group input:focus, .field-group select:focus, .field-group textarea:focus { border-color: var(--roxo-principal); box-shadow: 0 0 0 3px rgba(204,0,204,0.10); }
         .field-group input.error, .field-group select.error { border-color: var(--vermelho-obrigatorio); }
@@ -246,6 +260,11 @@
         #pdf-paper-view th { background: #f5f5f5; }
         #pdf-paper-view img.logo-pdf { height: 60px; display: block; margin-bottom: 10px; }
 
+        /* TOOLTIP */
+        .tooltip-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--roxo-200); color: var(--roxo-escuro); font-size: 10px; cursor: help; margin-left: 6px; position: relative; font-weight: 700; font-style: normal; }
+        .tooltip-icon:hover::after { content: attr(data-tooltip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 400; white-space: normal; width: 260px; z-index: 999; line-height: 1.5; }
+        .tooltip-icon:hover::before { content: ''; position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #333; z-index: 999; }
+
         @media (max-width: 768px) {
             .form-wrapper { margin: 16px auto; padding: 0 10px; }
             .card-top, .form-body, .step-indicator { padding-left: 20px; padding-right: 20px; }
@@ -253,7 +272,7 @@
             .submit-area { flex-direction: column; }
             .btn-submit, .btn-clear { width: 100%; }
             .type-selector { flex-direction: column; }
-            #pdf-paper-view { width: 100%; } /* Simplify for mobile generation if needed */
+            #pdf-paper-view { width: 100%; }
         }
     </style>
 </head>
@@ -336,7 +355,7 @@
                     <div class="field-group" style="grid-column:span 2"><label for="nomeInstituicao"><span id="nomeLabel">Nome da instituição</span> <span class="required">*</span></label><input type="text" id="nomeInstituicao" name="nomeInstituicao" required value="{{ dados.get('nomeInstituicao', '') }}"></div>
                 </div>
                 <div class="field-row" id="categoriaGroup">
-                    <div class="field-group"><label for="categoria">Categoria <span class="required">*</span></label><select id="categoria" name="categoria" onchange="toggleVisibilityByCategory()"><option value="">Selecione...</option><option value="empresa_startup" {{ 'selected' if dados.get('categoria') == 'empresa_startup' }}>Empresa / Startup</option><option value="ong" {{ 'selected' if dados.get('categoria') == 'ong' }}>Organização da Sociedade Civil (OSC/ONG)</option><option value="osc_os" {{ 'selected' if dados.get('categoria') == 'osc_os' }}>Organização Social (OS)</option><option value="instituicao_ensino" {{ 'selected' if dados.get('categoria') == 'instituicao_ensino' }}>Instituição de Ensino</option><option value="orgao_publico" {{ 'selected' if dados.get('categoria') == 'orgao_publico' }}>Órgão Público</option><option value="fundacao_instituto" {{ 'selected' if dados.get('categoria') == 'fundacao_instituto' }}>Fundação / Instituto</option><option value="coletivo" {{ 'selected' if dados.get('categoria') == 'coletivo' }}">Coletivo</option></select></div>
+                    <div class="field-group"><label for="categoria">Categoria <span class="required">*</span></label><select id="categoria" name="categoria" onchange="toggleVisibilityByCategory()"><option value="">Selecione...</option><option value="empresa_startup" {{ 'selected' if dados.get('categoria') == 'empresa_startup' }}>Empresa / Startup</option><option value="ong" {{ 'selected' if dados.get('categoria') == 'ong' }}>Organização da Sociedade Civil (OSC/ONG)</option><option value="osc_os" {{ 'selected' if dados.get('categoria') == 'osc_os' }}>Organização Social (OS)</option><option value="instituicao_ensino" {{ 'selected' if dados.get('categoria') == 'instituicao_ensino' }}>Instituição de Ensino</option><option value="orgao_publico" {{ 'selected' if dados.get('categoria') == 'orgao_publico' }}>Órgão Público</option><option value="fundacao_instituto" {{ 'selected' if dados.get('categoria') == 'fundacao_instituto' }}>Fundação / Instituto</option><option value="coletivo" {{ 'selected' if dados.get('categoria') == 'coletivo' }}>Coletivo</option></select></div>
                     <div class="field-group"><label for="cnpjProponente">CNPJ <span class="required">*</span></label><input type="text" id="cnpjProponente" name="cnpjProponente" placeholder="00.000.000/0000-00" value="{{ dados.get('cnpjProponente', '') }}" maxlength="18" oninput="maskCNPJ(this)"></div>
                 </div>
                 <div class="field-group" id="logoMarcaGroup">
@@ -377,7 +396,7 @@
                 <h2 class="section-title"><i class="fas fa-lightbulb"></i> 3. Dados da atividade</h2>
                 <div class="field-row"><div class="field-group" style="grid-column:span 2"><label for="tituloAtividade">Nome da atividade <span class="required">*</span></label><input type="text" id="tituloAtividade" name="tituloAtividade" required value="{{ dados.get('tituloAtividade', '') }}"></div></div>
                 <div class="field-row">
-                    <div class="field-group"><label for="formatoAtividade">Formato <span class="required">*</span></label><select id="formatoAtividade" name="formatoAtividade" required onchange="toggleActivityFields()"><option value="">Selecione...</option><option value="debate" {{ 'selected' if dados.get('formatoAtividade') == 'debate' }}>Debate</option><option value="roda_de_conversa" {{ 'selected' if dados.get('formatoAtividade') == 'roda_de_conversa' }}>Roda de conversa</option><option value="oficina" {{ 'selected' if dados.get('formatoAtividade') == 'oficina' }}>Oficina</option></select></div>
+                    <div class="field-group"><label for="formatoAtividade">Formato <span class="required">*</span></label><select id="formatoAtividade" name="formatoAtividade" required onchange="toggleActivityFields()"><option value="">Selecione...</option><option value="debate" {{ 'selected' if dados.get('formatoAtividade') == 'debate' }}>Debate</option><option value="roda_de_conversa" {{ 'selected' if dados.get('formatoAtividade') == 'roda_de_conversa' }}>Roda de conversa</option><option value="oficina" {{ 'selected' if dados.get('formatoAtividade') == 'oficina' }}>Oficina</option><option value="experiencia" {{ 'selected' if dados.get('formatoAtividade') == 'experiencia' }}>Experiência</option></select></div>
                     <div class="field-group"><label for="tempoDuracao">Duração prevista <span class="required">*</span></label><select id="tempoDuracao" name="tempoDuracao" required><option value="">Selecione o formato primeiro...</option></select></div>
                 </div>
                 <div class="field-row">
@@ -413,6 +432,176 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- ==================== SEÇÃO EXPERIÊNCIA (ATUALIZADA) ==================== -->
+                <div id="experienciaSection" class="hidden" style="background: #FFFAFF; border: 2px dashed #F0C8F0; border-radius: 12px; padding: 24px; margin-top: 20px;">
+
+                    <!-- Tipologias (múltiplo seletor) -->
+                    <div class="oficina-step">
+                        <span class="oficina-label">Tipologias da experiência <span class="required">*</span></span>
+                        <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:4px;">
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_tecnologica" value="sim"><label>Tecnológica</label></div>
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_interativa" value="sim"><label>Interativa</label></div>
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_imersiva" value="sim"><label>Imersiva</label></div>
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_demonstrativa" value="sim"><label>Demonstrativa</label></div>
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_hibrida" value="sim"><label>Híbrida</label></div>
+                        </div>
+                    </div>
+
+                    <!-- Espaço -->
+                    <div class="oficina-step">
+                        <span class="oficina-label">Espaço</span>
+                        <div class="field-row">
+                            <div class="field-group"><label>Área mínima (m²) <span class="required">*</span></label><input type="number" name="exp_espaco_area_min" min="1" step="0.1"></div>
+                            <div class="field-group"><label>Área ideal (m²) <span class="required">*</span></label><input type="number" name="exp_espaco_area_ideal" min="1" step="0.1"></div>
+                        </div>
+                        <div class="field-group"><label>Ambiente <span class="required">*</span></label><select name="exp_espaco_ambiente"><option value="">Selecione...</option><option value="interno">Interno</option><option value="externo">Externo</option><option value="ambos">Ambos</option></select></div>
+                        <div class="field-group"><label>Isolamento acústico? <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" name="exp_espaco_acustico" value="sim"><label>Sim</label></div><div class="radio-option"><input type="radio" name="exp_espaco_acustico" value="nao"><label>Não</label></div></div></div>
+
+                        <!-- Sala escura? (com opção "outro") -->
+                        <div class="field-group"><label>Sala escura? <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-option"><input type="radio" name="exp_espaco_escura" value="sim" onchange="toggleSalaEscuraOutro()"><label>Sim</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_espaco_escura" value="nao" onchange="toggleSalaEscuraOutro()"><label>Não</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_espaco_escura" value="outro" onchange="toggleSalaEscuraOutro()"><label>Outro</label></div>
+                            </div>
+                            <div class="field-group hidden" id="salaEscuraOutroField" style="margin-top:8px;margin-bottom:0"><label>Especifique <span class="required">*</span></label><input type="text" name="exp_espaco_escura_outro" maxlength="100" placeholder="Descreva a necessidade..."></div>
+                        </div>
+                    </div>
+
+                    <!-- Operação (com tooltip) -->
+                    <div class="oficina-step">
+                        <span class="oficina-label">Operação <i class="tooltip-icon" data-tooltip="Informações sobre o funcionamento, fluxo e operação da experiência durante o festival.">?</i></span>
+
+                        <div class="field-group"><label>Duração da experiência <span class="required">*</span></label><input type="text" name="exp_oper_duracao" maxlength="100"></div>
+
+                        <div class="field-group"><label>Funcionamento <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" name="exp_oper_funcionamento" value="continuo"><label>Contínuo</label></div><div class="radio-option"><input type="radio" name="exp_oper_funcionamento" value="sessoes"><label>Por sessões</label></div></div></div>
+
+                        <div class="field-row">
+                            <div class="field-group"><label>Permanência média do usuário <span class="required">*</span></label><input type="text" name="exp_oper_permanencia" maxlength="50"></div>
+                            <div class="field-group"><label>Quantidade simultânea de usuários <span class="required">*</span></label><input type="number" name="exp_oper_qtd_simultanea" min="1"></div>
+                        </div>
+                        <div class="field-group"><label>Fluxo de usuários estimado por hora <span class="required">*</span></label><input type="number" name="exp_oper_fluxo_hora" min="1"></div>
+                    </div>
+
+                    <!-- Detalhes - Múltiplos dias (condicional) -->
+                    <div class="oficina-step hidden" id="expMultiplosDiasSection">
+                        <span class="oficina-label">Detalhes — Múltiplos dias</span>
+                        <div class="field-row">
+                            <div class="field-group"><label>Quantidade de dias <span class="required">*</span></label>
+                                <select name="exp_multiplos_dias_qtd" id="expMultiplosDiasQtd">
+                                    <option value="">Selecione...</option>
+                                    <option value="2">2 dias</option>
+                                    <option value="3">3 dias</option>
+                                    <option value="4">4 dias</option>
+                                    <option value="5">5 dias</option>
+                                </select>
+                            </div>
+                            <div class="field-group"><label>Duração em horas por dia <span class="required">*</span></label>
+                                <select name="exp_multiplos_dias_horas" id="expMultiplosDiasHoras">
+                                    <option value="">Selecione...</option>
+                                    <option value="1">1 hora</option>
+                                    <option value="2">2 horas</option>
+                                    <option value="3">3 horas</option>
+                                    <option value="4">4 horas</option>
+                                    <option value="5">5 horas</option>
+                                    <option value="6">6 horas</option>
+                                    <option value="7">7 horas</option>
+                                    <option value="8">8 horas</option>
+                                    <option value="9">9 horas</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Infraestrutura -->
+                    <div class="oficina-step">
+                        <span class="oficina-label">Infraestrutura</span>
+
+                        <!-- Energia elétrica especial -->
+                        <div class="field-group"><label>Energia elétrica especial? <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-option"><input type="radio" name="exp_infra_energia" value="sim" onchange="toggleExpPontosEnergia()"><label>Sim</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_energia" value="nao" onchange="toggleExpPontosEnergia()"><label>Não</label></div>
+                            </div>
+                        </div>
+
+                        <!-- Pontos de energia (condicional) -->
+                        <div class="field-group hidden" id="expPontosEnergiaField" style="margin-top:0">
+                            <label>Quantidade de pontos de energia <span class="required">*</span></label>
+                            <input type="number" name="exp_infra_pontos_energia_qtd" min="1" placeholder="Ex: 4" style="max-width:200px">
+                        </div>
+
+                        <!-- Pontos de iluminação -->
+                        <div class="field-group"><label>Pontos de iluminação? <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-option"><input type="radio" name="exp_infra_iluminacao" value="sim" onchange="toggleExpIluminacao()"><label>Sim</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_iluminacao" value="nao" onchange="toggleExpIluminacao()"><label>Não</label></div>
+                            </div>
+                        </div>
+                        <div class="hidden" id="expIluminacaoField" style="margin-top:0;margin-bottom:20px">
+                            <div class="field-row">
+                                <div class="field-group"><label>Quantidade de pontos <span class="required">*</span></label><input type="number" name="exp_infra_iluminacao_qtd" min="1" placeholder="Ex: 3"></div>
+                                <div class="field-group"><label>Especificação <span class="required">*</span></label><input type="text" name="exp_infra_iluminacao_spec" maxlength="100" placeholder="Ex: Spot LED 50W"></div>
+                            </div>
+                        </div>
+
+                        <!-- Mobiliário próprios -->
+                        <div class="field-group"><label>Mobiliário próprios utilizados para a realização da atividade? <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-option"><input type="radio" name="exp_infra_mobiliario_opcao" value="sim" onchange="toggleExpMobiliario()"><label>Sim</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_mobiliario_opcao" value="nao" onchange="toggleExpMobiliario()"><label>Não</label></div>
+                            </div>
+                            <div class="field-group hidden" id="expMobiliarioField" style="margin-top:8px;margin-bottom:0"><label>Descreva o mobiliário próprio <span class="required">*</span></label><textarea name="exp_infra_mobiliario_desc" maxlength="500" style="min-height:70px" placeholder="Descreva os mobiliários próprios que serão utilizados..."></textarea></div>
+                        </div>
+
+                        <!-- Equipamentos próprios -->
+                        <div class="field-group"><label>Equipamentos próprios? <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-option"><input type="radio" name="exp_infra_equip_proprios_opcao" value="sim" onchange="toggleExpEquipProprios()"><label>Sim</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_equip_proprios_opcao" value="nao" onchange="toggleExpEquipProprios()"><label>Não</label></div>
+                            </div>
+                        </div>
+                        <div class="hidden" id="expEquipPropriosTable" style="margin-top:0">
+                            <label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Lista de equipamentos próprios</label>
+                            <table class="material-table" id="expEquipTable">
+                                <thead><tr><th style="width:40%">Equipamento</th><th style="width:20%">Quantidade</th><th style="width:30%">Observações</th><th style="width:10%"></th></tr></thead>
+                                <tbody id="expEquipTableBody"></tbody>
+                            </table>
+                            <button type="button" class="btn-add-row" onclick="addExpEquipRow()"><i class="fas fa-plus"></i> Adicionar equipamento</button>
+                        </div>
+
+                        <!-- Equipamentos solicitados ao festival -->
+                        <div class="field-group" style="margin-top:16px"><label>Equipamentos solicitados ao festival <span class="required">*</span></label><textarea name="exp_infra_equip_solicitados" maxlength="500" style="min-height:70px"></textarea></div>
+                    </div>
+
+                    <!-- Montagem -->
+                    <div class="oficina-step">
+                        <span class="oficina-label">Montagem</span>
+                        <div class="field-row">
+                            <div class="field-group"><label>Tempo de montagem <span class="required">*</span></label><input type="text" name="exp_montagem_tempo" maxlength="100"></div>
+                            <div class="field-group"><label>Tempo de desmontagem <span class="required">*</span></label><input type="text" name="exp_montagem_desmontagem" maxlength="100"></div>
+                        </div>
+                        <div class="field-group"><label>Quantidade da equipe operacional do proponente? <span class="required">*</span></label><input type="number" name="exp_montagem_qtd_equipe" min="1"></div>
+                    </div>
+
+                    <!-- Acessibilidade -->
+                    <div class="oficina-step">
+                        <span class="oficina-label">Acessibilidade</span>
+                        <div class="field-group"><label>Existe ações de acessibilidade na experiência? <span class="required">*</span></label><input type="text" name="exp_acess_recursos" maxlength="200" placeholder="Descreva as ações de acessibilidade..."></div>
+                        <div class="field-group"><label>Restrições de público (se houver)</label><textarea name="exp_acess_restricoes" maxlength="300" style="min-height:60px"></textarea></div>
+                    </div>
+
+                    <!-- Anexos -->
+                    <div class="oficina-step" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
+                        <span class="oficina-label">Anexos</span>
+                        <!-- Croqui/Planta unificado, apenas PDF -->
+                        <div class="field-group"><label>Croqui esquemático / Planta simplificada <span class="required">*</span></label><input type="file" name="exp_anexo_croqui" accept="application/pdf"><div class="helper-text">Formato aceito: PDF. Máx 5MB.</div></div>
+                        <!-- Imagens de referência: JPG, PNG, JPEG apenas, máx 5MB -->
+                        <div class="field-group"><label>Imagens de referência <span class="required">*</span></label><input type="file" name="exp_anexo_imagens" accept="image/jpeg,image/png" id="expAnexoImagens"><div class="helper-text">Formatos aceitos: JPG, PNG. Máx 5MB.</div></div>
+                        <div class="field-group"><label>Vídeo demonstrativo (opcional)</label><input type="url" name="exp_anexo_video" placeholder="https://youtu.be/..."></div>
+                    </div>
+                </div>
 
                 <div class="field-group" style="margin-top: 30px;">
                     <label>Recursos de infraestrutura necessários</label>
@@ -429,7 +618,6 @@
                 <div class="field-group hidden" id="ajudaCustoWrapper" style="margin-top: 30px;">
                     <h2 class="section-title" style="border-bottom: none; margin-bottom: 16px; padding-bottom: 0;"><i class="fas fa-hand-holding-usd"></i> Ajuda de Custo</h2>
                     <label>Você precisa de recurso financeiro para ajuda de custo? <span class="required">*</span></label>
-                    <!-- O ATRIBUTO REQUIRED FOI REMOVIDO DAQUI PARA SER GERENCIADO PELO TOGGLESECTION -->
                     <select id="ajudaCustoSelect" name="ajuda_custo" onchange="toggleAjudaCustoTable()">
                         <option value="">Selecione...</option>
                         <option value="nao" {{ 'selected' if dados.get('ajuda_custo') == 'nao' or not dados.get('ajuda_custo') }}>Não</option>
@@ -609,7 +797,7 @@ function applyCrop(){
 }
 const ci=document.getElementById('cropImage');ci.addEventListener('mousedown',function(e){cropState.isDragging=true;cropState.startX=e.clientX-parseFloat(ci.style.left);cropState.startY=e.clientY-parseFloat(ci.style.top);e.preventDefault()});document.addEventListener('mousemove',function(e){if(!cropState.isDragging)return;let x=e.clientX-cropState.startX,y=e.clientY-cropState.startY;const w=parseFloat(ci.style.width),h=parseFloat(ci.style.height);if(x>0)x=0;if(y>0)y=0;if(x+w<cropState.modalSize)x=cropState.modalSize-w;if(y+h<cropState.modalSize)y=cropState.modalSize-h;ci.style.left=x+'px';ci.style.top=y+'px'});document.addEventListener('mouseup',function(){cropState.isDragging=false});ci.addEventListener('touchstart',function(e){cropState.isDragging=true;const t=e.touches[0];cropState.startX=t.clientX-parseFloat(ci.style.left);cropState.startY=t.clientY-parseFloat(ci.style.top);e.preventDefault()},{passive:false});document.addEventListener('touchmove',function(e){if(!cropState.isDragging)return;const t=e.touches[0];let x=t.clientX-cropState.startX,y=t.clientY-cropState.startY;const w=parseFloat(ci.style.width),h=parseFloat(ci.style.height);if(x>0)x=0;if(y>0)y=0;if(x+w<cropState.modalSize)x=cropState.modalSize-w;if(y+h<cropState.modalSize)y=cropState.modalSize-h;ci.style.left=x+'px';ci.style.top=y+'px'},{passive:false});document.addEventListener('touchend',function(){cropState.isDragging=false});
 
-// ===== TOGGLES DE VISIBILIDADE ATUALIZADOS =====
+// ===== TOGGLES DE VISIBILIDADE =====
 function toggleVisibilityByCategory(){toggleMaterialAjudaOficina();toggleAjudaCustoVisibility()}
 function toggleMaterialAjudaOficina(){const t=document.getElementById('tipoProponente').value,c=document.getElementById('categoria').value,s=document.getElementById('oficinaMaterialStep');const show=(t==='pf'||(t==='pj'&&(c==='ong'||c==='coletivo')));toggleSection(s,show);if(!show){document.getElementById('materialAjuda').value='nao';toggleMaterialTable()}}
 function toggleAjudaCustoVisibility(){const t=document.getElementById('tipoProponente').value,c=document.getElementById('categoria').value,w=document.getElementById('ajudaCustoWrapper');const show=(t==='pf'||(t==='pj'&&(c==='ong'||c==='coletivo')));toggleSection(w,show);if(!show){document.getElementById('ajudaCustoSelect').value='';toggleAjudaCustoTable()}}
@@ -645,10 +833,36 @@ function toggleProponenteDocs(){if(currentType!=='pf')return;const nat=document.
 
 function checkGuestBairro(input){const card=input.closest('.guest-card');if(!card)return;const bf=card.querySelector('.g-bairro-field'),es=card.querySelector('.g-estado'),ci=card.querySelector('.g-cidade');const e=es?es.value:'',c=ci?ci.value.trim().toLowerCase():'';if(e==='PE'&&c==='recife')bf.classList.remove('hidden');else bf.classList.add('hidden')}
 
-const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'roda_de_conversa':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'oficina':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'2h30',label:'2h30'},{value:'3h',label:'3h'}]};
+const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'roda_de_conversa':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'oficina':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'2h30',label:'2h30'},{value:'3h',label:'3h'}],'experiencia':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'3h',label:'3h'},{value:'4h',label:'4h'},{value:'meio_periodo',label:'Meio período'},{value:'dia_inteiro',label:'Dia inteiro'},{value:'multiplos_dias',label:'Múltiplos dias'}]};
+
 function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value,s=document.getElementById('tempoDuracao'),cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op)});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv}}
-function toggleActivityFields(){const f=document.getElementById('formatoAtividade').value;updateDuracaoOptions();const s=document.getElementById('oficinaSection');const isOficina=(f==='oficina');toggleSection(s,isOficina);if(isOficina){toggleLabFields();toggleSoftwareFields();toggleVisibilityByCategory()}}
-toggleActivityFields();function toggleInscricaoCheckbox(){const v=document.getElementById('acessoAtividade').value;const show=(v==='inscricao');toggleSection(document.getElementById('inscricaoCheckboxGroup'),show);if(!show){document.getElementById('inscricaoResponsabilidade').checked=false}}
+
+function toggleActivityFields(){
+    const f=document.getElementById('formatoAtividade').value;
+    updateDuracaoOptions();
+    const isOficina=(f==='oficina');
+    const isExperiencia=(f==='experiencia');
+    toggleSection(document.getElementById('oficinaSection'),isOficina);
+    toggleSection(document.getElementById('experienciaSection'),isExperiencia);
+    if(isOficina){toggleLabFields();toggleSoftwareFields();toggleVisibilityByCategory()}
+    toggleMultiplosDiasFields();
+}
+
+function toggleMultiplosDiasFields(){
+    const f=document.getElementById('formatoAtividade').value;
+    const d=document.getElementById('tempoDuracao').value;
+    const section=document.getElementById('expMultiplosDiasSection');
+    if(f==='experiencia' && d==='multiplos_dias'){
+        toggleSection(section, true);
+    } else {
+        toggleSection(section, false);
+    }
+}
+document.getElementById('tempoDuracao').addEventListener('change', toggleMultiplosDiasFields);
+
+toggleActivityFields();
+
+function toggleInscricaoCheckbox(){const v=document.getElementById('acessoAtividade').value;const show=(v==='inscricao');toggleSection(document.getElementById('inscricaoCheckboxGroup'),show);if(!show){document.getElementById('inscricaoResponsabilidade').checked=false}}
 toggleInscricaoCheckbox();function toggleLabFields(){const v=document.querySelector('input[name="oficina_lab"]:checked');const show=(v&&v.value==='sim');toggleSection(document.getElementById('labDetails'),show)}
 function toggleSoftwareFields(){const v=document.querySelector('input[name="oficina_soft_req"]:checked');const show=(v&&v.value==='sim');toggleSection(document.getElementById('softwareDetails'),show)}
 function toggleRestricao(){const show=document.getElementById('restricaoSim').checked;toggleSection(document.getElementById('faixaEtariaGroup'),show)}
@@ -669,10 +883,10 @@ function validateCPFfrontend(i){const v=i.value.replace(/\D/g,'');if(v.length===
 
 function maskPhone(e){var v=e.target.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>6)e.target.value='('+v.substring(0,2)+') '+v.substring(2,7)+'-'+v.substring(7);else if(v.length>2)e.target.value='('+v.substring(0,2)+') '+v.substring(2);else if(v.length>0)e.target.value='('+v}
 document.getElementById('telefoneRepresentante').addEventListener('input',maskPhone);
+
 function setupCounter(id,max){var el=document.getElementById(id);if(!el)return;var cnt=el.parentElement.querySelector('.char-counter');if(!cnt)return;el.addEventListener('input',function(){cnt.innerText=this.value.length+' / '+max});cnt.innerText=el.value.length+' / '+max}
 setupCounter('objetivoAtividade',500);setupCounter('justificativaTematica',700);setupCounter('metodologiaAplicada',500);setupCounter('descricaoAtividade',700);setupCounter('infoExtras',700);
 
-// Listener do Proponente
 document.getElementById('fotoProponente').addEventListener('change',function(e){
     var p=document.getElementById('photoPreview');
     var s=document.getElementById('status_fotoProponente');
@@ -686,6 +900,43 @@ document.getElementById('fotoProponente').addEventListener('change',function(e){
     }
 });
 
+// ===== NOVAS FUNÇÕES DA SEÇÃO EXPERIÊNCIA =====
+function toggleSalaEscuraOutro() {
+    const val = document.querySelector('input[name="exp_espaco_escura"]:checked')?.value;
+    toggleSection(document.getElementById('salaEscuraOutroField'), val === 'outro');
+}
+
+function toggleExpPontosEnergia() {
+    const val = document.querySelector('input[name="exp_infra_energia"]:checked')?.value;
+    toggleSection(document.getElementById('expPontosEnergiaField'), val === 'sim');
+}
+
+function toggleExpIluminacao() {
+    const val = document.querySelector('input[name="exp_infra_iluminacao"]:checked')?.value;
+    toggleSection(document.getElementById('expIluminacaoField'), val === 'sim');
+}
+
+function toggleExpMobiliario() {
+    const val = document.querySelector('input[name="exp_infra_mobiliario_opcao"]:checked')?.value;
+    toggleSection(document.getElementById('expMobiliarioField'), val === 'sim');
+}
+
+function toggleExpEquipProprios() {
+    const val = document.querySelector('input[name="exp_infra_equip_proprios_opcao"]:checked')?.value;
+    toggleSection(document.getElementById('expEquipPropriosTable'), val === 'sim');
+}
+
+let expEquipRowCount = 0;
+function addExpEquipRow() {
+    expEquipRowCount++;
+    const tb = document.getElementById('expEquipTableBody'), tr = document.createElement('tr');
+    tr.id = 'expEquipRow' + expEquipRowCount;
+    tr.innerHTML = `<td><input type="text" name="exp_equip_item_${expEquipRowCount}" required></td><td><input type="number" name="exp_equip_qtd_${expEquipRowCount}" min="1" value="1" required style="width:70px"></td><td><input type="text" name="exp_equip_obs_${expEquipRowCount}" maxlength="200"></td><td><button type="button" class="btn-remove-row" onclick="removeExpEquipRow('expEquipRow${expEquipRowCount}')"><i class="fas fa-times"></i></button></td>`;
+    tb.appendChild(tr);
+}
+function removeExpEquipRow(id) { document.getElementById(id).remove(); }
+
+// ===== GUEST LOGIC =====
 let guestCount=0;const maxGuests=5;
 function populateAgeDropdowns(){const f=[{value:'0 a 18',label:'0 a 18'},{value:'19 a 25',label:'19 a 25'},{value:'26 a 35',label:'26 a 35'},{value:'36 a 60',label:'36 a 60'}];document.querySelectorAll('.g-idade').forEach(s=>{if(s.options.length<=1)f.forEach(x=>{const o=document.createElement('option');o.value=x.value;o.textContent=x.label;s.appendChild(o)})})}
 
@@ -807,6 +1058,31 @@ function createPaperViewHTML() {
     
     const tags = document.getElementById('tagsHidden').value + (document.getElementById('tagSuggestionHidden').value ? `, ${document.getElementById('tagSuggestionHidden').value} (Sugestão)` : '');
 
+    // Experiencia specific data
+    let expHTML = '';
+    const formato = getVal('formatoAtividade');
+    if(formato === 'experiencia') {
+        const getExpRadio = (name) => document.querySelector(`input[name="${name}"]:checked`)?.value || 'N/A';
+        const getExpVal = (name) => document.querySelector(`[name="${name}"]`)?.value || '';
+        
+        const tipologias = [];
+        document.querySelectorAll('#experienciaSection input[name^="exp_tipologia_"]:checked').forEach(cb => {
+            tipologias.push(cb.closest('.checkbox-option').querySelector('label').innerText);
+        });
+
+        expHTML = `
+            <div class="pdf-section">
+                <h2>Detalhes da Experiência</h2>
+                <div class="pdf-row"><span class="pdf-label">Tipologias:</span> <span class="pdf-value">${tipologias.join(', ') || 'N/A'}</span></div>
+                <div class="pdf-row"><span class="pdf-label">Sala escura:</span> <span class="pdf-value">${getExpRadio('exp_espaco_escura') === 'outro' ? 'Outro: ' + getExpVal('exp_espaco_escura_outro') : getExpRadio('exp_espaco_escura')}</span></div>
+                <div class="pdf-row"><span class="pdf-label">Pontos de Energia:</span> <span class="pdf-value">${getExpRadio('exp_infra_energia') === 'sim' ? 'Sim - Qtd: ' + getExpVal('exp_infra_pontos_energia_qtd') : 'Não'}</span></div>
+                <div class="pdf-row"><span class="pdf-label">Pontos de Iluminação:</span> <span class="pdf-value">${getExpRadio('exp_infra_iluminacao') === 'sim' ? 'Sim - Qtd: ' + getExpVal('exp_infra_iluminacao_qtd') + ' - Spec: ' + getExpVal('exp_infra_iluminacao_spec') : 'Não'}</span></div>
+                <div class="pdf-row"><span class="pdf-label">Mobiliário Próprio:</span> <span class="pdf-value">${getExpRadio('exp_infra_mobiliario_opcao') === 'sim' ? 'Sim' : 'Não'}</span></div>
+                <div class="pdf-row"><span class="pdf-label">Equipe Operacional:</span> <span class="pdf-value">${getExpVal('exp_montagem_qtd_equipe')}</span></div>
+            </div>
+        `;
+    }
+
     paperContainer.innerHTML = `
         <div class="pdf-section">
             <h2>1. Proponente</h2>
@@ -842,6 +1118,8 @@ function createPaperViewHTML() {
                 <strong>Descrição:</strong> ${getVal('descricaoAtividade')}
             </div>
         </div>
+
+        ${expHTML}
 
         <div class="pdf-section">
             <h2>4. Integrantes</h2>
@@ -1087,6 +1365,16 @@ function limparFormulario(){
     toggleSection(document.getElementById('inscricaoCheckboxGroup'), false);
     toggleSection(document.getElementById('ajudaCustoSection'), false);
     toggleSection(document.getElementById('ajudaCustoWrapper'), false);
+    // Reset experiencia specific toggles
+    toggleSection(document.getElementById('expMultiplosDiasSection'), false);
+    toggleSection(document.getElementById('salaEscuraOutroField'), false);
+    toggleSection(document.getElementById('expPontosEnergiaField'), false);
+    toggleSection(document.getElementById('expIluminacaoField'), false);
+    toggleSection(document.getElementById('expMobiliarioField'), false);
+    toggleSection(document.getElementById('expEquipPropriosTable'), false);
+    if(document.getElementById('expEquipTableBody')) document.getElementById('expEquipTableBody').innerHTML = '';
+    expEquipRowCount = 0;
+    
     addGuest();showToast('Formulário limpo.','info')
 }
 </script>

@@ -79,6 +79,8 @@ def strip_base64_for_supabase(data):
         for conv in clean['convidados']:
             if 'foto_base64' in conv:
                 conv['foto_base64'] = '[ENVIADO VIA WORKER]'
+    if 'atividade' in clean and clean['atividade'].get('experiencia') and 'anexos_base64' in clean['atividade']['experiencia']:
+        clean['atividade']['experiencia']['anexos_base64'] = '[ENVIADOS VIA WORKER]'
     return clean
 
 
@@ -125,7 +127,6 @@ def save_to_supabase(inscricao):
     except Exception as e:
         print(f"❌ Exceção ao salvar no Supabase: {type(e).__name__}: {e}")
         return None
-
 
 # ──────────────────────────────────────────────
 # FIM: Configuração Supabase
@@ -192,6 +193,28 @@ def converter_foto_base64(arquivo_foto):
         print(f"Erro ao converter imagem: {e}")
         return None
 
+def converter_arquivo_base64(arquivo, permitido_ext=None):
+    """Converte qualquer arquivo (incluindo PDF) para base64."""
+    if not arquivo or arquivo.filename == '':
+        return None
+    ext = arquivo.filename.rsplit('.', 1)[1].lower() if '.' in arquivo.filename else ''
+    if permitido_ext and ext not in permitido_ext:
+        return None
+    try:
+        arquivo.seek(0)
+        dados_bytes = arquivo.read()
+        encoded_string = base64.b64encode(dados_bytes).decode('utf-8')
+        if ext == 'pdf':
+            mime_type = 'application/pdf'
+        elif ext in ['jpg', 'jpeg']:
+            mime_type = 'image/jpeg'
+        else:
+            mime_type = f'image/{ext}'
+        return f"data:{mime_type};base64,{encoded_string}"
+    except Exception as e:
+        print(f"Erro ao converter arquivo: {e}")
+        return None
+
 
 def salvar_uploads_temporarios(request_files):
     uploads = session.get('temp_uploads', {})
@@ -219,20 +242,15 @@ def limpar_uploads_temporarios():
 
 
 # ──────────────────────────────────────────────
-# FUNÇÃO DE ENVIO DE EMAIL (CORRIGIDA E MELHORADA)
+# FUNÇÃO DE ENVIO DE EMAIL
 # ──────────────────────────────────────────────
 def enviar_email_com_anexo(destinatario, nome_atividade, nome_proponente, pdf_file):
-    """
-    Envia email HTML profissional com o PDF anexado.
-    Retorna True se enviado com sucesso, False caso contrário.
-    """
     SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
     SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
     SMTP_USER = os.environ.get("SMTP_USER")
     SMTP_PASS = os.environ.get("SMTP_PASS")
     EMAIL_FROM = os.environ.get("EMAIL_FROM", "naoresponda@recnplay.com.br")
 
-    # ── Verificação de credenciais ──
     if not SMTP_USER or not SMTP_PASS:
         print("=" * 60)
         print("⚠️  CREDENCIAIS SMTP NÃO CONFIGURADAS!")
@@ -251,7 +269,6 @@ def enviar_email_com_anexo(destinatario, nome_atividade, nome_proponente, pdf_fi
         return False
 
     try:
-        # ── CRÍTICO: Resetar ponteiro do arquivo antes de ler ──
         pdf_file.seek(0)
         pdf_bytes = pdf_file.read()
 
@@ -261,33 +278,21 @@ def enviar_email_com_anexo(destinatario, nome_atividade, nome_proponente, pdf_fi
 
         print(f"📧 Preparando email para {destinatario} (PDF: {len(pdf_bytes)} bytes)...")
 
-        # ── Construir mensagem ──
         msg = MIMEMultipart('alternative')
         msg['From'] = EMAIL_FROM
         msg['To'] = destinatario
         msg['Subject'] = f"Confirmação de Inscrição — REC'n'Play 2026: {nome_atividade}"
 
-        # ── Versão texto puro (fallback) ──
         text_body = f"""Olá, {nome_proponente},
 
 Recebemos sua proposta para a atividade "{nome_atividade}" no REC'n'Play 2026 com sucesso!
 
 Em anexo, segue o comprovante em PDF com todos os dados enviados.
 
-Próximos passos:
-- Sua proposta será analisada pela equipe curadora do festival
-- Você receberá o resultado por e-mail
-- Em caso de dúvidas, entre em contato conosco
-
 Atenciosamente,
 Equipe REC'n'Play 2026
-
----
-Este é um e-mail automático. Não responta esta mensagem.
-REC'n'Play 2026 — Festival Colaborativo de Inovação e Cultura
 """
 
-        # ── Versão HTML (visual profissional) ──
         html_body = f"""<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -295,16 +300,11 @@ REC'n'Play 2026 — Festival Colaborativo de Inovação e Cultura
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4; padding:20px 0;">
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.1);">
-
-    <!-- HEADER -->
     <tr>
         <td style="background:linear-gradient(135deg,#FF3399,#990099); padding:35px 40px; text-align:center;">
             <h1 style="color:#fff; margin:0; font-size:28px; font-weight:700;">REC'n'Play 2026</h1>
-            <p style="color:rgba(255,255,255,0.85); margin:8px 0 0; font-size:14px;">Festival Colaborativo de Inovação e Cultura</p>
         </td>
     </tr>
-
-    <!-- BODY -->
     <tr>
         <td style="padding:35px 40px;">
             <h2 style="color:#990099; margin:0 0 20px; font-size:22px;">✅ Proposta Registrada com Sucesso!</h2>
@@ -312,57 +312,30 @@ REC'n'Play 2026 — Festival Colaborativo de Inovação e Cultura
                 Olá, <strong style="color:#FF3399;">{nome_proponente}</strong>!
             </p>
             <p style="font-size:15px; line-height:1.7; margin:0 0 15px;">
-                Recebemos sua proposta para a atividade <strong>"{nome_atividade}"</strong> no REC'n'Play 2026.
+                Recebemos sua proposta para a atividade <strong>"{nome_atividade}"</strong>.
             </p>
             <p style="font-size:15px; line-height:1.7; margin:0 0 25px;">
                 Em anexo, segue o comprovante em PDF com todos os dados enviados na inscrição.
             </p>
-
-            <!-- INFO BOX -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#FFF0FF; border-left:4px solid #FF3399; border-radius:8px; margin:0 0 25px;">
-                <tr>
-                    <td style="padding:18px 22px;">
-                        <p style="margin:0 0 10px; font-size:14px; font-weight:700; color:#990099;">📋 Próximos passos:</p>
-                        <ul style="margin:0; padding-left:20px; font-size:14px; line-height:1.8; color:#555;">
-                            <li>Sua proposta será analisada pela equipe curadora do festival</li>
-                            <li>Você receberá o resultado da avaliação por e-mail</li>
-                            <li>Em caso de dúvidas, entre em contato conosco</li>
-                        </ul>
-                    </td>
-                </tr>
-            </table>
-
             <p style="font-size:15px; line-height:1.7; margin:0;">
                 Atenciosamente,<br>
                 <strong style="color:#990099;">Equipe REC'n'Play 2026</strong>
             </p>
         </td>
     </tr>
-
-    <!-- FOOTER -->
-    <tr>
-        <td style="background:#1a1a1a; color:#999; padding:22px 40px; text-align:center; font-size:12px; line-height:1.6;">
-            <p style="margin:0;">Este é um e-mail automático. Não responta esta mensagem.</p>
-            <p style="margin:5px 0 0; color:#FF3399;">REC'n'Play 2026 — Festival Colaborativo de Inovação e Cultura</p>
-        </td>
-    </tr>
-
 </table>
 </td></tr>
 </table>
 </body>
 </html>"""
 
-        # ── Anexar corpos do email ──
         msg.attach(MIMEText(text_body, 'plain', 'utf-8'))
         msg.attach(MIMEText(html_body, 'html', 'utf-8'))
 
-        # ── Anexar PDF ──
         pdf_part = MIMEApplication(pdf_bytes, Name="proposta_recnplay_2026.pdf")
         pdf_part['Content-Disposition'] = 'attachment; filename="proposta_recnplay_2026.pdf"'
         msg.attach(pdf_part)
 
-        # ── Enviar via SMTP ──
         print(f"📧 Conectando ao SMTP {SMTP_SERVER}:{SMTP_PORT}...")
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=30)
         server.ehlo()
@@ -375,34 +348,9 @@ REC'n'Play 2026 — Festival Colaborativo de Inovação e Cultura
         print(f"✅ Email enviado com sucesso para {destinatario}")
         return True
 
-    except smtplib.SMTPAuthenticationError:
-        print("=" * 60)
-        print("❌ ERRO DE AUTENTICAÇÃO SMTP!")
-        print("❌ Verifique SMTP_USER e SMTP_PASS.")
-        print("💡 Para Gmail: use 'Senha de App', NÃO a senha normal.")
-        print("   1. Acesse myaccount.google.com/security")
-        print("   2. Ative verificação em 2 etapas")
-        print("   3. Crie uma 'Senha de App' para Gmail")
-        print("   4. Use essa senha de 16 caracteres no SMTP_PASS")
-        print("=" * 60)
-        return False
-
-    except smtplib.SMTPConnectError:
-        print(f"❌ Erro ao conectar ao servidor SMTP {SMTP_SERVER}:{SMTP_PORT}. Verifique o endereço e porta.")
-        return False
-
-    except smtplib.SMTPRecipientsRefused:
-        print(f"❌ Destinatário recusado: {destinatario}. Verifique se o e-mail é válido.")
-        return False
-
     except Exception as e:
         print(f"❌ Erro inesperado ao enviar email: {type(e).__name__}: {e}")
         return False
-
-
-# ──────────────────────────────────────────────
-# FIM: FUNÇÃO DE ENVIO DE EMAIL
-# ──────────────────────────────────────────────
 
 
 # ──────────────────────────────────────────────
@@ -411,7 +359,6 @@ REC'n'Play 2026 — Festival Colaborativo de Inovação e Cultura
 
 def verify_turnstile(token, remote_ip=None):
     if not TURNSTILE_SECRET_KEY:
-        print("⚠️ TURNSTILE_SECRET_KEY não configurada, pulando verificação CAPTCHA")
         return True
     if not token:
         return False
@@ -430,8 +377,6 @@ def verify_turnstile(token, remote_ip=None):
         )
         with urllib.request.urlopen(req, timeout=10) as resp:
             result = json.loads(resp.read().decode('utf-8'))
-            if not result.get('success', False):
-                print(f"❌ Turnstile falhou: {result.get('error-codes', [])}")
             return result.get('success', False)
     except Exception as e:
         print(f"❌ Erro na verificação Turnstile: {e}")
@@ -444,7 +389,6 @@ def validate_origin():
     origin = request.headers.get('Origin', '').strip()
     referer = request.headers.get('Referer', '').strip()
     if not origin and not referer:
-        print("⚠️ Requisição sem Origin nem Referer")
         return False
 
     def _check_domain(header_value):
@@ -464,13 +408,10 @@ def validate_origin():
             return False
 
     if origin and not _check_domain(origin):
-        print(f"⚠️ Origin rejeitada: {origin}")
         return False
     if referer and not _check_domain(referer):
-        print(f"⚠️ Referer rejeitado: {referer}")
         return False
     return True
-
 
 # ──────────────────────────────────────────────
 # FIM: Funções de Segurança
@@ -501,7 +442,6 @@ def home():
     # INÍCIO: Verificações de Segurança
     honeypot_value = dados.get(HONEYPOT_FIELD_NAME, '').strip()
     if honeypot_value:
-        print(f"🚨 Honeypot preenchido — bot detectado! Valor: '{honeypot_value}'")
         flash('Proposta enviada com sucesso!', 'success')
         return redirect(url_for('home'))
 
@@ -563,8 +503,7 @@ def home():
 
     if dados.get('acessoAtividade') == 'inscricao':
         if dados.get('inscricaoResponsabilidade') != 'sim':
-            erros.append(
-                'É necessário aceitar a responsabilidade sobre o processo de inscrição e a segurança dos dados conforme a LGPD.')
+            erros.append('É necessário aceitar a responsabilidade sobre o processo de inscrição e a segurança dos dados conforme a LGPD.')
 
     tags_val = dados.get('tags', '').strip()
     suggestion = dados.get('tagSuggestion', '').strip()
@@ -599,17 +538,13 @@ def home():
         if not dados.get('oficina_lab'): erros.append('Informe sobre laboratório.')
         if dados.get('oficina_lab') == 'sim':
             if not dados.get('oficina_pc_specs'): erros.append('Descreva as configurações mínimas dos PCs.')
-            if len(dados.get('oficina_pc_specs', '')) > 200: erros.append(
-                'Configurações dos PCs: máximo 200 caracteres.')
+            if len(dados.get('oficina_pc_specs', '')) > 200: erros.append('Configurações dos PCs: máximo 200 caracteres.')
             if not dados.get('oficina_soft_req'): erros.append('Informe sobre software.')
-            elif dados.get('oficina_soft_req') == 'sim' and not dados.get('oficina_soft_desc'): erros.append(
-                'Descreva o software.')
-            if len(dados.get('oficina_soft_desc', '')) > 200: erros.append(
-                'Descrição do software: máximo 200 caracteres.')
+            elif dados.get('oficina_soft_req') == 'sim' and not dados.get('oficina_soft_desc'): erros.append('Descreva o software.')
+            if len(dados.get('oficina_soft_desc', '')) > 200: erros.append('Descrição do software: máximo 200 caracteres.')
         if not dados.get('oficina_mobiliario'): erros.append('Selecione o mobiliário necessário.')
         if mostrar_ajuda_custo:
-            if not dados.get('oficina_material_ajuda'): erros.append(
-                'Informe sobre ajuda de custo com material.')
+            if not dados.get('oficina_material_ajuda'): erros.append('Informe sobre ajuda de custo com material.')
             if dados.get('oficina_material_ajuda') in ('sim', 'indispensavel'):
                 has_items = False
                 for key in dados:
@@ -621,6 +556,83 @@ def home():
                     erros.append('A justificativa dos materiais é obrigatória quando há ajuda de custo.')
                 elif len(dados.get('oficina_justificativa_materiais', '')) > 500:
                     erros.append('Justificativa dos materiais: máximo 500 caracteres.')
+
+    # ──────────────────────────────────────────────────────────
+    # VALIDAÇÃO EXCLUSIVA PARA FORMATO EXPERIÊNCIA (ATUALIZADO)
+    # ──────────────────────────────────────────────────────────
+    elif formato == 'experiencia':
+        # 1. Tipologias (Múltipla escolha)
+        tipologias_exp = ['exp_tipologia_tecnologica', 'exp_tipologia_interativa', 'exp_tipologia_imersiva', 'exp_tipologia_demonstrativa', 'exp_tipologia_hibrida']
+        if not any(dados.get(t) for t in tipologias_exp):
+            erros.append('Selecione pelo menos uma Tipologia da experiência.')
+
+        # 2. Múltiplos dias (Condicional)
+        if dados.get('tempoDuracao') == 'multiplos_dias':
+            if not dados.get('exp_multiplos_dias_qtd'): erros.append('Informe a quantidade de dias.')
+            if not dados.get('exp_multiplos_dias_horas'): erros.append('Informe a duração em horas por dia.')
+
+        # 3. Campos Radiobox obrigatórios
+        campos_exp_obrigatorios = {
+            'exp_espaco_ambiente': 'Ambiente (Experiência)',
+            'exp_espaco_acustico': 'Isolamento acústico (Experiência)',
+            'exp_espaco_escura': 'Sala escura (Experiência)',
+            'exp_oper_funcionamento': 'Funcionamento (Experiência)',
+            'exp_infra_energia': 'Energia elétrica especial (Experiência)',
+            'exp_infra_iluminacao': 'Pontos de iluminação (Experiência)',
+            'exp_infra_mobiliario_opcao': 'Mobiliário próprios (Experiência)',
+            'exp_infra_equip_proprios_opcao': 'Equipamentos próprios (Experiência)'
+        }
+        for campo, nome_amigavel in campos_exp_obrigatorios.items():
+            if not dados.get(campo):
+                erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
+
+        # 4. Condicionais de Radiobox
+        if dados.get('exp_espaco_escura') == 'outro' and not dados.get('exp_espaco_escura_outro', '').strip():
+            erros.append('Especifique a necessidade de "Sala escura".')
+        if dados.get('exp_infra_energia') == 'sim' and not dados.get('exp_infra_pontos_energia_qtd', '').strip():
+            erros.append('Informe a quantidade de pontos de energia.')
+        if dados.get('exp_infra_iluminacao') == 'sim':
+            if not dados.get('exp_infra_iluminacao_qtd', '').strip(): erros.append('Informe a quantidade de pontos de iluminação.')
+            if not dados.get('exp_infra_iluminacao_spec', '').strip(): erros.append('Informe a especificação da iluminação.')
+        if dados.get('exp_infra_mobiliario_opcao') == 'sim' and not dados.get('exp_infra_mobiliario_desc', '').strip():
+            erros.append('Descreva o mobiliário próprio utilizado.')
+        if dados.get('exp_infra_equip_proprios_opcao') == 'sim':
+            has_exp_equip = any(key.startswith('exp_equip_item_') and dados[key].strip() for key in dados)
+            if not has_exp_equip: erros.append('Liste pelo menos um equipamento próprio na tabela.')
+
+        # 5. Campos Texto/Number obrigatórios
+        campos_exp_texto_obrigatorios = {
+            'exp_espaco_area_min': 'Área mínima (m²) (Experiência)',
+            'exp_espaco_area_ideal': 'Área ideal (m²) (Experiência)',
+            'exp_oper_duracao': 'Duração da experiência (Experiência)',
+            'exp_oper_permanencia': 'Permanência média do usuário (Experiência)',
+            'exp_oper_qtd_simultanea': 'Quantidade simultânea de usuários (Experiência)',
+            'exp_oper_fluxo_hora': 'Fluxo de usuários estimado por hora (Experiência)',
+            'exp_montagem_tempo': 'Tempo de montagem (Experiência)',
+            'exp_montagem_desmontagem': 'Tempo de desmontagem (Experiência)',
+            'exp_montagem_qtd_equipe': 'Quantidade da equipe operacional (Experiência)',
+            'exp_infra_equip_solicitados': 'Equipamentos solicitados ao festival (Experiência)',
+            'exp_acess_recursos': 'Ações de acessibilidade na experiência (Experiência)'
+        }
+        for campo, nome_amigavel in campos_exp_texto_obrigatorios.items():
+            if not dados.get(campo, '').strip():
+                erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
+
+        # 6. Validação de Anexos (Croqui apenas PDF, Imagens JPG/PNG)
+        croqui_file = request.files.get('exp_anexo_croqui')
+        if not croqui_file or croqui_file.filename.strip() == '':
+            erros.append('O anexo "Croqui esquemático" é obrigatório.')
+        elif croqui_file.filename and not croqui_file.filename.lower().endswith('.pdf'):
+            erros.append('O Croqui esquemático deve ser um arquivo PDF.')
+
+        imagens_file = request.files.get('exp_anexo_imagens')
+        if not imagens_file or imagens_file.filename.strip() == '':
+            erros.append('O anexo "Imagens de referência" é obrigatório.')
+        elif imagens_file.filename and not extensao_permitida(imagens_file.filename):
+            erros.append('As Imagens de referência devem ser JPG ou PNG.')
+    # ──────────────────────────────────────────────────────────
+    # FIM: VALIDAÇÃO EXCLUSIVA PARA FORMATO EXPERIÊNCIA
+    # ──────────────────────────────────────────────────────────
 
     if len(dados.get('recursosAcessibilidade', '')) > 200:
         erros.append('Recursos de acessibilidade: máximo 200 caracteres.')
@@ -687,10 +699,8 @@ def home():
             if nacionalidade == 'brasileiro' and (not estado or not cidade_c):
                 erros.append(f'Estado e cidade do integrante {i} são obrigatórios.')
             elif nacionalidade == 'estrangeiro':
-                if not dados.get(f'{prefixo}passaporte', '').strip(): erros.append(
-                    f'Passaporte do integrante estrangeiro {i} é obrigatório.')
-                if not dados.get(f'{prefixo}pais_origem', '').strip(): erros.append(
-                    f'País de origem do integrante {i} é obrigatório.')
+                if not dados.get(f'{prefixo}passaporte', '').strip(): erros.append(f'Passaporte do integrante estrangeiro {i} é obrigatório.')
+                if not dados.get(f'{prefixo}pais_origem', '').strip(): erros.append(f'País de origem do integrante {i} é obrigatório.')
             cpf_conv = dados.get(f'{prefixo}cpf', '').strip()
             if nacionalidade == 'brasileiro':
                 if not cpf_conv:
@@ -709,8 +719,7 @@ def home():
             raca = dados.get(f'{prefixo}raca', '').strip()
             genero = dados.get(f'{prefixo}genero', '').strip()
             if dados.get(f'{prefixo}acessibilidade') == 'sim':
-                if not dados.get(f'{prefixo}acessibilidade_desc', '').strip(): erros.append(
-                    f'Descreva os recursos de acessibilidade do integrante {i}.')
+                if not dados.get(f'{prefixo}acessibilidade_desc', '').strip(): erros.append(f'Descreva os recursos de acessibilidade do integrante {i}.')
             convidados.append({
                 'nome': nome, 'email': email, 'nacionalidade': nacionalidade,
                 'cpf': cpf_conv, 'passaporte': dados.get(f'{prefixo}passaporte'),
@@ -735,8 +744,7 @@ def home():
             erros.append('Adicione pelo menos 1 integrante.')
     elif len(convidados) < min_convidados:
         nome_formato = 'Debate' if formato == 'debate' else 'Roda de conversa'
-        erros.append(
-            f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes. Você adicionou apenas {len(convidados)}.')
+        erros.append(f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes. Você adicionou apenas {len(convidados)}.')
 
     if erros:
         for erro in erros:
@@ -801,6 +809,54 @@ def home():
         else:
             infra_recursos.append('Outros')
 
+    # ──────────────────────────────────────────────────────────
+    # PROCESSAMENTO DE DADOS DE EXPERIÊNCIA (ATUALIZADO)
+    # ──────────────────────────────────────────────────────────
+    tipologias_selecionadas_exp = []
+    exp_equip_items = []
+    anexos_exp_base64 = {}
+
+    if formato == 'experiencia':
+        # 1. Tipologias (Checkboxes)
+        map_tipologias = {
+            'exp_tipologia_tecnologica': 'Tecnológica',
+            'exp_tipologia_interativa': 'Interativa',
+            'exp_tipologia_imersiva': 'Imersiva',
+            'exp_tipologia_demonstrativa': 'Demonstrativa',
+            'exp_tipologia_hibrida': 'Híbrida'
+        }
+        for key, label in map_tipologias.items():
+            if dados.get(key) == 'sim':
+                tipologias_selecionadas_exp.append(label)
+
+        # 2. Tabela Dinâmica de Equipamentos Próprios
+        if dados.get('exp_infra_equip_proprios_opcao') == 'sim':
+            for key in sorted(dados.keys()):
+                if key.startswith('exp_equip_item_'):
+                    idx = key.split('_')[-1]
+                    item = dados.get(f'exp_equip_item_{idx}', '').strip()
+                    if item:
+                        exp_equip_items.append({
+                            'equipamento': item,
+                            'quantidade': dados.get(f'exp_equip_qtd_{idx}', '1'),
+                            'observacoes': dados.get(f'exp_equip_obs_{idx}', '').strip()
+                        })
+
+        # 3. Anexos (Croqui PDF e Imagens JPG/PNG)
+        croqui_file = request.files.get('exp_anexo_croqui')
+        if croqui_file and croqui_file.filename:
+            b64 = converter_arquivo_base64(croqui_file, permitido_ext=['pdf'])
+            if b64: anexos_exp_base64['exp_anexo_croqui'] = b64
+
+        imagens_file = request.files.get('exp_anexo_imagens')
+        if imagens_file and imagens_file.filename:
+            b64 = converter_arquivo_base64(imagens_file, permitido_ext=['png', 'jpg', 'jpeg'])
+            if b64: anexos_exp_base64['exp_anexo_imagens'] = b64
+            
+    # ──────────────────────────────────────────────────────────
+    # FIM: PROCESSAMENTO DE DADOS DE EXPERIÊNCIA
+    # ──────────────────────────────────────────────────────────
+
     inscricao = {
         'proponente': {
             'tipo': tipo_prop,
@@ -857,7 +913,46 @@ def home():
                 'materiais': materiais,
                 'justificativa_materiais': dados.get('oficina_justificativa_materiais'),
                 'mobiliario': dados.get('oficina_mobiliario'),
-            } if formato == 'oficina' else None
+            } if formato == 'oficina' else None,
+            # ──────────────────────────────────────────────────────────
+            # PAYLOAD DE EXPERIÊNCIA NO DICIONÁRIO FINAL (ATUALIZADO)
+            # ──────────────────────────────────────────────────────────
+            'experiencia': {
+                'tipologias': tipologias_selecionadas_exp,
+                'multiplos_dias_qtd': dados.get('exp_multiplos_dias_qtd') if dados.get('tempoDuracao') == 'multiplos_dias' else None,
+                'multiplos_dias_horas': dados.get('exp_multiplos_dias_horas') if dados.get('tempoDuracao') == 'multiplos_dias' else None,
+                'espaco_area_min': dados.get('exp_espaco_area_min'),
+                'espaco_area_ideal': dados.get('exp_espaco_area_ideal'),
+                'espaco_ambiente': dados.get('exp_espaco_ambiente'),
+                'espaco_acustico': dados.get('exp_espaco_acustico'),
+                'espaco_escura': dados.get('exp_espaco_escura'),
+                'espaco_escura_outro': dados.get('exp_espaco_escura_outro') if dados.get('exp_espaco_escura') == 'outro' else None,
+                'oper_duracao': dados.get('exp_oper_duracao'),
+                'oper_funcionamento': dados.get('exp_oper_funcionamento'),
+                'oper_permanencia': dados.get('exp_oper_permanencia'),
+                'oper_qtd_simultanea': dados.get('exp_oper_qtd_simultanea'),
+                'oper_fluxo_hora': dados.get('exp_oper_fluxo_hora'),
+                'infra_energia': dados.get('exp_infra_energia'),
+                'infra_pontos_energia_qtd': dados.get('exp_infra_pontos_energia_qtd') if dados.get('exp_infra_energia') == 'sim' else None,
+                'infra_iluminacao': dados.get('exp_infra_iluminacao'),
+                'infra_iluminacao_qtd': dados.get('exp_infra_iluminacao_qtd') if dados.get('exp_infra_iluminacao') == 'sim' else None,
+                'infra_iluminacao_spec': dados.get('exp_infra_iluminacao_spec') if dados.get('exp_infra_iluminacao') == 'sim' else None,
+                'infra_mobiliario_opcao': dados.get('exp_infra_mobiliario_opcao'),
+                'infra_mobiliario_desc': dados.get('exp_infra_mobiliario_desc') if dados.get('exp_infra_mobiliario_opcao') == 'sim' else None,
+                'infra_equip_proprios_opcao': dados.get('exp_infra_equip_proprios_opcao'),
+                'infra_equip_proprios_items': exp_equip_items,
+                'infra_equip_solicitados': dados.get('exp_infra_equip_solicitados'),
+                'montagem_tempo': dados.get('exp_montagem_tempo'),
+                'montagem_desmontagem': dados.get('exp_montagem_desmontagem'),
+                'montagem_qtd_equipe': dados.get('exp_montagem_qtd_equipe'),
+                'acess_recursos': dados.get('exp_acess_recursos'),
+                'acess_restricoes': dados.get('exp_acess_restricoes'),
+                'anexo_video': dados.get('exp_anexo_video'),
+                'anexos_base64': anexos_exp_base64
+            } if formato == 'experiencia' else None
+            # ──────────────────────────────────────────────────────────
+            # FIM: PAYLOAD DE EXPERIÊNCIA
+            # ──────────────────────────────────────────────────────────
         },
         'convidados': convidados
     }
