@@ -81,7 +81,7 @@
         .field-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
         .field-group textarea { resize: vertical; min-height: 100px; }
 
-        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: end; }
         .radio-group { display: flex; gap: 16px; margin-top: 4px; flex-wrap: wrap; }
         .radio-option { display: flex; align-items: center; gap: 6px; cursor: pointer; }
         .radio-option input[type="radio"] { appearance: none; width: 18px; height: 18px; border: 2px solid var(--cinza-borda); border-radius: 50%; cursor: pointer; position: relative; transition: border-color 0.2s; }
@@ -341,7 +341,7 @@
                 <div class="field-row hidden" id="nacionalidadeGroup">
                     <div class="field-group"><label for="nacionalidadeProponente">Nacionalidade <span class="required">*</span></label><select id="nacionalidadeProponente" name="nacionalidadeProponente" onchange="toggleProponenteDocs()"><option value="brasileiro" {{ 'selected' if dados.get('nacionalidadeProponente') != 'estrangeiro' }}>Brasileiro</option><option value="estrangeiro" {{ 'selected' if dados.get('nacionalidadeProponente') == 'estrangeiro' }}>Estrangeiro</option></select></div>
                     <div class="field-group" id="docCpfField"><label for="cpfProponente">CPF <span class="required">*</span></label><input type="text" id="cpfProponente" name="cpfProponente" placeholder="000.000.000-00" value="{{ dados.get('cpfProponente', '') }}" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)" required></div>
-                    <div class="field-group hidden" id="docPassaporteField"><label for="passaporteProponente">Passaporte ou Documento de Identidade Internacional / RNM<span class="required">*</span></label><input type="text" id="passaporteProponente" name="passaporteProponente" value="{{ dados.get('passaporteProponente', '') }}" required></div>
+                    <div class="field-group hidden" id="docPassaporteField"><label for="passaporteProponente">Passaporte ou Documento de Identidade Internacional / RNM <span class="required">*</span></label><input type="text" id="passaporteProponente" name="passaporteProponente" value="{{ dados.get('passaporteProponente', '') }}" required></div>
                 </div>
                 <div class="lgpd-notice hidden" id="proponentLgpdNotice">
                     <i class="fas fa-shield-alt"></i>
