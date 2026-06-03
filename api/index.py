@@ -36,7 +36,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Aumentado para suportar P
 EXTENSOES_PERMITIDAS = {'png', 'jpg', 'jpeg', 'webp'}
 
 CAMPOS_OBRIGATORIOS_BASE = [
-    'tipoProponente', 'nomeInstituicao',
+    'tipoProponente', 
     'nomeRepresentante', 'telefoneRepresentante', 'emailRepresentante',
     'tituloAtividade', 'formatoAtividade', 'tempoDuracao',
     'objetivoAtividade', 'justificativaTematica', 'metodologiaAplicada',
@@ -465,11 +465,20 @@ def home():
     tipo_prop = dados.get('tipoProponente', '')
     categoria_prop = dados.get('categoria', '')
 
+    # Validação base
     for campo in CAMPOS_OBRIGATORIOS_BASE:
         valor = dados.get(campo, '').strip()
         if not valor:
             nome_amigavel = campo.replace('_', ' ').title()
             erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
+
+    # Validação condicional do Nome do Proponente
+    if tipo_prop == 'pj':
+        if not dados.get('nomeInstituicao', '').strip():
+            erros.append('O campo "Nome da instituição" é obrigatório.')
+    else:
+        if not dados.get('nomeInstituicaoPF', '').strip():
+            erros.append('O campo "Nome do proponente" é obrigatório.')
 
     if tipo_prop == 'pj':
         cat = categoria_prop.strip()
@@ -515,9 +524,10 @@ def home():
     if tag_count < 3: erros.append('Selecione pelo menos 3 tags.')
     if tag_count > 5: erros.append('O limite máximo de tags é 5.')
 
+    # Limites de caracteres (Removido 'objetivoAtividade')
     for campo, limite in [('objetivoAtividade', 500), ('justificativaTematica', 700),
-                          ('metodologiaAplicada', 500), ('descricaoAtividade', 700),
-                          ('infoExtras', 700)]:
+                        ('metodologiaAplicada', 500), ('descricaoAtividade', 700),
+                        ('infoExtras', 700)]:
         if len(dados.get(campo, '')) > limite:
             erros.append(f'O campo "{campo}" excedeu o limite de {limite} caracteres.')
 
@@ -561,64 +571,70 @@ def home():
     # VALIDAÇÃO EXCLUSIVA PARA FORMATO EXPERIÊNCIA (ATUALIZADO)
     # ──────────────────────────────────────────────────────────
     elif formato == 'experiencia':
-        # 1. Tipologias (Múltipla escolha)
+        # 1. Tipologias
         tipologias_exp = ['exp_tipologia_tecnologica', 'exp_tipologia_interativa', 'exp_tipologia_imersiva', 'exp_tipologia_demonstrativa', 'exp_tipologia_hibrida']
         if not any(dados.get(t) for t in tipologias_exp):
             erros.append('Selecione pelo menos uma Tipologia da experiência.')
 
-        # 2. Múltiplos dias (Condicional)
-        if dados.get('tempoDuracao') == 'multiplos_dias':
-            if not dados.get('exp_multiplos_dias_qtd'): erros.append('Informe a quantidade de dias.')
-            if not dados.get('exp_multiplos_dias_horas'): erros.append('Informe a duração em horas por dia.')
+        # 2. Dias
+        if not dados.get('exp_dias'): erros.append('Informe a quantidade de dias (Experiência).')
 
-        # 3. Campos Radiobox obrigatórios
-        campos_exp_obrigatorios = {
+        # 3. Espaço
+        campos_exp_espaco = {
             'exp_espaco_ambiente': 'Ambiente (Experiência)',
-            'exp_espaco_acustico': 'Isolamento acústico (Experiência)',
-            'exp_espaco_escura': 'Sala escura (Experiência)',
-            'exp_oper_funcionamento': 'Funcionamento (Experiência)',
-            'exp_infra_energia': 'Energia elétrica especial (Experiência)',
-            'exp_infra_iluminacao': 'Pontos de iluminação (Experiência)',
-            'exp_infra_mobiliario_opcao': 'Mobiliário próprios (Experiência)',
-            'exp_infra_equip_proprios_opcao': 'Equipamentos próprios (Experiência)'
+            'exp_espaco_condicao': 'Condição do ambiente (Experiência)'
         }
-        for campo, nome_amigavel in campos_exp_obrigatorios.items():
-            if not dados.get(campo):
-                erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
+        for campo, nome_amigavel in campos_exp_espaco.items():
+            if not dados.get(campo): erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
 
-        # 4. Condicionais de Radiobox
-        if dados.get('exp_espaco_escura') == 'outro' and not dados.get('exp_espaco_escura_outro', '').strip():
-            erros.append('Especifique a necessidade de "Sala escura".')
-        if dados.get('exp_infra_energia') == 'sim' and not dados.get('exp_infra_pontos_energia_qtd', '').strip():
-            erros.append('Informe a quantidade de pontos de energia.')
-        if dados.get('exp_infra_iluminacao') == 'sim':
-            if not dados.get('exp_infra_iluminacao_qtd', '').strip(): erros.append('Informe a quantidade de pontos de iluminação.')
-            if not dados.get('exp_infra_iluminacao_spec', '').strip(): erros.append('Informe a especificação da iluminação.')
+        # 4. Acessibilidade e Restrição
+        if not dados.get('exp_acess_recursos', '').strip(): erros.append('O campo "Ações de acessibilidade" é obrigatório.')
+
+        # 5. Operação
+        campos_exp_op = {
+            'exp_oper_funcionamento': 'Funcionamento (Experiência)',
+            'exp_oper_permanencia': 'Permanência média do usuário (Experiência)',
+            'exp_oper_qtd_simultanea': 'Quantidade simultânea de usuários (Experiência)',
+            'exp_oper_fluxo_hora': 'Fluxo de usuários estimado por hora (Experiência)',
+            'exp_oper_qtd_equipe': 'Quantidade de equipe operacional (Experiência)'
+        }
+        for campo, nome_amigavel in campos_exp_op.items():
+            if not dados.get(campo, '').strip(): erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
+
+        # 6. Infra - Ponto de Energia
+        if not dados.get('exp_infra_energia'): erros.append('Informe sobre Ponto de energia.')
+        if dados.get('exp_infra_energia') == 'sim':
+            if not dados.get('exp_infra_pontos_energia_qtd', '').strip(): erros.append('Informe a Quantidade de Pontos de energia.')
+            if not dados.get('exp_infra_energia_equip', '').strip(): erros.append('Informe os Equipamentos/finalidade dos Pontos de energia.')
+            if not dados.get('exp_infra_energia_spec', '').strip(): erros.append('Informe a Especificação dos Pontos de energia.')
+            if not dados.get('exp_infra_energia_carga', '').strip(): erros.append('Informe a Capacidade/Carga dos Pontos de energia.')
+
+        # 7. Infra - Mobiliário
+        if not dados.get('exp_infra_mobiliario_opcao'): erros.append('Informe sobre Mobiliário próprio.')
         if dados.get('exp_infra_mobiliario_opcao') == 'sim' and not dados.get('exp_infra_mobiliario_desc', '').strip():
-            erros.append('Descreva o mobiliário próprio utilizado.')
+            erros.append('Descreva o mobiliário próprio.')
+
+        # 8. Infra - Equipamentos próprios
+        if not dados.get('exp_infra_equip_proprios_opcao'): erros.append('Informe sobre Equipamentos próprios.')
         if dados.get('exp_infra_equip_proprios_opcao') == 'sim':
             has_exp_equip = any(key.startswith('exp_equip_item_') and dados[key].strip() for key in dados)
             if not has_exp_equip: erros.append('Liste pelo menos um equipamento próprio na tabela.')
 
-        # 5. Campos Texto/Number obrigatórios
-        campos_exp_texto_obrigatorios = {
-            'exp_espaco_area_min': 'Área mínima (m²) (Experiência)',
-            'exp_espaco_area_ideal': 'Área ideal (m²) (Experiência)',
-            'exp_oper_duracao': 'Duração da experiência (Experiência)',
-            'exp_oper_permanencia': 'Permanência média do usuário (Experiência)',
-            'exp_oper_qtd_simultanea': 'Quantidade simultânea de usuários (Experiência)',
-            'exp_oper_fluxo_hora': 'Fluxo de usuários estimado por hora (Experiência)',
-            'exp_montagem_tempo': 'Tempo de montagem (Experiência)',
-            'exp_montagem_desmontagem': 'Tempo de desmontagem (Experiência)',
-            'exp_montagem_qtd_equipe': 'Quantidade da equipe operacional (Experiência)',
-            'exp_infra_equip_solicitados': 'Equipamentos solicitados ao festival (Experiência)',
-            'exp_acess_recursos': 'Ações de acessibilidade na experiência (Experiência)'
-        }
-        for campo, nome_amigavel in campos_exp_texto_obrigatorios.items():
-            if not dados.get(campo, '').strip():
-                erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
+        # 9. Infra - Equipamentos solicitados
+        if not dados.get('exp_infra_equip_solicitados', '').strip(): erros.append('Informe os Equipamentos solicitados ao festival.')
 
-        # 6. Validação de Anexos (Croqui apenas PDF, Imagens JPG/PNG)
+        # 10. Infra - Materiais de Apoio
+        if not dados.get('exp_material_ajuda'): erros.append('Informe sobre recurso financeiro para material de apoio.')
+        if dados.get('exp_material_ajuda') in ('sim', 'indispensavel'):
+            has_exp_mat = any(key.startswith('exp_mat_item_') and dados[key].strip() for key in dados)
+            if not has_exp_mat: erros.append('Liste pelo menos um material de apoio na tabela.')
+            if not dados.get('exp_justificativa_materiais', '').strip(): erros.append('A justificativa dos materiais de apoio é obrigatória.')
+
+        # 11. Montagem e Equipe
+        if not dados.get('exp_montagem_desmontagem_desc', '').strip(): erros.append('O campo "Montagem e desmontagem" é obrigatório.')
+        if not dados.get('exp_infra_qtd_equipe', '').strip(): erros.append('O campo "Quantidade da equipe operacional do proponente" é obrigatório.')
+
+        # 12. Anexos
         croqui_file = request.files.get('exp_anexo_croqui')
         if not croqui_file or croqui_file.filename.strip() == '':
             erros.append('O anexo "Croqui esquemático" é obrigatório.')
@@ -735,7 +751,8 @@ def home():
                 'foto_base64': foto_conv_base64
             })
 
-    min_convidados = 2 if formato in ('debate', 'roda_de_conversa') else 1
+    # Validação de Convidados (Atualizado: Roda de conversa exige 3, Debate exige 2)
+    min_convidados = 2 if formato == 'debate' else 3 if formato == 'roda_de_conversa' else 1
     if not tem_convidado:
         if min_convidados > 1:
             nome_formato = 'Debate' if formato == 'debate' else 'Roda de conversa'
@@ -814,10 +831,11 @@ def home():
     # ──────────────────────────────────────────────────────────
     tipologias_selecionadas_exp = []
     exp_equip_items = []
+    exp_materiais = []
     anexos_exp_base64 = {}
 
     if formato == 'experiencia':
-        # 1. Tipologias (Checkboxes)
+        # 1. Tipologias
         map_tipologias = {
             'exp_tipologia_tecnologica': 'Tecnológica',
             'exp_tipologia_interativa': 'Interativa',
@@ -842,7 +860,20 @@ def home():
                             'observacoes': dados.get(f'exp_equip_obs_{idx}', '').strip()
                         })
 
-        # 3. Anexos (Croqui PDF e Imagens JPG/PNG)
+        # 3. Tabela Dinâmica de Materiais de Apoio
+        if dados.get('exp_material_ajuda') in ('sim', 'indispensavel'):
+            for key in sorted(dados.keys()):
+                if key.startswith('exp_mat_item_'):
+                    idx = key.split('_')[-1]
+                    item = dados.get(f'exp_mat_item_{idx}', '').strip()
+                    if item:
+                        exp_materiais.append({
+                            'item': item,
+                            'quantidade': dados.get(f'exp_mat_qtd_{idx}', '1'),
+                            'valor_unitario': dados.get(f'exp_mat_valor_{idx}', '0'),
+                        })
+
+        # 4. Anexos
         croqui_file = request.files.get('exp_anexo_croqui')
         if croqui_file and croqui_file.filename:
             b64 = converter_arquivo_base64(croqui_file, permitido_ext=['pdf'])
@@ -857,10 +888,13 @@ def home():
     # FIM: PROCESSAMENTO DE DADOS DE EXPERIÊNCIA
     # ──────────────────────────────────────────────────────────
 
+    # Captura condicional do Nome
+    nome_proponente_val = dados.get('nomeInstituicao') if tipo_prop == 'pj' else dados.get('nomeInstituicaoPF')
+
     inscricao = {
         'proponente': {
             'tipo': tipo_prop,
-            'nome_instituicao': dados.get('nomeInstituicao'),
+            'nome_instituicao': nome_proponente_val,
             'categoria': categoria_prop if tipo_prop == 'pj' else None,
             'nacionalidade': nat_prop_val,
             'cpf': dados.get('cpfProponente') if tipo_prop == 'pf' else None,
@@ -919,34 +953,31 @@ def home():
             # ──────────────────────────────────────────────────────────
             'experiencia': {
                 'tipologias': tipologias_selecionadas_exp,
-                'multiplos_dias_qtd': dados.get('exp_multiplos_dias_qtd') if dados.get('tempoDuracao') == 'multiplos_dias' else None,
-                'multiplos_dias_horas': dados.get('exp_multiplos_dias_horas') if dados.get('tempoDuracao') == 'multiplos_dias' else None,
-                'espaco_area_min': dados.get('exp_espaco_area_min'),
-                'espaco_area_ideal': dados.get('exp_espaco_area_ideal'),
+                'dias': dados.get('exp_dias'),
                 'espaco_ambiente': dados.get('exp_espaco_ambiente'),
-                'espaco_acustico': dados.get('exp_espaco_acustico'),
-                'espaco_escura': dados.get('exp_espaco_escura'),
-                'espaco_escura_outro': dados.get('exp_espaco_escura_outro') if dados.get('exp_espaco_escura') == 'outro' else None,
-                'oper_duracao': dados.get('exp_oper_duracao'),
+                'espaco_condicao': dados.get('exp_espaco_condicao'),
+                'acess_recursos': dados.get('exp_acess_recursos'),
+                'acess_restricoes': dados.get('exp_acess_restricoes'),
                 'oper_funcionamento': dados.get('exp_oper_funcionamento'),
                 'oper_permanencia': dados.get('exp_oper_permanencia'),
                 'oper_qtd_simultanea': dados.get('exp_oper_qtd_simultanea'),
                 'oper_fluxo_hora': dados.get('exp_oper_fluxo_hora'),
+                'oper_qtd_equipe': dados.get('exp_oper_qtd_equipe'),
                 'infra_energia': dados.get('exp_infra_energia'),
                 'infra_pontos_energia_qtd': dados.get('exp_infra_pontos_energia_qtd') if dados.get('exp_infra_energia') == 'sim' else None,
-                'infra_iluminacao': dados.get('exp_infra_iluminacao'),
-                'infra_iluminacao_qtd': dados.get('exp_infra_iluminacao_qtd') if dados.get('exp_infra_iluminacao') == 'sim' else None,
-                'infra_iluminacao_spec': dados.get('exp_infra_iluminacao_spec') if dados.get('exp_infra_iluminacao') == 'sim' else None,
+                'infra_energia_equip': dados.get('exp_infra_energia_equip') if dados.get('exp_infra_energia') == 'sim' else None,
+                'infra_energia_spec': dados.get('exp_infra_energia_spec') if dados.get('exp_infra_energia') == 'sim' else None,
+                'infra_energia_carga': dados.get('exp_infra_energia_carga') if dados.get('exp_infra_energia') == 'sim' else None,
                 'infra_mobiliario_opcao': dados.get('exp_infra_mobiliario_opcao'),
                 'infra_mobiliario_desc': dados.get('exp_infra_mobiliario_desc') if dados.get('exp_infra_mobiliario_opcao') == 'sim' else None,
                 'infra_equip_proprios_opcao': dados.get('exp_infra_equip_proprios_opcao'),
                 'infra_equip_proprios_items': exp_equip_items,
                 'infra_equip_solicitados': dados.get('exp_infra_equip_solicitados'),
-                'montagem_tempo': dados.get('exp_montagem_tempo'),
-                'montagem_desmontagem': dados.get('exp_montagem_desmontagem'),
-                'montagem_qtd_equipe': dados.get('exp_montagem_qtd_equipe'),
-                'acess_recursos': dados.get('exp_acess_recursos'),
-                'acess_restricoes': dados.get('exp_acess_restricoes'),
+                'material_ajuda': dados.get('exp_material_ajuda'),
+                'materiais': exp_materiais,
+                'justificativa_materiais': dados.get('exp_justificativa_materiais'),
+                'montagem_desmontagem_desc': dados.get('exp_montagem_desmontagem_desc'),
+                'infra_qtd_equipe': dados.get('exp_infra_qtd_equipe'),
                 'anexo_video': dados.get('exp_anexo_video'),
                 'anexos_base64': anexos_exp_base64
             } if formato == 'experiencia' else None
@@ -990,7 +1021,8 @@ def home():
     # ──────────────────────────────────────────────
     email_representante = dados.get('emailRepresentante')
     nome_atividade = dados.get('tituloAtividade')
-    nome_proponente = dados.get('nomeInstituicao', '')
+    # Usa o nome correto do proponente baseado no tipo
+    nome_proponente = nome_proponente_val or ''
 
     if pdf_file and email_representante:
         try:
