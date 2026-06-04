@@ -80,6 +80,7 @@
         .field-group input.error, .field-group select.error { border-color: var(--vermelho-obrigatorio); }
         .field-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
         .field-group textarea { resize: vertical; min-height: 100px; }
+        .field-group input[readonly] { background: #F0F0F0; cursor: not-allowed; }
 
         .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: end; }
         .radio-group { display: flex; gap: 16px; margin-top: 4px; flex-wrap: wrap; }
@@ -231,6 +232,18 @@
             .type-selector { flex-direction: column; }
             #pdf-paper-view { width: 100%; }
         }
+
+        .btn-preview-confirm:disabled {
+            background: #cccccc;
+            color: #999999;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .btn-preview-confirm:disabled:hover {
+            background: #cccccc;
+            transform: none;
+        }
     </style>
 </head>
 <body>
@@ -264,9 +277,25 @@
         <h2 style="color: var(--roxo-principal); font-family: 'Space Grotesk', sans-serif; margin-bottom: 15px;">Revise sua proposta</h2>
         <p style="margin-bottom: 15px; font-size: 14px; color: #555;">Verifique se os dados abaixo estão corretos antes de enviar.</p>
         <iframe id="pdfPreviewFrame" style="width: 100%; height: 60vh; border: 1px solid #ddd;"></iframe>
+        
+        <div style="text-align: left; margin-top: 20px; padding: 0 10px; border-top: 1px solid #ddd; max-height: 30vh; overflow-y: auto;">
+            <div class="checkbox-option" style="margin-bottom: 14px; margin-top: 14px;">
+                <input type="checkbox" id="aceiteTermos" name="aceite_termos" value="sim">
+                <label for="aceiteTermos"><span class="required">*</span> Aceite Integral dos Termos: "Declaro que li, compreendi e aceito integralmente todas as condições, prazos e regras estabelecidas na Chamada Pública para Recebimento de Propostas de Atividades de Conteúdo — REC’n’Play 2026 e seus Guias complementares."</label>
+            </div>
+            <div class="checkbox-option" style="margin-bottom: 14px;">
+                <input type="checkbox" id="direitosAutorais" name="direitos_autorais" value="sim">
+                <label for="direitosAutorais"><span class="required">*</span> Direitos Autorais e Imagem: "Declaro que sou o titular ou possuo todas as autorizações, licenças e direitos de propriedade intelectual e de uso de imagem necessários sobre os conteúdos, marcas e materiais que serão apresentados na atividade, assumindo total e exclusiva responsabilidade civil e criminal por quaisquer reivindicações de terceiros."</label>
+            </div>
+            <div class="checkbox-option" style="margin-bottom: 14px;">
+                <input type="checkbox" id="consentimentoLgpd" name="consentimento_lgpd" value="sim">
+                <label for="consentimentoLgpd"><span class="required">*</span> Consentimento de Dados (LGPD): "Consinto com a coleta, armazenamento e tratamento dos meus dados pessoais e dos demais integrantes indicados na proposta, exclusivamente para fins de avaliação curatorial, comunicação, gestão de agenda e execução das atividades do Festival REC'n'Play 2026, nos termos da Lei nº 13.709/2018."</label>
+            </div>
+        </div>
+
         <div class="pdf-actions">
             <button type="button" class="btn-preview-cancel" onclick="closePDFModal()"><i class="fas fa-arrow-left"></i> Voltar e editar</button>
-            <button type="button" class="btn-preview-confirm" id="btnConfirmSend"><i class="fas fa-paper-plane"></i> Confirmar e Enviar</button>
+            <button type="button" class="btn-preview-confirm" id="btnConfirmSend" disabled><i class="fas fa-paper-plane"></i> Confirmar e Enviar</button>
         </div>
     </div>
 </div>
@@ -387,7 +416,7 @@
                     </select></div>
                 </div>
 
-                <!-- Objetivo (RESTAURADO) -->
+                <!-- Objetivo -->
                 <div class="field-group"><label for="objetivoAtividade">Objetivo <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required>{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
 
                 <!-- Justificativa -->
@@ -439,11 +468,21 @@
                 </div>
 
                 <!-- Acesso -->
-                <div class="field-group"><label for="acessoAtividade">Acesso à atividade <span class="required">*</span></label><select id="acessoAtividade" name="acessoAtividade" required onchange="toggleInscricaoCheckbox()"><option value="">Selecione...</option><option value="ordem_chegada" {{ 'selected' if dados.get('acessoAtividade') == 'ordem_chegada' }}>Acesso por ordem de chegada</option><option value="inscricao" {{ 'selected' if dados.get('acessoAtividade') == 'inscricao' }}>Acesso por inscrição</option></select></div>
+                <div class="field-group">
+                    <label for="acessoAtividade">Acesso à atividade <span class="required">*</span></label>
+                    <select id="acessoAtividade" name="acessoAtividade" required onchange="toggleInscricaoCheckbox()">
+                        <option value="">Selecione...</option>
+                        <option value="ordem_chegada" {{ 'selected' if dados.get('acessoAtividade') == 'ordem_chegada' }}>Acesso por ordem de chegada</option>
+                        <option value="inscricao" {{ 'selected' if dados.get('acessoAtividade') == 'inscricao' }}>Acesso por inscrição</option>
+                    </select>
+                    <div class="helper-text hidden" id="acessoFixoNotice" style="color: var(--roxo-escuro); font-weight: 600; font-size: 12px; margin-top: 6px;">
+                        <i class="fas fa-lock" style="margin-right: 4px;"></i> Para os formatos Debate e Roda de conversa, o único meio de acesso é por ordem de chegada.
+                    </div>
+                </div>
                 <div class="field-group hidden" id="inscricaoCheckboxGroup"><div class="inscricao-checkbox-box"><div class="checkbox-option"><input type="checkbox" id="inscricaoResponsabilidade" name="inscricaoResponsabilidade" value="sim" {{ 'checked' if dados.get('inscricaoResponsabilidade') == 'sim' }}><label for="inscricaoResponsabilidade">Declaro que me responsabilizo por enviar o link de inscrição para a equipe do festival, por todos os processos de seleção e pela segurança dos dados dos participantes, em conformidade com a LGPD. <span class="required">*</span></label></div></div></div>
 
                 <!-- Recurso de acessibilidade indispensível? -->
-                <div class="field-group"><label for="recursosAcessibilidade">Recurso de acessibilidade indispensável? <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></label><textarea id="recursosAcessibilidade" name="recursosAcessibilidade" maxlength="200" style="min-height:70px" placeholder="Ex: intérprete de Libras, rampas de acesso, audiodescrição...">{{ dados.get('recursosAcessibilidade', '') }}</textarea></div>
+                <div class="field-group"><label for="recursosAcessibilidade">Recurso de acessibilidade indispensível? <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></label><textarea id="recursosAcessibilidade" name="recursosAcessibilidade" maxlength="200" style="min-height:70px" placeholder="Ex: intérprete de Libras, rampas de acesso, audiodescrição...">{{ dados.get('recursosAcessibilidade', '') }}</textarea></div>
 
                 <!-- ===== EXPERIÊNCIA: ACESSIBILIDADE / OPERAÇÃO (caixa roxa) ===== -->
                 <div id="expAcessOperacaoBox" class="purple-dashed-box hidden">
@@ -654,7 +693,7 @@
                         <label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Lista de ajuda de custo e previsão de valor</label>
                         <table class="material-table" id="ajudaCustoTable"><thead><tr><th style="width:40%">Item</th><th style="width:20%">Quantidade</th><th style="width:20%">Valor unit. (R$)</th><th style="width:20%">Subtotal (R$)</th><th></th></tr></thead><tbody id="ajudaCustoTableBody"></tbody><tfoot><tr class="material-total-row"><td colspan="3" style="text-align:right">TOTAL</td><td id="ajudaCustoTotal">R$ 0,00</td><td></td></tr></tfoot></table>
                         <button type="button" class="btn-add-row" onclick="addAjudaCustoRow()"><i class="fas fa-plus"></i> Adicionar item</button>
-                        <div class="field-group" style="margin-top: 16px;"><label for="justificativaAjudaCusto">Justifique cada ponto elencado <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="justificativaAjudaCusto" name="justificativa_ajuda_custo" maxlength="500" style="min-height: 80px;" required placeholder="Descreva a justificativa para cada item listado acima...">{{ dados.get('justificativa_ajuda_custo', '') }}</textarea></div>
+                        <div class="field-group" style="margin-top: 16px;"><label for="justificativaAjudaCusto">Justifique cada ponto elencado <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea id="justificativaAjudaCusto" name="justificativa_ajuda_custo" maxlength="500" style="min-height: 80px;" required placeholder="Descreba a justificativa para cada item listado acima...">{{ dados.get('justificativa_ajuda_custo', '') }}</textarea></div>
                     </div>
                 </div>
 
@@ -789,7 +828,23 @@ function updateHiddenTags(){document.getElementById('tagsHidden').value=selected
 let currentType='pj';
 function setProponenteType(type){currentType=type;document.getElementById('tipoProponente').value=type;document.querySelectorAll('.type-selector-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));const isPJ=(type==='pj');toggleSection(document.getElementById('categoriaGroup'),isPJ);toggleSection(document.getElementById('logoMarcaGroup'),isPJ);toggleSection(document.getElementById('pjNomeRow'),isPJ);toggleSection(document.getElementById('nacionalidadeGroup'),!isPJ);toggleSection(document.getElementById('pfNomeRow'),!isPJ);const lgpdNotice=document.getElementById('proponentLgpdNotice');if(!isPJ){lgpdNotice.classList.remove('hidden')}else{lgpdNotice.classList.add('hidden')}if(!isPJ)toggleProponenteDocs();toggleVisibilityByCategory();syncNomeRepresentante()}
 function toggleProponenteDocs(){if(currentType!=='pf')return;const nat=document.getElementById('nacionalidadeProponente').value;const isBR=(nat==='brasileiro');toggleSection(document.getElementById('docCpfField'),isBR);toggleSection(document.getElementById('docPassaporteField'),!isBR)}
-function syncNomeRepresentante(){if(currentType==='pf'){const pfName=document.getElementById('nomeInstituicaoPF').value;document.getElementById('nomeRepresentante').value=pfName;} else { document.getElementById('nomeRepresentante').value = ''; } }
+
+function syncNomeRepresentante(){ 
+    const repInput = document.getElementById('nomeRepresentante');
+    if(currentType==='pf'){
+        const pfName=document.getElementById('nomeInstituicaoPF').value;
+        repInput.value=pfName;
+        repInput.setAttribute('readonly', true);
+        repInput.style.background = '#F0F0F0';
+        repInput.style.cursor = 'not-allowed';
+    } else { 
+        repInput.value = ''; 
+        repInput.removeAttribute('readonly');
+        repInput.style.background = '#fff';
+        repInput.style.cursor = 'text';
+    } 
+}
+
 (function(){const s=document.getElementById('tipoProponente').value||'pj';setProponenteType(s)})();
 
 function checkGuestBairro(input){const card=input.closest('.guest-card');if(!card)return;const bf=card.querySelector('.g-bairro-field'),es=card.querySelector('.g-estado'),ci=card.querySelector('.g-cidade');const e=es?es.value:'',c=ci?ci.value.trim().toLowerCase():'';if(e==='PE'&&c==='recife')bf.classList.remove('hidden');else bf.classList.add('hidden')}
@@ -818,6 +873,20 @@ function toggleActivityFields(){
     
     if(isOficina){toggleLabFields();toggleSoftwareFields();toggleVisibilityByCategory()}
 
+    // Lógica de bloqueio de acesso
+    const acessoSelect = document.getElementById('acessoAtividade');
+    const acessoNotice = document.getElementById('acessoFixoNotice');
+    
+    if (f === 'debate' || f === 'roda_de_conversa') {
+        acessoSelect.value = 'ordem_chegada';
+        acessoSelect.setAttribute('disabled', true);
+        acessoNotice.classList.remove('hidden');
+        toggleInscricaoCheckbox(); // Força a atualização do checkbox
+    } else {
+        acessoSelect.removeAttribute('disabled');
+        acessoNotice.classList.add('hidden');
+    }
+
     // ===== LÓGICA DE CARDS AUTOMÁTICOS =====
     let minGuestsRequired = 1;
     if (f === 'debate') minGuestsRequired = 2;
@@ -834,7 +903,7 @@ function toggleLabFields(){const v=document.querySelector('input[name="oficina_l
 function toggleSoftwareFields(){const v=document.querySelector('input[name="oficina_soft_req"]:checked');const show=(v&&v.value==='sim');toggleSection(document.getElementById('softwareDetails'),show)}
 function toggleRestricao(){const show=document.getElementById('restricaoSim').checked;toggleSection(document.getElementById('faixaEtariaGroup'),show)}
 
-const savedFormato="{{ dados.get('formatoAtividade', '') }}",savedDuracao="{{ dados.get('tempoDuracao', '') }}";if(savedFormato){document.getElementById('formatoAtividade').value=savedFormato;updateDuracaoOptions();if(savedDuracao)document.getElementById('tempoDuracao').value=savedDuracao}
+const savedFormato="{{ dados.get('formatoAtividade', '') }}",savedDuracao="{{ dados.get('tempoDuracao', '') }}";if(savedFormato){document.getElementById('formatoAtividade').value=savedFormato;updateDuracaoOptions();if(savedDuracao)document.getElementById('tempoDuracao').value=savedDuracao;toggleActivityFields();}
 
 // ===== TABELAS DINÂMICAS =====
 let materialRowCount=0;function addMaterialRow(){materialRowCount++;const tb=document.getElementById('materialTableBody'),tr=document.createElement('tr');tr.id='matRow'+materialRowCount;tr.innerHTML=`<td><input type="text" name="mat_item_${materialRowCount}" required></td><td><input type="number" name="mat_qtd_${materialRowCount}" min="1" value="1" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td><input type="number" name="mat_valor_${materialRowCount}" min="0" step="0.01" value="0" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td class="mat-subtotal">R$ 0,00</td><td><button type="button" class="btn-remove-row" onclick="removeMaterialRow('matRow${materialRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr);calcMaterialTotal()}
@@ -893,7 +962,16 @@ function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card'),d=ca
 
 // ===== PDF GENERATION =====
 let generatedPDFBlob=null;
-function closePDFModal(){document.getElementById('pdfModalOverlay').classList.remove('active');document.getElementById('pdfPreviewFrame').src=''}
+function closePDFModal(){ 
+    document.getElementById('pdfModalOverlay').classList.remove('active'); 
+    document.getElementById('pdfPreviewFrame').src='';
+    
+    // Reseta os termos ao fechar o modal
+    document.getElementById('aceiteTermos').checked = false;
+    document.getElementById('direitosAutorais').checked = false;
+    document.getElementById('consentimentoLgpd').checked = false;
+    checkTermsAndToggleSubmit(); // Força o botão a voltar para cinza
+}
 function dataURLtoBlob(dataurl){try{var arr=dataurl.split(','),mime=arr[0].match(/:(.*?);/)[1],bstr=atob(arr[1]),n=bstr.length,u8arr=new Uint8Array(n);while(n--){u8arr[n]=bstr.charCodeAt(n)}return new Blob([u8arr],{type:mime})}catch(e){console.error("Erro ao converter imagem para blob:",e);return null}}
 
 function createPaperViewHTML(){const getVal=(id)=>document.getElementById(id)?.value||'';const getCheck=(name)=>document.querySelector(`input[name="${name}"]:checked`)?.value||'';const formatLabel=(selId)=>{const sel=document.getElementById(selId);return sel?sel.options[sel.selectedIndex]?.text:''};const paperContainer=document.getElementById('pdf-content-injector');let guestsHTML='';document.querySelectorAll('.guest-card').forEach((card,idx)=>{const qId=card.dataset.id;const nome=card.querySelector(`input[name="convidado${qId}_nome"]`)?.value||'';const papel=card.querySelector(`select[name="convidado${qId}_papel"]`)?.options[card.querySelector(`select[name="convidado${qId}_papel"]`).selectedIndex]?.text||'';const email=card.querySelector(`input[name="convidado${qId}_email"]`)?.value||'';guestsHTML+=`<div style="margin-bottom:10px;border-bottom:1px dashed #ccc;padding-bottom:5px;"><strong>Integrante ${idx+1}:</strong> ${nome}<br><span class="pdf-label">Papel:</span> ${papel}<br><span class="pdf-label">Email:</span> ${email}</div>`});let matHTML='';const matRows=document.querySelectorAll('#materialTableBody tr');if(matRows.length>0){matHTML='';matRows.forEach(row=>{const inputs=row.querySelectorAll('input');matHTML+=`<tr><td>${inputs[0].value}</td><td>${inputs[1].value}</td><td>${inputs[2].value}</td><td>${row.querySelector('.mat-subtotal').innerText}</td></tr>`})}let infraHTML=[];if(document.getElementById('infra_projecao')?.checked)infraHTML.push('Projeção');if(document.getElementById('infra_som')?.checked)infraHTML.push('Som');if(document.getElementById('infra_internet')?.checked)infraHTML.push('Internet');const tags=document.getElementById('tagsHidden').value+(document.getElementById('tagSuggestionHidden').value?`, ${document.getElementById('tagSuggestionHidden').value} (Sugestão)`:'');let expHTML='';const formato=getVal('formatoAtividade');if(formato==='experiencia'){const tipologias=[];document.querySelectorAll('#experienciaInfraBox input[name^="exp_tipologia_"]:checked').forEach(cb=>{tipologias.push(cb.closest('.checkbox-option').querySelector('label').innerText)});const energiaVal=getCheck('exp_infra_energia');expHTML=`<div class="pdf-section"><h2>Detalhes da Experiência</h2><div class="pdf-row"><span class="pdf-label">Tipologias:</span> <span class="pdf-value">${tipologias.join(', ')||'N/A'}</span></div><div class="pdf-row"><span class="pdf-label">Dias:</span> <span class="pdf-value">${getVal('expDias')}</span></div><div class="pdf-row"><span class="pdf-label">Ponto de Energia:</span> <span class="pdf-value">${energiaVal==='sim'?'Sim - Qtd: '+getVal('exp_infra_pontos_energia_qtd')+' - Equip: '+getVal('exp_infra_energia_equip')+' - Spec: '+getVal('exp_infra_energia_spec')+' - Carga: '+getVal('exp_infra_energia_carga'):'Não'}</span></div></div>`}paperContainer.innerHTML=`<div class="pdf-section"><h2>1. Proponente</h2>
@@ -927,12 +1005,95 @@ function createPaperViewHTML(){const getVal=(id)=>document.getElementById(id)?.v
 
 async function gerarPDFPreview(e){e.preventDefault();try{showToast('Iniciando processo...','info');if(typeof html2canvas==='undefined'||typeof window.jsPDF==='undefined'){showToast('Erro: Bibliotecas de PDF não carregadas.','error');return}const propPreviewImg=document.querySelector('#photoPreview img');const tipoProp=document.getElementById('tipoProponente').value;if(tipoProp==='pj'){if(!propPreviewImg){showToast('A logo da instituição é obrigatória.','error');document.getElementById('fotoProponente').focus();return}}let guestsMissingPhoto=false;document.querySelectorAll('.guest-card').forEach(card=>{const guestImg=card.querySelector('.g-photo-preview img');if(!guestImg)guestsMissingPhoto=true});if(guestsMissingPhoto){showToast('Todas as fotos dos integrantes são obrigatórias.','error');return}const hiddenContainers=document.querySelectorAll('.hidden');const restoredFields=[];hiddenContainers.forEach(container=>{if(container.classList.contains('hp-field-wrap'))return;container.querySelectorAll('input, select, textarea').forEach(field=>{if(!field.disabled){field.disabled=true;restoredFields.push(field)}if(field.required){field.dataset.wasRequired='true';field.required=false}})});const form=document.getElementById('inscricaoForm');const isValid=form.checkValidity();restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});if(!isValid){form.reportValidity();showToast('Por favor, preencha todos os campos obrigatórios.','error');return}const formato=document.getElementById('formatoAtividade').value;let minConvidados=1;if(formato==='debate')minConvidados=2;if(formato==='roda_de_conversa')minConvidados=3;if(guestCount<minConvidados){showToast(`Mínimo de ${minConvidados} integrantes necessário para este formato.`,'error');return}createPaperViewHTML();document.getElementById('pdf-date').innerText=new Date().toLocaleString('pt-BR');const paper=document.getElementById('pdf-paper-view');showToast('Gerando prévia do PDF...','info');const canvas=await html2canvas(paper,{scale:2,useCORS:true});const imgData=canvas.toDataURL('image/jpeg',0.95);const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const imgProps=pdf.getImageProperties(imgData);const pdfWidth=pdf.internal.pageSize.getWidth();const pdfHeight=(imgProps.height*pdfWidth)/imgProps.width;pdf.addImage(imgData,'JPEG',0,0,pdfWidth,pdfHeight);generatedPDFBlob=pdf.output('blob');const fileURL=URL.createObjectURL(generatedPDFBlob);document.getElementById('pdfPreviewFrame').src=fileURL;document.getElementById('pdfModalOverlay').classList.add('active')}catch(err){console.error(err);showToast('Erro ao gerar PDF: '+err.message,'error')}}
 
-function submitToBackend(){const btn=document.getElementById('btnConfirmSend');const originalText=btn.innerHTML;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Enviando...';btn.disabled=true;const hiddenContainers=document.querySelectorAll('.hidden');const restoredFields=[];hiddenContainers.forEach(container=>{if(container.classList.contains('hp-field-wrap'))return;container.querySelectorAll('input, select, textarea').forEach(field=>{if(!field.disabled){field.disabled=true;restoredFields.push(field)}if(field.required){field.dataset.wasRequired='true';field.required=false}})});const form=document.getElementById('inscricaoForm');const formData=new FormData(form);restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});const emptyFileKeys=[];for(let[key,value]of formData.entries()){if(value instanceof File&&value.size===0)emptyFileKeys.push(key)}emptyFileKeys.forEach(key=>formData.delete(key));if(generatedPDFBlob)formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');const propPreviewImg=document.querySelector('#photoPreview img');if(propPreviewImg){const blob=dataURLtoBlob(propPreviewImg.src);if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')}document.querySelectorAll('.guest-card').forEach(card=>{const guestId=card.dataset.id;const guestPreviewImg=card.querySelector('.g-photo-preview img');if(guestPreviewImg){const blob=dataURLtoBlob(guestPreviewImg.src);if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)}});fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const flashSuccess=doc.querySelector('.flash-messages li.success');const flashError=doc.querySelector('.flash-messages li.error');if(flashError){document.open();document.write(html);document.close();showToast('Corrija os erros indicados.','error')}else{if(flashSuccess)showToast(flashSuccess.innerText,'success');else showToast('Proposta enviada com sucesso!','success');setTimeout(()=>{window.location.reload()},2000)}}).catch(err=>{console.error(err);showToast('Erro de conexão.','error');btn.innerHTML=originalText;btn.disabled=false})}
+function submitToBackend(){
+    const btn=document.getElementById('btnConfirmSend');
+    const originalText=btn.innerHTML;
+    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    btn.disabled=true;
+
+    // VALIDAÇÃO DOS CHECKBOXES OBRIGATÓRIOS
+    const chkTermos = document.getElementById('aceiteTermos').checked;
+    const chkDireitos = document.getElementById('direitosAutorais').checked;
+    const chkLgpd = document.getElementById('consentimentoLgpd').checked;
+
+    if (!chkTermos || !chkDireitos || !chkLgpd) {
+        showToast('Você deve aceitar os Termos, Direitos Autorais e LGPD para enviar.', 'error');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        return;
+    }
+
+    const hiddenContainers=document.querySelectorAll('.hidden');
+    const restoredFields=[];
+    hiddenContainers.forEach(container=>{if(container.classList.contains('hp-field-wrap'))return;container.querySelectorAll('input, select, textarea').forEach(field=>{if(!field.disabled){field.disabled=true;restoredFields.push(field)}if(field.required){field.dataset.wasRequired='true';field.required=false}})});
+    
+    // DESTRAVA CAMPOS DISABLED (COMO O ACESSO) PARA ENVIO FormData
+    const acessoSelect = document.getElementById('acessoAtividade');
+    const wasAcessoDisabled = acessoSelect.disabled;
+    if(wasAcessoDisabled) acessoSelect.disabled = false;
+
+    const form=document.getElementById('inscricaoForm');
+    const formData=new FormData(form);
+        // Envia checkboxes de termos (estão fora do <form>)
+    if (document.getElementById('aceiteTermos').checked) {
+        formData.append('aceite_termos', 'sim');
+    }
+    if (document.getElementById('direitosAutorais').checked) {
+        formData.append('direitos_autorais', 'sim');
+    }
+    if (document.getElementById('consentimentoLgpd').checked) {
+        formData.append('consentimento_lgpd', 'sim');
+    }
+    
+    // RESTAURA ESTADO DO SELECT APÓS CAPTURA
+    if(wasAcessoDisabled) acessoSelect.disabled = true;
+
+    restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});const emptyFileKeys=[];for(let[key,value]of formData.entries()){if(value instanceof File&&value.size===0)emptyFileKeys.push(key)}emptyFileKeys.forEach(key=>formData.delete(key));if(generatedPDFBlob)formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');const propPreviewImg=document.querySelector('#photoPreview img');if(propPreviewImg){const blob=dataURLtoBlob(propPreviewImg.src);if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')}document.querySelectorAll('.guest-card').forEach(card=>{const guestId=card.dataset.id;const guestPreviewImg=card.querySelector('.g-photo-preview img');if(guestPreviewImg){const blob=dataURLtoBlob(guestPreviewImg.src);if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)}});fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const flashSuccess=doc.querySelector('.flash-messages li.success');const flashError=doc.querySelector('.flash-messages li.error');if(flashError){document.open();document.write(html);document.close();showToast('Corrija os erros indicados.','error')}else{if(flashSuccess)showToast(flashSuccess.innerText,'success');else showToast('Proposta enviada com sucesso!','success');setTimeout(()=>{window.location.reload()},2000)}}).catch(err=>{console.error(err);showToast('Erro de conexão.','error');btn.innerHTML=originalText;btn.disabled=false})}
 
 document.getElementById('inscricaoForm').removeEventListener('submit',null); 
 document.getElementById('inscricaoForm').addEventListener('submit',gerarPDFPreview);document.getElementById('btnConfirmSend').addEventListener('click',submitToBackend);
 
-function limparFormulario(){document.getElementById('inscricaoForm').reset();document.getElementById('guestsList').innerHTML='';guestCount=0;selectedTags=[];hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();setProponenteType('pj');toggleActivityFields();toggleInscricaoCheckbox();document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';document.getElementById('photoPreview').classList.remove('error-border');document.getElementById('status_fotoProponente').innerText='Nenhum arquivo selecionado';document.getElementById('status_fotoProponente').style.color='#666';document.getElementById('materialTableBody').innerHTML='';materialRowCount=0;document.getElementById('infraTableBody').innerHTML='';infraRowCount=0;document.getElementById('ajudaCustoTableBody').innerHTML='';ajudaCustoRowCount=0;document.querySelectorAll('input.error').forEach(i=>i.classList.remove('error'));toggleSection(document.getElementById('infraOutrosField'),false);toggleSection(document.getElementById('inscricaoCheckboxGroup'),false);toggleSection(document.getElementById('ajudaCustoSection'),false);toggleSection(document.getElementById('ajudaCustoWrapper'),false);toggleSection(document.getElementById('expPontosEnergiaField'),false);toggleSection(document.getElementById('expMobiliarioField'),false);toggleSection(document.getElementById('expEquipPropriosTable'),false);if(document.getElementById('expEquipTableBody'))document.getElementById('expEquipTableBody').innerHTML='';expEquipRowCount=0;if(document.getElementById('expMaterialTableBody'))document.getElementById('expMaterialTableBody').innerHTML='';expMatRowCount=0;addGuest();showToast('Formulário limpo.','info')}
+function limparFormulario(){
+    document.getElementById('inscricaoForm').reset();
+    document.getElementById('guestsList').innerHTML='';guestCount=0;selectedTags=[];hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();setProponenteType('pj');toggleActivityFields();toggleInscricaoCheckbox();
+    document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';document.getElementById('photoPreview').classList.remove('error-border');document.getElementById('status_fotoProponente').innerText='Nenhum arquivo selecionado';document.getElementById('status_fotoProponente').style.color='#666';
+    document.getElementById('materialTableBody').innerHTML='';materialRowCount=0;document.getElementById('infraTableBody').innerHTML='';infraRowCount=0;document.getElementById('ajudaCustoTableBody').innerHTML='';ajudaCustoRowCount=0;document.querySelectorAll('input.error').forEach(i=>i.classList.remove('error'));
+    toggleSection(document.getElementById('infraOutrosField'),false);toggleSection(document.getElementById('inscricaoCheckboxGroup'),false);toggleSection(document.getElementById('ajudaCustoSection'),false);toggleSection(document.getElementById('ajudaCustoWrapper'),false);toggleSection(document.getElementById('expPontosEnergiaField'),false);toggleSection(document.getElementById('expMobiliarioField'),false);toggleSection(document.getElementById('expEquipPropriosTable'),false);
+    if(document.getElementById('expEquipTableBody'))document.getElementById('expEquipTableBody').innerHTML='';expEquipRowCount=0;if(document.getElementById('expMaterialTableBody'))document.getElementById('expMaterialTableBody').innerHTML='';expMatRowCount=0;
+    
+    // Limpa o bloqueio do select de acesso ao resetar
+    const acessoSelect = document.getElementById('acessoAtividade');
+    acessoSelect.removeAttribute('disabled');
+    document.getElementById('acessoFixoNotice').classList.add('hidden');
+    
+    // Desmarca os termos no modal
+    document.getElementById('aceiteTermos').checked = false;
+    document.getElementById('direitosAutorais').checked = false;
+    document.getElementById('consentimentoLgpd').checked = false;
+
+    addGuest();showToast('Formulário limpo.','info');
+}
+
+// ===== LÓGICA DE HABILITAR BOTÃO DE ENVIO PELOS CHECKBOXES =====
+function checkTermsAndToggleSubmit() {
+    const chkTermos = document.getElementById('aceiteTermos').checked;
+    const chkDireitos = document.getElementById('direitosAutorais').checked;
+    const chkLgpd = document.getElementById('consentimentoLgpd').checked;
+    const btnSend = document.getElementById('btnConfirmSend');
+
+    // Só habilita se os 3 estiverem marcados
+    if (chkTermos && chkDireitos && chkLgpd) {
+        btnSend.disabled = false;
+    } else {
+        btnSend.disabled = true;
+    }
+}
+
+// Adiciona os escutadores para quando o usuário clicar nos checkboxes
+document.getElementById('aceiteTermos').addEventListener('change', checkTermsAndToggleSubmit);
+document.getElementById('direitosAutorais').addEventListener('change', checkTermsAndToggleSubmit);
+document.getElementById('consentimentoLgpd').addEventListener('change', checkTermsAndToggleSubmit);
+
 </script>
 </body>
 </html>
