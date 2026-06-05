@@ -479,7 +479,7 @@
                     <select id="acessoAtividade" name="acessoAtividade" required onchange="toggleInscricaoCheckbox()">
                         <option value="">Selecione...</option>
                         <option value="ordem_chegada" {{ 'selected' if dados.get('acessoAtividade') == 'ordem_chegada' }}>Acesso por ordem de chegada</option>
-                        <option value="inscricao" {{ 'selected' if dados.get('acessoAtividade') == 'inscricao' }}>Acesso por inscrição</option>
+                        <option value="inscricao" {{ 'selected' if dados.get('acessoAtividade') == 'inscricao' }}>Acesso por inscrição prévia</option>
                     </select>
                     <div class="helper-text hidden" id="acessoFixoNotice" style="color: var(--roxo-escuro); font-weight: 600; font-size: 12px; margin-top: 6px;">
                         <i class="fas fa-lock" style="margin-right: 4px;"></i> Para os formatos Debate e Roda de conversa, o único meio de acesso é por ordem de chegada.
