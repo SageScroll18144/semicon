@@ -12,6 +12,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+from cryptography.fernet import Fernet
 
 # ──────────────────────────────────────────────
 # INÍCIO: Configurações Anti-Spam / Segurança
@@ -19,7 +20,8 @@ from email.mime.application import MIMEApplication
 TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '')
 TURNSTILE_SITE_KEY = os.environ.get('TURNSTILE_SITE_KEY', '')
 ALLOWED_DOMAINS = [d.strip() for d in os.environ.get('ALLOWED_DOMAINS', '').split(',') if d.strip()]
-
+DOCUMENT_FERNET_KEY = os.environ.get('DOCUMENT_FERNET_KEY', '')
+document_cipher = Fernet(DOCUMENT_FERNET_KEY.encode()) if DOCUMENT_FERNET_KEY else None
 HONEYPOT_FIELD_NAME = 'website_url'
 # ──────────────────────────────────────────────
 # FIM: Configurações Anti-Spam / Segurança
@@ -176,6 +178,14 @@ def validar_cnpj(cnpj):
     if resto in (10, 11): resto = 0
     return resto == int(cnpj[13])
 
+def criptografar_documento(valor, somente_digitos=False):
+    if not valor:
+        return None
+    if not document_cipher:
+        raise RuntimeError("DOCUMENT_FERNET_KEY nao configurada")
+
+    texto = re.sub(r"\D", "", valor) if somente_digitos else valor.strip()
+    return document_cipher.encrypt(texto.encode("utf-8")).decode("utf-8")
 
 def converter_foto_base64(arquivo_foto):
     if not arquivo_foto or arquivo_foto.filename == '':
@@ -737,7 +747,8 @@ def home():
                 if not dados.get(f'{prefixo}acessibilidade_desc', '').strip(): erros.append(f'Descreva os recursos de acessibilidade do integrante {i}.')
             convidados.append({
                 'nome': nome, 'email': email, 'nacionalidade': nacionalidade,
-                'cpf': cpf_conv, 'passaporte': dados.get(f'{prefixo}passaporte'),
+                'cpf': criptografar_documento(cpf_conv, somente_digitos=True) if cpf_conv else None,
+                'passaporte': criptografar_documento(dados.get(f'{prefixo}passaporte')) if dados.get(f'{prefixo}passaporte') else None,
                 'telefone': telefone, 'instituicao': inst, 'tipo_instituicao': tipo_inst,
                 'minibio': minibio, 'papel': papel, 'raca': raca, 'genero': genero,
                 'idade': idade,
@@ -896,8 +907,8 @@ def home():
             'nome_instituicao': nome_proponente_val,
             'categoria': categoria_prop if tipo_prop == 'pj' else None,
             'nacionalidade': nat_prop_val,
-            'cpf': dados.get('cpfProponente') if tipo_prop == 'pf' else None,
-            'passaporte': dados.get('passaporteProponente') if tipo_prop == 'pf' else None,
+            'cpf': criptografar_documento(dados.get('cpfProponente'), somente_digitos=True) if tipo_prop == 'pf' and dados.get('cpfProponente') else None,
+            'passaporte': criptografar_documento(dados.get('passaporteProponente')) if tipo_prop == 'pf' and dados.get('passaporteProponente') else None,
             'cnpj': dados.get('cnpjProponente') if tipo_prop == 'pj' else None,
             'logo_marca_base64': foto_proponente_base64
         },

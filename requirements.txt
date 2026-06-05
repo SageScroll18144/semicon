@@ -3,3 +3,4 @@ gunicorn
 werkzeug
 upstash-redis
 requests
+cryptography

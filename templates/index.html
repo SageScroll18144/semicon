@@ -665,12 +665,16 @@
                             </select>
                         </div>
                         <div class="field-group"><label>Condição do ambiente <span class="required">*</span></label>
-                            <select name="exp_espaco_condicao">
+                            <select name="exp_espaco_condicao" onchange="toggleExpCondicaoOutros()">
                                 <option value="">Selecione...</option>
-                                <option value="isolamento_acustico">1. Isolamento acústico</option>
-                                <option value="sala_escura">2. Sala escura</option>
-                                <option value="outros">3. Outros</option>
+                                <option value="isolamento_acustico" {{ 'selected' if dados.get('exp_espaco_condicao') == 'isolamento_acustico' }}>1. Isolamento acústico</option>
+                                <option value="sala_escura" {{ 'selected' if dados.get('exp_espaco_condicao') == 'sala_escura' }}>2. Sala escura</option>
+                                <option value="outros" {{ 'selected' if dados.get('exp_espaco_condicao') == 'outros' }}>3. Outros</option>
                             </select>
+                        </div>
+                        <div class="field-group hidden" id="expCondicaoOutrosField">
+                            <label>Descreva a condição do ambiente <span class="required">*</span></label>
+                            <input type="text" name="exp_espaco_condicao_outros" maxlength="200" placeholder="Informe a condição necessária para o ambiente" value="{{ dados.get('exp_espaco_condicao_outros', '') }}">
                         </div>
                     </div>
                 </div>
@@ -941,6 +945,7 @@ function toggleActivityFields(){
     toggleSection(document.getElementById('experienciaInfraBox'),isExperiencia);
     toggleSection(document.getElementById('experienciaEspacoBox'),isExperiencia);
     toggleSection(document.getElementById('experienciaAnexosBox'),isExperiencia);
+    toggleExpCondicaoOutros();
     
     if(isOficina){toggleLabFields();toggleSoftwareFields();toggleVisibilityByCategory()}
 
@@ -1025,6 +1030,7 @@ setupFileLoadStatus('expAnexoImagens','status_expAnexoImagens','Carregando image
 function toggleExpPontosEnergia(){const val=document.querySelector('input[name="exp_infra_energia"]:checked')?.value;toggleSection(document.getElementById('expPontosEnergiaField'),val==='sim');}
 function toggleExpMobiliario(){const val=document.querySelector('input[name="exp_infra_mobiliario_opcao"]:checked')?.value;toggleSection(document.getElementById('expMobiliarioField'),val==='sim');}
 function toggleExpEquipProprios(){const val=document.querySelector('input[name="exp_infra_equip_proprios_opcao"]:checked')?.value;toggleSection(document.getElementById('expEquipPropriosTable'),val==='sim');}
+function toggleExpCondicaoOutros(){const select=document.querySelector('[name="exp_espaco_condicao"]'),field=document.getElementById('expCondicaoOutrosField'),input=field?.querySelector('input');const show=select?.value==='outros';toggleSection(field,show);if(input){input.required=show;if(!show)input.value=''}}
 
 let expEquipRowCount=0;function addExpEquipRow(){expEquipRowCount++;const tb=document.getElementById('expEquipTableBody'),tr=document.createElement('tr');tr.id='expEquipRow'+expEquipRowCount;tr.innerHTML=`<td><input type="text" name="exp_equip_item_${expEquipRowCount}" required></td><td><input type="number" name="exp_equip_qtd_${expEquipRowCount}" min="1" value="1" required style="width:70px"></td><td><input type="text" name="exp_equip_obs_${expEquipRowCount}" maxlength="200"></td><td><button type="button" class="btn-remove-row" onclick="removeExpEquipRow('expEquipRow${expEquipRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr)}
 function removeExpEquipRow(id){document.getElementById(id).remove()}
@@ -1225,6 +1231,7 @@ function createPaperViewHTML(){
             row('Quantidade da equipe operacional do proponente',byName('exp_infra_qtd_equipe')),
             row('Ambiente',byName('exp_espaco_ambiente')),
             row('Condição do ambiente',byName('exp_espaco_condicao')),
+            document.querySelector('[name="exp_espaco_condicao"]')?.value==='outros'?row('Condição do ambiente - outros',byName('exp_espaco_condicao_outros')):'',
             row('Croqui / planta simplificada',fileValue('exp_anexo_croqui')),
             row('Imagens de referência',fileValue('exp_anexo_imagens')),
             row('Vídeo demonstrativo',byName('exp_anexo_video'))
