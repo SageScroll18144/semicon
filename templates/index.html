@@ -98,11 +98,13 @@
 
         .tag-chip.suggestion { background: var(--roxo-50); color: var(--roxo-escuro); border: 1px dashed var(--roxo-principal); }
 
-        .suggestion-input-row { display: flex; gap: 8px; margin-top: 8px; background: #FFFAFF; border: 2px dashed var(--roxo-200); border-radius: 12px; padding: 16px; align-items: center; }
+        .suggestion-input-row { position: relative; display: flex; gap: 8px; margin-top: 8px; background: #FFFAFF; border: 2px dashed var(--roxo-200); border-radius: 12px; padding: 18px 42px 16px 16px; align-items: center; }
         .suggestion-input-row input { flex: 1; padding: 8px 12px; border: 1.5px solid var(--cinza-borda); border-radius: 8px; font-size: 13px; outline: none; background: #fff; }
         .suggestion-input-row input:focus { border-color: var(--roxo-principal); box-shadow: 0 0 0 3px rgba(255,51,153,0.10); }
         .suggestion-input-row button { background: #FF9800; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; }
         .suggestion-input-row button:hover { background: #F57C00; }
+        .suggestion-input-row .suggestion-close-btn { position: absolute; top: 6px; right: 8px; width: 24px; height: 24px; padding: 0; border-radius: 50%; background: transparent; color: var(--roxo-escuro); font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+        .suggestion-input-row .suggestion-close-btn:hover { background: var(--roxo-100); }
 
         .type-selector { display: flex; border-radius: 10px; overflow: hidden; border: 2px solid var(--roxo-principal); margin-bottom: 24px; }
         .type-selector-btn { flex: 1; text-align: center; padding: 14px 20px; font-weight: 600; font-size: 14px; cursor: pointer; background: #fff; color: var(--roxo-principal); border: none; transition: all 0.25s; font-family: 'Space Grotesk', sans-serif; }
@@ -433,7 +435,7 @@
                 <!-- Descrição para publicação -->
                 <div class="field-group"><label for="descricaoAtividade">Descrição para publicação <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span> <i class="tooltip-icon" data-tooltip="Texto resumido que aparecerá para o público. Priorize linguagem clara, objetiva e convidativa para o público geral.">?</i></label><textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="700" required placeholder="Essa descrição será usada no site e no aplicativo de programação do festival.">{{ dados.get('descricaoAtividade', '') }}</textarea><div class="char-counter" id="charCounterDesc">0 / 700</div></div>
                 <!-- Palavra-chave -->
-                <div class="field-group"><label for="tagsInput">Palavra-chave <span class="required">*</span> <span style="font-weight:400;color:#999">(Mínimo 3, Máximo 5)</span></label><div class="tags-container" id="tagsContainer"><div class="tags-chips" id="tagsChips"></div><div class="tags-input-wrapper"><input type="text" id="tagsInput" placeholder="Buscar e selecionar palavras-chave..." autocomplete="off"><input type="hidden" id="tagsHidden" name="tags" value="{{ dados.get('tags', '') }}"><input type="hidden" id="tagSuggestionHidden" name="tagSuggestion" value="{{ dados.get('tagSuggestion', '') }}"><div class="tags-dropdown" id="tagsDropdown"></div></div><div class="suggestion-input-row hidden" id="suggestionInputRow"><input type="text" id="suggestionInput" placeholder="Digite sua sugestão de palavra-chave..." maxlength="50"><button type="button" onclick="addSuggestionTag()">Adicionar</button></div></div></div>
+                <div class="field-group"><label for="tagsInput">Palavra-chave <span class="required">*</span> <span style="font-weight:400;color:#999">(Mínimo 3, Máximo 5)</span></label><div class="tags-container" id="tagsContainer"><div class="tags-chips" id="tagsChips"></div><div class="tags-input-wrapper"><input type="text" id="tagsInput" placeholder="Buscar e selecionar palavras-chave..." autocomplete="off"><input type="hidden" id="tagsHidden" name="tags" value="{{ dados.get('tags', '') }}"><input type="hidden" id="tagSuggestionHidden" name="tagSuggestion" value="{{ dados.get('tagSuggestion', '') }}"><div class="tags-dropdown" id="tagsDropdown"></div></div><div class="suggestion-input-row hidden" id="suggestionInputRow"><button type="button" class="suggestion-close-btn" onclick="hideSuggestionInput()" aria-label="Fechar sugestao">&times;</button><input type="text" id="suggestionInput" placeholder="Digite sua sugestão de palavra-chave..." maxlength="50"><button type="button" onclick="addSuggestionTag()">Adicionar</button></div></div></div>
 
                 <!-- ===== EXPERIÊNCIA: TIPOLOGIA (caixa roxa) ===== -->
                 <div id="expTipologiaBox" class="purple-dashed-box hidden">
@@ -867,15 +869,15 @@ function calcAjudaCustoTotal(){let t=0;document.querySelectorAll('#ajudaCustoTab
 function showToast(m,t='info'){const c=document.getElementById('toast-container'),e=document.createElement('div');e.className=`toast ${t}`;e.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-triangle':'info-circle'}"></i> ${m}`;c.appendChild(e);setTimeout(()=>{e.style.opacity='0';e.style.transition='opacity 0.3s';setTimeout(()=>e.remove(),300)},3500)}
 
 // ===== TAGS LOGIC =====
-const MIN_TAGS=3,MAX_TAGS=5;const AVAILABLE_TAGS=["Economia Circular","Energia Renovável","Gestão de Resíduos","Logística Reversa","Meio Ambiente","Mudanças Climáticas","ODS","Arquitetura","Intervenções Urbanas","ESG","Responsabilidade Social","Cidadania Digital","Geopolítica","Mobilidade Urbana","Turismo","Urbanismo","Saúde","Agritech","Cleantech","Construtech","Ecotech","Edutech","Fintech","Foodtech","Govtech","Healthtech","Lawtech","Retailtech","Sportech","Dados","Blockchain","Cibersegurança","LGPD","Cloud","Programação","XR / Realidade Virtual e Aumentada","Deep Learning","Engenharia de Prompt","Inteligência Artificial","LLM","Machine Learning","Metaverso","Processamento de Linguagem Natural","Visão Computacional","Internet das Coisas","Sistemas Embarcados","Computação Quântica","Automação","Robótica","Tecnologias de Conectividade","Acessibilidade","50+","PcD","Equidade Racial","LGBTQIAPN+","Mulheres","Neurodivergência","Periferias","Diversidade e Inclusão","Cultura Popular","Patrimônio Imaterial","Artes","Impacto Social","Legislação","Educação e Formação","Infância","Empreendedorismo","Inovação","Empresa Júnior","Gestão de Comunidades","Internacionalização","Modelagem de Negócios","Startup","Transformação Digital","Carreira Profissional","Cultura Organizacional","Desenvolvimento de Times","RH","Captação por Editais","Investimentos","Agilidade","Atacado e Varejo","Branding","Canais de Venda","Comportamento do Consumidor","Marketing","Vendas B2B e B2C","Artes Visuais","Audiovisual","Cultura Maker","Dança","Fotografia","Gastronomia","Literatura","Moda","Música","Teatro","Comunicação","Criação de Conteúdo","Design Gráfico/ Industrial","Podcast","e-Sports","Experiência do Usuário (UX / CX)","Gameficação","Interface do Usuário (UI)","Simulação e Modelagem","Desenvolvimento de Jogos","Economia Criativa"];let selectedTags=[];let hasSuggestion=false;
-(function(){const v=document.getElementById('tagsHidden').value;if(v&&v.trim()){selectedTags=v.split(',').map(t=>t.trim()).filter(t=>t);renderTagChips()}const sv=document.getElementById('tagSuggestionHidden').value;if(sv&&sv.trim())hasSuggestion=true})();
-const tagsInput=document.getElementById('tagsInput'),tagsDropdown=document.getElementById('tagsDropdown');
-tagsInput.addEventListener('input',function(){filterAndShowTags(this.value.toLowerCase().trim())});tagsInput.addEventListener('focus',function(){filterAndShowTags(this.value.toLowerCase().trim()||'')});document.addEventListener('click',function(e){if(!document.getElementById('tagsContainer').contains(e.target))tagsDropdown.classList.remove('active')});
+const MIN_TAGS=3,MAX_TAGS=5;const AVAILABLE_TAGS=["Economia Circular","Energia Renovável","Gestão de Resíduos","Logística Reversa","Meio Ambiente","Mudanças Climáticas","ODS","Arquitetura","Intervenções Urbanas","ESG","Responsabilidade Social","Cidadania Digital","Geopolítica","Mobilidade Urbana","Turismo","Urbanismo","Saúde","Agritech","Cleantech","Construtech","Ecotech","Edutech","Fintech","Foodtech","Govtech","Healthtech","Lawtech","Retailtech","Sportech","Dados","Blockchain","Cibersegurança","LGPD","Cloud","Programação","XR / Realidade Virtual e Aumentada","Deep Learning","Engenharia de Prompt","Inteligência Artificial","LLM","Machine Learning","Metaverso","Processamento de Linguagem Natural","Visão Computacional","Internet das Coisas","Sistemas Embarcados","Computação Quântica","Automação","Robótica","Tecnologias de Conectividade","Acessibilidade","50+","PcD","Equidade Racial","LGBTQIAPN+","Mulheres","Neurodivergência","Periferias","Diversidade e Inclusão","Cultura Popular","Patrimônio Imaterial","Artes","Impacto Social","Legislação","Educação e Formação","Infância","Empreendedorismo","Inovação","Empresa Júnior","Gestão de Comunidades","Internacionalização","Modelagem de Negócios","Startup","Transformação Digital","Carreira Profissional","Cultura Organizacional","Desenvolvimento de Times","RH","Captação por Editais","Investimentos","Agilidade","Atacado e Varejo","Branding","Canais de Venda","Comportamento do Consumidor","Marketing","Vendas B2B e B2C","Artes Visuais","Audiovisual","Cultura Maker","Dança","Fotografia","Gastronomia","Literatura","Moda","Música","Teatro","Comunicação","Criação de Conteúdo","Design Gráfico/ Industrial","Podcast","e-Sports","Experiência do Usuário (UX / CX)","Gameficação","Interface do Usuário (UI)","Simulação e Modelagem","Desenvolvimento de Jogos","Economia Criativa"];let selectedTags=[];let hasSuggestion=false;let tagsInput=null,tagsDropdown=null;
+function initTagsWidget(){tagsInput=document.getElementById('tagsInput');tagsDropdown=document.getElementById('tagsDropdown');if(!tagsInput||!tagsDropdown)return;const hidden=document.getElementById('tagsHidden'),suggestionHidden=document.getElementById('tagSuggestionHidden');selectedTags=[];hasSuggestion=false;const v=hidden?hidden.value:'';if(v&&v.trim())selectedTags=v.split(',').map(t=>t.trim()).filter(t=>t);const sv=suggestionHidden?suggestionHidden.value:'';if(sv&&sv.trim())hasSuggestion=true;renderTagChips();if(tagsInput.dataset.tagsBound==='true')return;tagsInput.dataset.tagsBound='true';tagsInput.addEventListener('input',function(){filterAndShowTags(this.value.toLowerCase().trim())});tagsInput.addEventListener('focus',function(){filterAndShowTags(this.value.toLowerCase().trim()||'')});if(document.documentElement.dataset.tagsOutsideBound!=='true'){document.documentElement.dataset.tagsOutsideBound='true';document.addEventListener('click',function(e){const container=document.getElementById('tagsContainer'),dropdown=document.getElementById('tagsDropdown');if(container&&dropdown&&!container.contains(e.target))dropdown.classList.remove('active')})}}
+initTagsWidget();
 function filterAndShowTags(q){const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){tagsDropdown.innerHTML='<div class="tags-dropdown-empty">Máximo de '+MAX_TAGS+' tags atingido</div>';tagsDropdown.classList.add('active');return}let items='';if(!hasSuggestion){items='<div class="tags-dropdown-item suggestion-item" onclick="showSuggestionInput()"><i class="fas fa-pen"></i> Dê a sua sugestão </div>'}const f=AVAILABLE_TAGS.filter(t=>(q===''||t.toLowerCase().includes(q))&&!selectedTags.includes(t));if(f.length===0&&q!==''&&!hasSuggestion){tagsDropdown.innerHTML=items+'<div class="tags-dropdown-empty">Nenhuma tag encontrada</div>';tagsDropdown.classList.add('active');return}if(f.length===0&&q===''){if(items){tagsDropdown.innerHTML=items;tagsDropdown.classList.add('active')}else tagsDropdown.classList.remove('active');return}items+=f.slice(0,30).map(t=>{let d=t;if(q){const i=t.toLowerCase().indexOf(q);if(i>=0)d=t.substring(0,i)+'<span class="highlight">'+t.substring(i,i+q.length)+'</span>'+t.substring(i+q.length)}return`<div class="tags-dropdown-item" onclick="addTag('${t.replace(/'/g,"\\'")}')">${d}</div>`}).join('');tagsDropdown.innerHTML=items;tagsDropdown.classList.add('active')}
 function addTag(t){const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return}if(!selectedTags.includes(t)){selectedTags.push(t);renderTagChips();updateHiddenTags()}tagsInput.value='';tagsDropdown.classList.remove('active')}
 function removeTag(t){selectedTags=selectedTags.filter(x=>x!==t);renderTagChips();updateHiddenTags()}
-function showSuggestionInput(){document.getElementById('suggestionInputRow').classList.remove('hidden');tagsDropdown.classList.remove('active');tagsInput.value=''}
-function addSuggestionTag(){if(hasSuggestion){showToast('Apenas uma sugestão é permitida.','error');return}const v=document.getElementById('suggestionInput').value.trim();if(!v){showToast('Digite a sugestão.','error');return}const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return}hasSuggestion=true;document.getElementById('tagSuggestionHidden').value=v;document.getElementById('suggestionInputRow').classList.add('hidden');renderTagChips();updateHiddenTags()}
+function showSuggestionInput(){const row=document.getElementById('suggestionInputRow'),input=document.getElementById('suggestionInput');row.classList.remove('hidden');tagsDropdown.classList.remove('active');tagsInput.value='';input.focus()}
+function hideSuggestionInput(){document.getElementById('suggestionInput').value='';document.getElementById('suggestionInputRow').classList.add('hidden')}
+function addSuggestionTag(){if(hasSuggestion){showToast('Apenas uma sugestão é permitida.','error');return}const input=document.getElementById('suggestionInput');const v=input.value.trim();if(!v){showToast('Digite a sugestão.','error');return}const total=selectedTags.length+(hasSuggestion?1:0);if(total>=MAX_TAGS){showToast('Máximo de '+MAX_TAGS+' tags atingido.','error');return}hasSuggestion=true;document.getElementById('tagSuggestionHidden').value=v;input.value='';document.getElementById('suggestionInputRow').classList.add('hidden');renderTagChips();updateHiddenTags()}
 function removeSuggestionTag(){hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags()}
 function renderTagChips(){const total=selectedTags.length+(hasSuggestion?1:0);let html=selectedTags.map(t=>`<span class="tag-chip">${t} <button type="button" onclick="removeTag('${t.replace(/'/g,"\\'")}')">&times;</button></span>`).join('');if(hasSuggestion){html+=`<span class="tag-chip suggestion">✏️ ${document.getElementById('tagSuggestionHidden').value} <button type="button" onclick="removeSuggestionTag()">&times;</button></span>`}document.getElementById('tagsChips').innerHTML=html;if(total>=MAX_TAGS){tagsInput.disabled=true;tagsInput.placeholder='Máximo de '+MAX_TAGS+' atingido'}else{tagsInput.disabled=false;tagsInput.placeholder='Buscar e selecionar palavras-chave...'}}
 function updateHiddenTags(){document.getElementById('tagsHidden').value=selectedTags.join(',')}
@@ -1082,8 +1084,23 @@ function replacePageAtTop(doc,category,message){
     document.open();
     document.write('<!DOCTYPE html>'+doc.documentElement.outerHTML);
     document.close();
-    setTimeout(()=>window.scrollTo({top:0,left:0,behavior:'auto'}),0);
+    setTimeout(()=>{
+        if(typeof initTagsWidget==='function')initTagsWidget();
+        window.scrollTo({top:0,left:0,behavior:'auto'});
+    },0);
 }
+
+(function(){
+    try{
+        const message=sessionStorage.getItem('form_success_message');
+        if(!message)return;
+        sessionStorage.removeItem('form_success_message');
+        setTimeout(()=>{
+            ensureFlashMessage(document,'success',message);
+            window.scrollTo({top:0,left:0,behavior:'auto'});
+        },0);
+    }catch(e){}
+})();
 
 function createPaperViewHTML(){
     const paperContainer=document.getElementById('pdf-content-injector');
@@ -1095,6 +1112,12 @@ function createPaperViewHTML(){
     const radio=(name,root=document)=>{const checked=root.querySelector(`input[name="${name}"]:checked`);return checked?(checked.closest('.radio-option')?.querySelector('label')?.innerText||checked.value):''};
     const check=(id)=>document.getElementById(id)?.checked?'Sim':'Não';
     const row=(label,value)=>`<div class="pdf-row"><span class="pdf-label">${esc(label)}:</span> <span class="pdf-value">${clean(value)}</span></div>`;
+    const checkboxText=(id)=>{
+        const field=document.getElementById(id);
+        const label=document.querySelector(`label[for="${id}"]`)||field?.closest('.checkbox-option')?.querySelector('label');
+        return label?(label.innerText||'').replace(/\*/g,'').trim():id;
+    };
+    const checkboxRow=(id)=>`<div class="pdf-row"><span class="pdf-value">${clean(checkboxText(id))}</span></div>`;
     const section=(title,html)=>`<div class="pdf-section"><h2>${esc(title)}</h2>${html}</div>`;
     const table=(headers,rows)=>rows.length?`<table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${clean(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:`<div class="pdf-row"><span class="pdf-label">Itens:</span> <span class="pdf-value">Nenhum item informado</span></div>`;
     const fileValue=(name,loadedSelector='')=>{
@@ -1150,7 +1173,6 @@ function createPaperViewHTML(){
         row('Idade mínima',byId('idadeMinima')),
         row('Idade máxima',byId('idadeMaxima')),
         row('Acesso à atividade',byId('acessoAtividade')),
-        row('Responsabilidade por inscrição',document.getElementById('inscricaoResponsabilidade')?.checked?'Sim':'Não'),
         row('Recurso de acessibilidade indispensável',byId('recursosAcessibilidade'))
     ].join('');
     const infraRows=[
@@ -1244,6 +1266,15 @@ function createPaperViewHTML(){
         guestSections.push(section(`7.${idx+1}. Integrante ${idx+1}`,guestRows));
     });
     const observacoesHTML=section('8. Informações Extras',row('Observações',byId('infoExtras')));
+    const declaracoesRows=[
+        checkboxRow('aceiteTermos'),
+        checkboxRow('direitosAutorais'),
+        checkboxRow('consentimentoLgpd')
+    ];
+    if(document.getElementById('acessoAtividade')?.value==='inscricao'){
+        declaracoesRows.push(checkboxRow('inscricaoResponsabilidade'));
+    }
+    const declaracoesHTML=section('9. Declara\u00e7\u00f5es e Consentimentos',declaracoesRows.join(''));
     paperContainer.innerHTML=[
         section('1. Proponente',proponenteRows),
         section('2. Responsável pela Inscrição',responsavelRows),
@@ -1253,7 +1284,8 @@ function createPaperViewHTML(){
         experienciaHTML,
         ajudaHTML,
         ...(guestSections.length?guestSections:[section('7. Integrantes','<div class="pdf-row"><span class="pdf-value">Nenhum integrante informado</span></div>')]),
-        observacoesHTML
+        observacoesHTML,
+        declaracoesHTML
     ].join('');
 }
 
@@ -1387,7 +1419,7 @@ function submitToBackend(){
     // RESTAURA ESTADO DO SELECT APÓS CAPTURA
     if(wasAcessoDisabled) acessoSelect.disabled = true;
 
-    restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});const emptyFileKeys=[];for(let[key,value]of formData.entries()){if(value instanceof File&&value.size===0)emptyFileKeys.push(key)}emptyFileKeys.forEach(key=>formData.delete(key));if(generatedPDFBlob)formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');const propPreviewImg=document.querySelector('#photoPreview img');if(propPreviewImg){const blob=dataURLtoBlob(propPreviewImg.src);if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')}document.querySelectorAll('.guest-card').forEach(card=>{const guestId=card.dataset.id;const guestPreviewImg=card.querySelector('.g-photo-preview img');if(guestPreviewImg){const blob=dataURLtoBlob(guestPreviewImg.src);if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)}});fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const flashSuccess=doc.querySelector('.flash-messages li.success');const flashError=doc.querySelector('.flash-messages li.error');if(flashError){replacePageAtTop(doc,'error','Corrija os erros indicados.')}else{replacePageAtTop(doc,'success',flashSuccess?flashSuccess.innerText.trim():'Proposta enviada com sucesso!')}}).catch(err=>{console.error(err);showToast('Erro de conexão.','error');btn.innerHTML=originalText;btn.disabled=false})}
+    restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});const emptyFileKeys=[];for(let[key,value]of formData.entries()){if(value instanceof File&&value.size===0)emptyFileKeys.push(key)}emptyFileKeys.forEach(key=>formData.delete(key));if(generatedPDFBlob)formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');const propPreviewImg=document.querySelector('#photoPreview img');if(propPreviewImg){const blob=dataURLtoBlob(propPreviewImg.src);if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')}document.querySelectorAll('.guest-card').forEach(card=>{const guestId=card.dataset.id;const guestPreviewImg=card.querySelector('.g-photo-preview img');if(guestPreviewImg){const blob=dataURLtoBlob(guestPreviewImg.src);if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)}});fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const flashSuccess=doc.querySelector('.flash-messages li.success');const flashError=doc.querySelector('.flash-messages li.error');if(flashError){replacePageAtTop(doc,'error','Corrija os erros indicados.')}else{const successMessage=flashSuccess?flashSuccess.innerText.trim():'Proposta enviada com sucesso!';try{sessionStorage.setItem('form_success_message',successMessage)}catch(e){}window.location.href='/'}}).catch(err=>{console.error(err);showToast('Erro de conexão.','error');btn.innerHTML=originalText;btn.disabled=false})}
 
 document.getElementById('inscricaoForm').removeEventListener('submit',null); 
 document.getElementById('inscricaoForm').addEventListener('submit',gerarPDFPreview);document.getElementById('btnConfirmSend').addEventListener('click',submitToBackend);
