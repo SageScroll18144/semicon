@@ -544,7 +544,6 @@ def home():
 
     if formato == 'oficina':
         if not dados.get('oficina_qtd_publico'): erros.append('Selecione a quantidade máxima de público.')
-        if not dados.get('oficina_internet'): erros.append('Informe sobre internet.')
         if not dados.get('oficina_lab'): erros.append('Informe sobre laboratório.')
         if dados.get('oficina_lab') == 'sim':
             if not dados.get('oficina_pc_specs'): erros.append('Descreva as configurações mínimas dos PCs.')
@@ -941,7 +940,7 @@ def home():
             'observacoes': dados.get('infoExtras'),
             'oficina': {
                 'qtd_publico': dados.get('oficina_qtd_publico'),
-                'internet': dados.get('oficina_internet'),
+                'internet': dados.get('infra_internet') == 'sim',
                 'lab': dados.get('oficina_lab'),
                 'pc_specs': dados.get('oficina_pc_specs'),
                 'software_req': dados.get('oficina_soft_req'),

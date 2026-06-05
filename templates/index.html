@@ -128,6 +128,9 @@
         .custom-file-btn i { margin-right: 6px; }
 
         .file-status { margin-top: 6px; font-size: 12px; color: #666; font-weight: 500; }
+        .file-status.loading { color: var(--roxo-principal); }
+        .file-status.success { color: var(--verde-sucesso); }
+        .file-status.error { color: var(--vermelho-obrigatorio); }
 
         .tags-container { position: relative; }
         .tags-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; min-height: 0; }
@@ -206,18 +209,27 @@
         .btn-preview-cancel { background: #fff; color: #333; border: none; padding: 14px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .btn-preview-cancel:hover { background: #f0f0f0; }
 
-        #pdf-paper-view { position: fixed; left: -9999px; top: 0; width: 210mm; min-height: 297mm; background: white; color: #222; font-family: 'Helvetica', sans-serif; padding: 20px; box-sizing: border-box; z-index: -1; }
-        #pdf-paper-view h1, #pdf-paper-view h2, #pdf-paper-view h3 { color: var(--roxo-escuro); margin-bottom: 10px; }
-        #pdf-paper-view h1 { font-size: 24px; border-bottom: 2px solid var(--roxo-principal); padding-bottom: 10px; margin-bottom: 20px; }
-        #pdf-paper-view h2 { font-size: 18px; margin-top: 20px; background: var(--roxo-50); padding: 5px; }
-        #pdf-paper-view .pdf-row { display: flex; margin-bottom: 8px; font-size: 12px; }
-        #pdf-paper-view .pdf-label { font-weight: bold; width: 140px; flex-shrink: 0; }
-        #pdf-paper-view .pdf-value { flex: 1; }
-        #pdf-paper-view .pdf-section { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        #pdf-paper-view { position: fixed; left: -9999px; top: 0; width: 210mm; color: #222; font-family: 'Helvetica', sans-serif; z-index: -1; }
+        #pdf-source-page { display: none; }
+        #pdf-pages { display: flex; flex-direction: column; gap: 0; }
+        #pdf-paper-view .pdf-page { width: 210mm; height: 297mm; background: white; box-sizing: border-box; padding: 12mm 14mm 10mm; display: flex; flex-direction: column; overflow: hidden; }
+        #pdf-paper-view .pdf-page-header { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid var(--roxo-principal); padding-bottom: 8px; margin-bottom: 12px; flex-shrink: 0; }
+        #pdf-paper-view .pdf-page-header img { width: 54px; height: 54px; object-fit: contain; display: block; }
+        #pdf-paper-view .pdf-page-title { font-size: 22px; color: var(--roxo-escuro); font-weight: 700; margin: 0; line-height: 1.2; }
+        #pdf-paper-view .pdf-page-subtitle { font-size: 10px; color: #777; margin-top: 4px; }
+        #pdf-paper-view .pdf-page-content { flex: 1; overflow: hidden; }
+        #pdf-paper-view .pdf-page-footer { border-top: 1px solid #ddd; color: #777; font-size: 9px; margin-top: 8px; padding-top: 6px; display: flex; justify-content: space-between; flex-shrink: 0; }
+        #pdf-paper-view h1, #pdf-paper-view h2, #pdf-paper-view h3 { color: var(--roxo-escuro); margin-bottom: 8px; }
+        #pdf-paper-view h2 { font-size: 15px; margin: 0 0 10px; background: var(--roxo-50); padding: 6px 8px; border-left: 3px solid var(--roxo-principal); }
+        #pdf-paper-view h3 { font-size: 12px; margin: 0 0 8px; }
+        #pdf-paper-view .pdf-row { display: flex; gap: 10px; margin-bottom: 6px; font-size: 10.5px; line-height: 1.35; break-inside: avoid; page-break-inside: avoid; }
+        #pdf-paper-view .pdf-label { font-weight: bold; width: 128px; flex-shrink: 0; overflow-wrap: anywhere; }
+        #pdf-paper-view .pdf-value { flex: 1; overflow-wrap: anywhere; }
+        #pdf-paper-view .pdf-section { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; break-inside: avoid; page-break-inside: avoid; }
         #pdf-paper-view table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 5px; }
         #pdf-paper-view th, #pdf-paper-view td { border: 1px solid #ddd; padding: 6px; text-align: left; }
         #pdf-paper-view th { background: #f5f5f5; }
-        #pdf-paper-view img.logo-pdf { height: 60px; display: block; margin-bottom: 10px; }
+        #pdf-paper-view .pdf-source-only { display: none; }
 
         .tooltip-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--roxo-200); color: var(--roxo-escuro); font-size: 10px; cursor: help; margin-left: 6px; position: relative; font-weight: 700; font-style: normal; }
         .tooltip-icon:hover::after { content: attr(data-tooltip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 400; white-space: normal; width: 260px; z-index: 999; line-height: 1.5; }
@@ -252,12 +264,8 @@
 <canvas id="cropCanvas" width="512" height="512" style="display:none"></canvas>
 
 <div id="pdf-paper-view">
-    <img src="/static/logo.jpg" alt="Logo" class="logo-pdf">
-    <h1>REC'n'Play 2026 - Ficha de Inscrição</h1>
-    <div id="pdf-content-injector"></div>
-    <div style="margin-top: 30px; font-size: 10px; color: #777; border-top: 1px solid #ddd; padding-top: 10px;">
-        Este documento foi gerado automaticamente em <span id="pdf-date"></span>.
-    </div>
+    <div id="pdf-source-page"><div id="pdf-content-injector"></div></div>
+    <div id="pdf-pages"></div>
 </div>
 
 <div class="crop-modal-overlay" id="cropModalOverlay">
@@ -326,7 +334,7 @@
 
             <!-- ========== 1. DADOS DO PROPONENTE ========== -->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-user-circle"></i> 1. Dados do proponente</h2>
+                <h2 class="section-title"><i class="fas fa-user-circle"></i> 1. Dados do Proponente <i class="tooltip-icon" data-tooltip="Proponente é quem vai propor aquela atividade.">?</i></h2>
                 <div class="type-selector" id="typeSelector">
                     <button type="button" class="type-selector-btn active" data-type="pj" onclick="setProponenteType('pj')"><i class="fas fa-building"></i> Pessoa Jurídica</button>
                     <button type="button" class="type-selector-btn" data-type="pf" onclick="setProponenteType('pf')"><i class="fas fa-user"></i> Pessoa Física</button>
@@ -380,7 +388,7 @@
 
             <!-- ========== 2. RESPONSÁVEL ========== -->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-id-badge"></i> 2. Responsável pela inscrição</h2>
+                <h2 class="section-title"><i class="fas fa-id-badge"></i> 2. Responsável pela inscrição <i class="tooltip-icon" data-tooltip="Pessoa responsável pelo acompanhamento da proposta. Será contactado para comunicações, ajustes, dúvidas e retorno sobre o processo.">?</i></h2>
                 <div class="representante-box">
                     <div class="field-row">
                         <div class="field-group" id="nomeRepresentanteGroup"><label for="nomeRepresentante">Nome do responsável <span class="required">*</span></label><input type="text" id="nomeRepresentante" name="nomeRepresentante" required value="{{ dados.get('nomeRepresentante', '') }}"></div>
@@ -417,17 +425,13 @@
                 </div>
 
                 <!-- Objetivo -->
-                <div class="field-group"><label for="objetivoAtividade">Objetivo <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required>{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
-
+                <div class="field-group"><label for="objetivoAtividade">Objetivo <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva de forma objetiva o propósito principal da atividade e o que ela pretende promover, discutir, desenvolver ou compartilhar com o público.">?</i></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required>{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
                 <!-- Justificativa -->
-                <div class="field-group"><label for="justificativaTematica">Justificativa <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required>{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
-
+                <div class="field-group"><label for="justificativaTematica">Justificativa <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span> <i class="tooltip-icon" data-tooltip="Explique como a proposta se relaciona com os eixos temáticos, diretrizes curatoriais ou discussões contemporâneas abordadas pelo REC'n'Play 2026.">?</i></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required>{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
                 <!-- Metodologia -->
-                <div class="field-group"><label for="metodologiaAplicada">Metodologia <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required>{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
-
+                <div class="field-group"><label for="metodologiaAplicada">Metodologia <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva como a atividade será conduzida, incluindo dinâmica de participação, interação com o público e estrutura prevista para sua realização.">?</i></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required>{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
                 <!-- Descrição para publicação -->
-                <div class="field-group"><label for="descricaoAtividade">Descrição para publicação <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span></label><textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="700" required placeholder="Essa descrição será usada no site e no aplicativo de programação do festival.">{{ dados.get('descricaoAtividade', '') }}</textarea><div class="char-counter" id="charCounterDesc">0 / 700</div></div>
-
+                <div class="field-group"><label for="descricaoAtividade">Descrição para publicação <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span> <i class="tooltip-icon" data-tooltip="Texto resumido que aparecerá para o público. Priorize linguagem clara, objetiva e convidativa para o público geral.">?</i></label><textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="700" required placeholder="Essa descrição será usada no site e no aplicativo de programação do festival.">{{ dados.get('descricaoAtividade', '') }}</textarea><div class="char-counter" id="charCounterDesc">0 / 700</div></div>
                 <!-- Palavra-chave -->
                 <div class="field-group"><label for="tagsInput">Palavra-chave <span class="required">*</span> <span style="font-weight:400;color:#999">(Mínimo 3, Máximo 5)</span></label><div class="tags-container" id="tagsContainer"><div class="tags-chips" id="tagsChips"></div><div class="tags-input-wrapper"><input type="text" id="tagsInput" placeholder="Buscar e selecionar palavras-chave..." autocomplete="off"><input type="hidden" id="tagsHidden" name="tags" value="{{ dados.get('tags', '') }}"><input type="hidden" id="tagSuggestionHidden" name="tagSuggestion" value="{{ dados.get('tagSuggestion', '') }}"><div class="tags-dropdown" id="tagsDropdown"></div></div><div class="suggestion-input-row hidden" id="suggestionInputRow"><input type="text" id="suggestionInput" placeholder="Digite sua sugestão de palavra-chave..." maxlength="50"><button type="button" onclick="addSuggestionTag()">Adicionar</button></div></div></div>
 
@@ -673,8 +677,8 @@
                 <div id="experienciaAnexosBox" class="purple-dashed-box hidden">
                     <div class="oficina-step" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
                         <span class="oficina-label">Anexos</span>
-                        <div class="field-group"><label>Croqui esquemático / Planta simplificada <span class="required">*</span></label><input type="file" name="exp_anexo_croqui" accept="application/pdf"><div class="helper-text">Formato aceito: PDF. Máx 5MB.</div></div>
-                        <div class="field-group"><label>Imagens de referência <span class="required">*</span></label><input type="file" name="exp_anexo_imagens" accept="image/jpeg,image/png" id="expAnexoImagens"><div class="helper-text">Formatos aceitos: JPG, PNG. Máx 5MB.</div></div>
+                        <div class="field-group"><label>Croqui esquemático / Planta simplificada <span class="required">*</span></label><input type="file" name="exp_anexo_croqui" id="expAnexoCroqui" accept="application/pdf"><div class="file-status" id="status_expAnexoCroqui">Nenhum arquivo selecionado</div><div class="helper-text">Formato aceito: PDF. Máx 5MB.</div></div>
+                        <div class="field-group"><label>Imagens de referência <span class="required">*</span></label><input type="file" name="exp_anexo_imagens" accept="image/jpeg,image/png" id="expAnexoImagens"><div class="file-status" id="status_expAnexoImagens">Nenhum arquivo selecionado</div><div class="helper-text">Formatos aceitos: JPG, PNG. Máx 5MB.</div></div>
                         <div class="field-group"><label>Vídeo demonstrativo (opcional)</label><input type="url" name="exp_anexo_video" placeholder="https://youtu.be/..."></div>
                     </div>
                 </div>
@@ -701,14 +705,14 @@
 
             <!-- ========== 4. INTEGRANTES ========== -->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-users"></i> 4. Integrantes da atividade</h2>
+                <h2 class="section-title"><i class="fas fa-users"></i> 4. Integrantes da atividade <i class="tooltip-icon" data-tooltip="Pessoas que participarão da condução, mediação ou facilitação. (Mínimo 1, Máximo 5 — para Debate e Roda de conversa, mínimo 2)">?</i></h2>
                 <div id="guestsList"></div>
                 <button type="button" class="btn-add" id="btnAddGuest" onclick="addGuest()"><i class="fas fa-plus"></i> Adicionar integrante</button>
             </div>
 
             <!-- ========== 5. INFORMAÇÕES EXTRAS ========== -->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-info-circle"></i> 5. Informações extras</h2>
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> 5. Informações extras <i class="tooltip-icon" data-tooltip="O proponente pode elencar quaisquer pontos relevantes sobre a realização da atividade.">?</i></h2>
                 <div class="field-group"><label for="infoExtras">Observações</label><textarea id="infoExtras" name="infoExtras" maxlength="700" style="min-height:80px">{{ dados.get('infoExtras', '') }}</textarea><div class="char-counter" id="charCounterExtra">0 / 700</div></div>
             </div>
 
@@ -735,7 +739,7 @@
         </div></div></div>
         <div class="guest-subsection"><div class="guest-subsection-title">Identificação</div>
             <div class="field-row"><div class="field-group" style="grid-column:span 2"><label>Nome completo <span class="required">*</span></label><input type="text" class="g-nome" name="convidadoX_nome" required></div></div>
-            <div class="field-row"><div class="field-group"><label>Papel na atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="palestrante">Palestrante</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
+            <div class="field-row"><div class="field-group"><label>Papel na atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="palestrante">Palestrante</option><option value="mediador">Mediador</option><option value="facilitador" data-format-role="facilitador">Facilitador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
             
             <div class="lgpd-notice">
                 <i class="fas fa-shield-alt"></i>
@@ -768,6 +772,7 @@
 
 <script>
 if (typeof window.jspdf !== 'undefined') { window.jsPDF = window.jspdf.jsPDF; } else { console.error("jspdf library not loaded correctly"); }
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
 function toggleSection(section, show) {
     if (!section) return;
@@ -789,9 +794,60 @@ function toggleSection(section, show) {
 
 let cropState={targetFileInput:null,targetPreview:null,targetStatusLabel:null,imgSrc:'',natW:0,natH:0,offsetX:0,offsetY:0,isDragging:false,startX:0,startY:0,modalSize:400};
 
-function openCropModal(file,targetInput,targetPreview,targetStatusLabel){const r=new FileReader();r.onload=function(e){const img=new Image();img.onload=function(){cropState.targetFileInput=targetInput;cropState.targetPreview=targetPreview;cropState.targetStatusLabel=targetStatusLabel;cropState.imgSrc=e.target.result;cropState.natW=img.width;cropState.natH=img.height;const ci=document.getElementById('cropImage');ci.src=e.target.result;cropState.modalSize=document.getElementById('cropContainer').offsetWidth||400;const s=Math.max(cropState.modalSize/img.width,cropState.modalSize/img.height);const dW=img.width*s,dH=img.height*s;ci.style.width=dW+'px';ci.style.height=dH+'px';cropState.offsetX=(cropState.modalSize-dW)/2;cropState.offsetY=(cropState.modalSize-dH)/2;ci.style.left=cropState.offsetX+'px';ci.style.top=cropState.offsetY+'px';document.getElementById('cropModalOverlay').classList.add('active')};img.src=e.target.result};r.readAsDataURL(file)}
-function closeCropModal(){document.getElementById('cropModalOverlay').classList.remove('active');document.getElementById('cropImage').src='';if(cropState.targetFileInput)cropState.targetFileInput.value=''}
-function applyCrop(){const ci=document.getElementById('cropImage'),cv=document.getElementById('cropCanvas'),ctx=cv.getContext('2d');const dW=parseFloat(ci.style.width),dH=parseFloat(ci.style.height),dX=parseFloat(ci.style.left),dY=parseFloat(ci.style.top);const sX=cropState.natW/dW,sY=cropState.natH/dH;let srcX=(-dX)*sX,srcY=(-dY)*sY,srcW=cropState.modalSize*sX,srcH=cropState.modalSize*sY;cv.width=512;cv.height=512;ctx.clearRect(0,0,512,512);const img=new Image();img.onload=function(){ctx.drawImage(img,srcX,srcY,srcW,srcH,0,0,512,512);const u=cv.toDataURL('image/jpeg',0.9);if(cropState.targetPreview){cropState.targetPreview.innerHTML='<img src="'+u+'" alt="Foto">';cropState.targetPreview.classList.remove('error-border')}if(cropState.targetStatusLabel){cropState.targetStatusLabel.innerText = '✅ Foto carregada e recortada';cropState.targetStatusLabel.style.color = 'var(--verde-sucesso)';}closeCropModal()};img.src=cropState.imgSrc}
+function setFileStatus(el,message,state=''){
+    if(!el)return;
+    el.classList.remove('loading','success','error');
+    if(state)el.classList.add(state);
+    el.innerHTML=state==='loading'?`<i class="fas fa-spinner fa-spin"></i> ${message}`:message;
+}
+function resetUploadStatus(statusEl,message='Nenhum arquivo selecionado'){
+    setFileStatus(statusEl,message);
+}
+function openCropModal(file,targetInput,targetPreview,targetStatusLabel){
+    cropState.targetFileInput=targetInput;
+    cropState.targetPreview=targetPreview;
+    cropState.targetStatusLabel=targetStatusLabel;
+    if(targetPreview)targetPreview.innerHTML='<i class="fas fa-spinner fa-spin"></i>';
+    setFileStatus(targetStatusLabel,'Carregando imagem...','loading');
+    const r=new FileReader();
+    r.onerror=function(){if(targetPreview)targetPreview.innerHTML='<i class="fas fa-image"></i>';setFileStatus(targetStatusLabel,'Erro ao carregar imagem.','error')};
+    r.onload=function(e){
+        const img=new Image();
+        img.onerror=function(){if(targetPreview)targetPreview.innerHTML='<i class="fas fa-image"></i>';setFileStatus(targetStatusLabel,'Arquivo de imagem inválido.','error')};
+        img.onload=function(){
+            cropState.imgSrc=e.target.result;
+            cropState.natW=img.width;
+            cropState.natH=img.height;
+            const ci=document.getElementById('cropImage');
+            ci.src=e.target.result;
+            cropState.modalSize=document.getElementById('cropContainer').offsetWidth||400;
+            const s=Math.max(cropState.modalSize/img.width,cropState.modalSize/img.height);
+            const dW=img.width*s,dH=img.height*s;
+            ci.style.width=dW+'px';
+            ci.style.height=dH+'px';
+            cropState.offsetX=(cropState.modalSize-dW)/2;
+            cropState.offsetY=(cropState.modalSize-dH)/2;
+            ci.style.left=cropState.offsetX+'px';
+            ci.style.top=cropState.offsetY+'px';
+            setFileStatus(targetStatusLabel,'Imagem carregada. Ajuste o recorte e salve.','success');
+            document.getElementById('cropModalOverlay').classList.add('active');
+        };
+        img.src=e.target.result;
+    };
+    r.readAsDataURL(file);
+}
+function closeCropModal(resetSelection=true){
+    document.getElementById('cropModalOverlay').classList.remove('active');
+    document.getElementById('cropImage').src='';
+    if(resetSelection){
+        if(cropState.targetFileInput)cropState.targetFileInput.value='';
+        if(cropState.targetPreview&&!cropState.targetPreview.querySelector('img')){
+            cropState.targetPreview.innerHTML=cropState.targetPreview.classList.contains('g-photo-preview')?'<i class="fas fa-user"></i>':'<i class="fas fa-image"></i>';
+        }
+        resetUploadStatus(cropState.targetStatusLabel);
+    }
+}
+function applyCrop(){const ci=document.getElementById('cropImage'),cv=document.getElementById('cropCanvas'),ctx=cv.getContext('2d');const dW=parseFloat(ci.style.width),dH=parseFloat(ci.style.height),dX=parseFloat(ci.style.left),dY=parseFloat(ci.style.top);const sX=cropState.natW/dW,sY=cropState.natH/dH;let srcX=(-dX)*sX,srcY=(-dY)*sY,srcW=cropState.modalSize*sX,srcH=cropState.modalSize*sY;cv.width=512;cv.height=512;ctx.clearRect(0,0,512,512);const img=new Image();img.onload=function(){ctx.drawImage(img,srcX,srcY,srcW,srcH,0,0,512,512);const u=cv.toDataURL('image/jpeg',0.9);if(cropState.targetPreview){cropState.targetPreview.innerHTML='<img src="'+u+'" alt="Foto">';cropState.targetPreview.classList.remove('error-border')}setFileStatus(cropState.targetStatusLabel,'Foto carregada e recortada','success');closeCropModal(false)};img.src=cropState.imgSrc}
 const ci=document.getElementById('cropImage');ci.addEventListener('mousedown',function(e){cropState.isDragging=true;cropState.startX=e.clientX-parseFloat(ci.style.left);cropState.startY=e.clientY-parseFloat(ci.style.top);e.preventDefault()});document.addEventListener('mousemove',function(e){if(!cropState.isDragging)return;let x=e.clientX-cropState.startX,y=e.clientY-cropState.startY;const w=parseFloat(ci.style.width),h=parseFloat(ci.style.height);if(x>0)x=0;if(y>0)y=0;if(x+w<cropState.modalSize)x=cropState.modalSize-w;if(y+h<cropState.modalSize)y=cropState.modalSize-h;ci.style.left=x+'px';ci.style.top=y+'px'});document.addEventListener('mouseup',function(){cropState.isDragging=false});ci.addEventListener('touchstart',function(e){cropState.isDragging=true;const t=e.touches[0];cropState.startX=t.clientX-parseFloat(ci.style.left);cropState.startY=t.clientY-parseFloat(ci.style.top);e.preventDefault()},{passive:false});document.addEventListener('touchmove',function(e){if(!cropState.isDragging)return;const t=e.touches[0];let x=t.clientX-cropState.startX,y=t.clientY-cropState.startY;const w=parseFloat(ci.style.width),h=parseFloat(ci.style.height);if(x>0)x=0;if(y>0)y=0;if(x+w<cropState.modalSize)x=cropState.modalSize-w;if(y+h<cropState.modalSize)y=cropState.modalSize-h;ci.style.left=x+'px';ci.style.top=y+'px'},{passive:false});document.addEventListener('touchend',function(){cropState.isDragging=false});
 
 // ===== VISIBILITY TOGGLES =====
@@ -854,6 +910,18 @@ const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'},
 
 function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value,s=document.getElementById('tempoDuracao'),cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op)});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv}}
 
+function syncGuestRoleOptions(){
+    const formato=document.getElementById('formatoAtividade').value;
+    const allowFacilitador=(formato==='oficina'||formato==='experiencia');
+    document.querySelectorAll('.g-papel').forEach(select=>{
+        const opt=select.querySelector('option[value="facilitador"]');
+        if(!opt)return;
+        opt.hidden=!allowFacilitador;
+        opt.disabled=!allowFacilitador;
+        if(!allowFacilitador&&select.value==='facilitador')select.value='';
+    });
+}
+
 function toggleActivityFields(){
     const f=document.getElementById('formatoAtividade').value;
     updateDuracaoOptions();
@@ -861,7 +929,8 @@ function toggleActivityFields(){
     const isExperiencia=(f==='experiencia');
     
     toggleSection(document.getElementById('oficinaSection'),isOficina);
-    toggleSection(document.getElementById('generalInfraGroup'),!isOficina && !isExperiencia);
+    toggleSection(document.getElementById('generalInfraGroup'),true);
+    syncGuestRoleOptions();
     
     toggleSection(document.getElementById('expTipologiaBox'),isExperiencia);
     toggleSection(document.getElementById('diasExpGroup'),isExperiencia);
@@ -932,7 +1001,23 @@ document.getElementById('telefoneRepresentante').addEventListener('input',maskPh
 function setupCounter(id,max){var el=document.getElementById(id);if(!el)return;var cnt=el.parentElement.querySelector('.char-counter');if(!cnt)return;el.addEventListener('input',function(){cnt.innerText=this.value.length+' / '+max});cnt.innerText=el.value.length+' / '+max}
 setupCounter('objetivoAtividade',500);setupCounter('justificativaTematica',700);setupCounter('metodologiaAplicada',500);setupCounter('descricaoAtividade',700);setupCounter('infoExtras',700);
 
-document.getElementById('fotoProponente').addEventListener('change',function(e){var p=document.getElementById('photoPreview');var s=document.getElementById('status_fotoProponente');p.classList.remove('error-border');if(this.files&&this.files[0]){openCropModal(this.files[0],this,p,s);}else{p.innerHTML='<i class="fas fa-image"></i>';s.innerText='Nenhum arquivo selecionado';s.style.color='#666';}});
+document.getElementById('fotoProponente').addEventListener('change',function(e){var p=document.getElementById('photoPreview');var s=document.getElementById('status_fotoProponente');p.classList.remove('error-border');if(this.files&&this.files[0]){openCropModal(this.files[0],this,p,s);}else{p.innerHTML='<i class="fas fa-image"></i>';resetUploadStatus(s);}});
+
+function setupFileLoadStatus(inputId,statusId,loadingMessage='Carregando arquivo...'){
+    const input=document.getElementById(inputId),status=document.getElementById(statusId);
+    if(!input||!status)return;
+    input.addEventListener('change',function(){
+        if(this.files&&this.files[0]){
+            const fileName=this.files[0].name;
+            setFileStatus(status,loadingMessage,'loading');
+            setTimeout(()=>setFileStatus(status,'Arquivo selecionado: '+fileName,'success'),150);
+        }else{
+            resetUploadStatus(status);
+        }
+    });
+}
+setupFileLoadStatus('expAnexoCroqui','status_expAnexoCroqui');
+setupFileLoadStatus('expAnexoImagens','status_expAnexoImagens','Carregando imagem...');
 
 // ===== EXPERIÊNCIA TOGGLES =====
 function toggleExpPontosEnergia(){const val=document.querySelector('input[name="exp_infra_energia"]:checked')?.value;toggleSection(document.getElementById('expPontosEnergiaField'),val==='sim');}
@@ -950,10 +1035,10 @@ function addGuest(scroll=true,data=null){
     if(guestCount>=maxGuests){showToast('Máximo de 5 integrantes.','error');return}
     guestCount++;const c=document.getElementById('guestTemplate').content.cloneNode(true),card=c.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount)});
     const fi=card.querySelector('.g-foto'),fl=card.querySelector('.g-foto-label'),fs=card.querySelector('.g-foto-status');fi.id=`guest_file_${guestCount}`;fl.setAttribute('for',fi.id);
-    fi.addEventListener('change',function(e){var p=card.querySelector('.g-photo-preview'),s=card.querySelector('.g-foto-status');p.classList.remove('error-border');if(this.files&&this.files[0]){openCropModal(this.files[0],this,p,s)}else{p.innerHTML='<i class="fas fa-user"></i>';s.innerText='Nenhum arquivo selecionado';s.style.color='#666';}});
+    fi.addEventListener('change',function(e){var p=card.querySelector('.g-photo-preview'),s=card.querySelector('.g-foto-status');p.classList.remove('error-border');if(this.files&&this.files[0]){openCropModal(this.files[0],this,p,s)}else{p.innerHTML='<i class="fas fa-user"></i>';resetUploadStatus(s);}});
     const ti=card.querySelector('.g-telefone');if(ti)ti.addEventListener('input',maskPhone);const gi=card.querySelector('.g-cpf');if(gi)gi.addEventListener('paste',function(e){e.preventDefault();const p=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').substring(0,11);e.target.value=p;maskCPF(e.target)});
     if(data){card.querySelectorAll('input, select').forEach(i=>{if(i.name&&data[i.name]!==undefined){if(i.type==='checkbox'){i.checked=(data[i.name]==='sim'||data[i.name]===true);if(i.name.endsWith('_acessibilidade')&&i.checked)toggleGuestAcessibilidade(i)}else if(i.type==='radio')i.checked=(i.value===data[i.name]);else i.value=data[i.name]}});const ns=card.querySelector('.g-nacionalidade');if(ns)toggleGuestDocs(ns);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
-    document.getElementById('guestsList').appendChild(card);populateAgeDropdowns();document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);if(scroll&&!data)card.scrollIntoView({behavior:'smooth',block:'center'})
+    document.getElementById('guestsList').appendChild(card);populateAgeDropdowns();syncGuestRoleOptions();document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);if(scroll&&!data)card.scrollIntoView({behavior:'smooth',block:'center'})
 }
 function removeGuest(btn){const card=btn.closest('.guest-card');card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();guestCount--;document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests)},300)}
 function toggleGuestDocs(sel){const card=sel.closest('.guest-card'),isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>toggleSection(f,!isBR));card.querySelectorAll('.g-doc-br').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>toggleSection(f,!isBR))}
@@ -974,36 +1059,290 @@ function closePDFModal(){
 }
 function dataURLtoBlob(dataurl){try{var arr=dataurl.split(','),mime=arr[0].match(/:(.*?);/)[1],bstr=atob(arr[1]),n=bstr.length,u8arr=new Uint8Array(n);while(n--){u8arr[n]=bstr.charCodeAt(n)}return new Blob([u8arr],{type:mime})}catch(e){console.error("Erro ao converter imagem para blob:",e);return null}}
 
-function createPaperViewHTML(){const getVal=(id)=>document.getElementById(id)?.value||'';const getCheck=(name)=>document.querySelector(`input[name="${name}"]:checked`)?.value||'';const formatLabel=(selId)=>{const sel=document.getElementById(selId);return sel?sel.options[sel.selectedIndex]?.text:''};const paperContainer=document.getElementById('pdf-content-injector');let guestsHTML='';document.querySelectorAll('.guest-card').forEach((card,idx)=>{const qId=card.dataset.id;const nome=card.querySelector(`input[name="convidado${qId}_nome"]`)?.value||'';const papel=card.querySelector(`select[name="convidado${qId}_papel"]`)?.options[card.querySelector(`select[name="convidado${qId}_papel"]`).selectedIndex]?.text||'';const email=card.querySelector(`input[name="convidado${qId}_email"]`)?.value||'';guestsHTML+=`<div style="margin-bottom:10px;border-bottom:1px dashed #ccc;padding-bottom:5px;"><strong>Integrante ${idx+1}:</strong> ${nome}<br><span class="pdf-label">Papel:</span> ${papel}<br><span class="pdf-label">Email:</span> ${email}</div>`});let matHTML='';const matRows=document.querySelectorAll('#materialTableBody tr');if(matRows.length>0){matHTML='';matRows.forEach(row=>{const inputs=row.querySelectorAll('input');matHTML+=`<tr><td>${inputs[0].value}</td><td>${inputs[1].value}</td><td>${inputs[2].value}</td><td>${row.querySelector('.mat-subtotal').innerText}</td></tr>`})}let infraHTML=[];if(document.getElementById('infra_projecao')?.checked)infraHTML.push('Projeção');if(document.getElementById('infra_som')?.checked)infraHTML.push('Som');if(document.getElementById('infra_internet')?.checked)infraHTML.push('Internet');const tags=document.getElementById('tagsHidden').value+(document.getElementById('tagSuggestionHidden').value?`, ${document.getElementById('tagSuggestionHidden').value} (Sugestão)`:'');let expHTML='';const formato=getVal('formatoAtividade');if(formato==='experiencia'){const tipologias=[];document.querySelectorAll('#experienciaInfraBox input[name^="exp_tipologia_"]:checked').forEach(cb=>{tipologias.push(cb.closest('.checkbox-option').querySelector('label').innerText)});const energiaVal=getCheck('exp_infra_energia');expHTML=`<div class="pdf-section"><h2>Detalhes da Experiência</h2><div class="pdf-row"><span class="pdf-label">Tipologias:</span> <span class="pdf-value">${tipologias.join(', ')||'N/A'}</span></div><div class="pdf-row"><span class="pdf-label">Dias:</span> <span class="pdf-value">${getVal('expDias')}</span></div><div class="pdf-row"><span class="pdf-label">Ponto de Energia:</span> <span class="pdf-value">${energiaVal==='sim'?'Sim - Qtd: '+getVal('exp_infra_pontos_energia_qtd')+' - Equip: '+getVal('exp_infra_energia_equip')+' - Spec: '+getVal('exp_infra_energia_spec')+' - Carga: '+getVal('exp_infra_energia_carga'):'Não'}</span></div></div>`}paperContainer.innerHTML=`<div class="pdf-section"><h2>1. Proponente</h2>
-            <div class="pdf-row"><span class="pdf-label">Tipo:</span> <span class="pdf-value">${getVal('tipoProponente')==='pj'?'Pessoa Jurídica':'Pessoa Física'}</span></div>
-            <div class="pdf-row"><span class="pdf-label">Nome:</span> <span class="pdf-value">${getVal('tipoProponente')==='pj'?getVal('nomeInstituicao'):getVal('nomeInstituicaoPF')}</span></div>
-            ${getVal('tipoProponente')==='pj'?`<div class="pdf-row"><span class="pdf-label">CNPJ:</span> <span class="pdf-value">${getVal('cnpjProponente')}</span></div><div class="pdf-row"><span class="pdf-label">Categoria:</span> <span class="pdf-value">${formatLabel('categoria')}</span></div>`:`<div class="pdf-row"><span class="pdf-label">Nacionalidade:</span> <span class="pdf-value">${formatLabel('nacionalidadeProponente')}</span></div>`}
-        </div>
-        <div class="pdf-section">
-            <h2>2. Atividade</h2>
-            <div class="pdf-row"><span class="pdf-label">Título:</span> <span class="pdf-value">${getVal('tituloAtividade')}</span></div>
-            <div class="pdf-row"><span class="pdf-label">Formato:</span> <span class="pdf-value">${formatLabel('formatoAtividade')}</span></div>
-            <div class="pdf-row"><span class="pdf-label">Duração:</span> <span class="pdf-value">${formatLabel('tempoDuracao')}</span></div>
-            <div class="pdf-row"><span class="pdf-label">Eixo:</span> <span class="pdf-value">${formatLabel('eixo')}</span></div>
-            <div class="pdf-row"><span class="pdf-label">Público Alvo:</span> <span class="pdf-value">${formatLabel('publicoAlvo')}</span></div>
-            <div class="pdf-row"><span class="pdf-label">Tags:</span> <span class="pdf-value">${tags}</span></div>
-            <br>
-            <div style="font-size: 11px; line-height: 1.4;">
-                <strong>Objetivo:</strong> ${getVal('objetivoAtividade')}<br><br>
-                <strong>Justificativa:</strong> ${getVal('justificativaTematica')}<br><br>
-                <strong>Metodologia:</strong> ${getVal('metodologiaAplicada')}<br><br>
-                <strong>Descrição:</strong> ${getVal('descricaoAtividade')}
-            </div>
-        </div>
-        ${expHTML}
-        <div class="pdf-section">
-            <h2>3. Integrantes</h2>
-            ${guestsHTML}
-        </div>
-    `;
+function ensureFlashMessage(doc,category,message){
+    let list=doc.querySelector('.flash-messages');
+    if(!list){
+        list=doc.createElement('ul');
+        list.className='flash-messages';
+        const form=doc.querySelector('#inscricaoForm');
+        if(form&&form.parentNode)form.parentNode.insertBefore(list,form);
+    }
+    if(!list.querySelector(`li.${category}`)){
+        const li=doc.createElement('li');
+        li.className=category;
+        const icon=doc.createElement('i');
+        icon.className=`fas fa-${category==='success'?'check-circle':'exclamation-circle'}`;
+        li.appendChild(icon);
+        li.appendChild(doc.createTextNode(' '+message));
+        list.appendChild(li);
+    }
+}
+function replacePageAtTop(doc,category,message){
+    ensureFlashMessage(doc,category,message);
+    document.open();
+    document.write('<!DOCTYPE html>'+doc.documentElement.outerHTML);
+    document.close();
+    setTimeout(()=>window.scrollTo({top:0,left:0,behavior:'auto'}),0);
 }
 
-async function gerarPDFPreview(e){e.preventDefault();try{showToast('Iniciando processo...','info');if(typeof html2canvas==='undefined'||typeof window.jsPDF==='undefined'){showToast('Erro: Bibliotecas de PDF não carregadas.','error');return}const propPreviewImg=document.querySelector('#photoPreview img');const tipoProp=document.getElementById('tipoProponente').value;if(tipoProp==='pj'){if(!propPreviewImg){showToast('A logo da instituição é obrigatória.','error');document.getElementById('fotoProponente').focus();return}}let guestsMissingPhoto=false;document.querySelectorAll('.guest-card').forEach(card=>{const guestImg=card.querySelector('.g-photo-preview img');if(!guestImg)guestsMissingPhoto=true});if(guestsMissingPhoto){showToast('Todas as fotos dos integrantes são obrigatórias.','error');return}const hiddenContainers=document.querySelectorAll('.hidden');const restoredFields=[];hiddenContainers.forEach(container=>{if(container.classList.contains('hp-field-wrap'))return;container.querySelectorAll('input, select, textarea').forEach(field=>{if(!field.disabled){field.disabled=true;restoredFields.push(field)}if(field.required){field.dataset.wasRequired='true';field.required=false}})});const form=document.getElementById('inscricaoForm');const isValid=form.checkValidity();restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});if(!isValid){form.reportValidity();showToast('Por favor, preencha todos os campos obrigatórios.','error');return}const formato=document.getElementById('formatoAtividade').value;let minConvidados=1;if(formato==='debate')minConvidados=2;if(formato==='roda_de_conversa')minConvidados=3;if(guestCount<minConvidados){showToast(`Mínimo de ${minConvidados} integrantes necessário para este formato.`,'error');return}createPaperViewHTML();document.getElementById('pdf-date').innerText=new Date().toLocaleString('pt-BR');const paper=document.getElementById('pdf-paper-view');showToast('Gerando prévia do PDF...','info');const canvas=await html2canvas(paper,{scale:2,useCORS:true});const imgData=canvas.toDataURL('image/jpeg',0.95);const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const imgProps=pdf.getImageProperties(imgData);const pdfWidth=pdf.internal.pageSize.getWidth();const pdfHeight=(imgProps.height*pdfWidth)/imgProps.width;pdf.addImage(imgData,'JPEG',0,0,pdfWidth,pdfHeight);generatedPDFBlob=pdf.output('blob');const fileURL=URL.createObjectURL(generatedPDFBlob);document.getElementById('pdfPreviewFrame').src=fileURL;document.getElementById('pdfModalOverlay').classList.add('active')}catch(err){console.error(err);showToast('Erro ao gerar PDF: '+err.message,'error')}}
+function createPaperViewHTML(){
+    const paperContainer=document.getElementById('pdf-content-injector');
+    const esc=(value)=>String(value??'').replace(/[&<>"']/g,(m)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    const clean=(value)=>{const text=String(value??'').trim();return text?esc(text).replace(/\n/g,'<br>'):'Não informado'};
+    const selectedText=(el)=>{if(!el)return'';if(el.tagName==='SELECT')return el.value?(el.options[el.selectedIndex]?.text||''):'';return el.value||''};
+    const byId=(id)=>selectedText(document.getElementById(id));
+    const byName=(name,root=document)=>selectedText(root.querySelector(`[name="${name}"]`));
+    const radio=(name,root=document)=>{const checked=root.querySelector(`input[name="${name}"]:checked`);return checked?(checked.closest('.radio-option')?.querySelector('label')?.innerText||checked.value):''};
+    const check=(id)=>document.getElementById(id)?.checked?'Sim':'Não';
+    const row=(label,value)=>`<div class="pdf-row"><span class="pdf-label">${esc(label)}:</span> <span class="pdf-value">${clean(value)}</span></div>`;
+    const section=(title,html)=>`<div class="pdf-section"><h2>${esc(title)}</h2>${html}</div>`;
+    const table=(headers,rows)=>rows.length?`<table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${clean(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:`<div class="pdf-row"><span class="pdf-label">Itens:</span> <span class="pdf-value">Nenhum item informado</span></div>`;
+    const fileValue=(name,loadedSelector='')=>{
+        const input=document.querySelector(`[name="${name}"]`);
+        if(input?.files?.[0])return input.files[0].name;
+        if(loadedSelector&&document.querySelector(`${loadedSelector} img`))return'Arquivo carregado';
+        return'Não informado';
+    };
+    const moneyRows=(tbodySelector,subtotalSelector)=>Array.from(document.querySelectorAll(`${tbodySelector} tr`)).map(tr=>{
+        const inputs=tr.querySelectorAll('input');
+        return[inputs[0]?.value,inputs[1]?.value,inputs[2]?.value,tr.querySelector(subtotalSelector)?.innerText];
+    });
+    const simpleRows=(tbodySelector)=>Array.from(document.querySelectorAll(`${tbodySelector} tr`)).map(tr=>{
+        const inputs=tr.querySelectorAll('input');
+        return[inputs[0]?.value,inputs[1]?.value,inputs[2]?.value];
+    });
+    const tipoProp=document.getElementById('tipoProponente')?.value||'';
+    const formatoValor=document.getElementById('formatoAtividade')?.value||'';
+    const formato=byId('formatoAtividade');
+    const tags=[byId('tagsHidden'),byId('tagSuggestionHidden')?`${byId('tagSuggestionHidden')} (Sugestão)`:'' ].filter(Boolean).join(', ');
+    const tipologias=Array.from(document.querySelectorAll('#expTipologiaBox input[name^="exp_tipologia_"]:checked')).map(cb=>cb.closest('.checkbox-option')?.querySelector('label')?.innerText||cb.name);
+    const infraOutrosRows=simpleRows('#infraTableBody');
+    const materialRows=moneyRows('#materialTableBody','.mat-subtotal');
+    const ajudaRows=moneyRows('#ajudaCustoTableBody','.ac-subtotal');
+    const expEquipRows=simpleRows('#expEquipTableBody');
+    const expMaterialRows=moneyRows('#expMaterialTableBody','.exp-mat-subtotal');
+    const proponenteRows=[
+        row('Tipo de proponente',tipoProp==='pj'?'Pessoa Jurídica':'Pessoa Física'),
+        row('Nome',tipoProp==='pj'?byId('nomeInstituicao'):byId('nomeInstituicaoPF')),
+        tipoProp==='pj'?row('Categoria',byId('categoria')):row('Nacionalidade',byId('nacionalidadeProponente')),
+        tipoProp==='pj'?row('CNPJ',byId('cnpjProponente')):row('CPF',byId('cpfProponente')),
+        tipoProp==='pf'?row('Passaporte / documento internacional',byId('passaporteProponente')):'',
+        tipoProp==='pj'?row('Logo da instituição',fileValue('fotoProponente','#photoPreview')):''
+    ].join('');
+    const responsavelRows=[
+        row('Nome do responsável',byId('nomeRepresentante')),
+        row('Telefone',byId('telefoneRepresentante')),
+        row('E-mail',byId('emailRepresentante'))
+    ].join('');
+    const atividadeRows=[
+        row('Nome da atividade',byId('tituloAtividade')),
+        row('Eixo temático',byId('eixo')),
+        row('Formato',formato),
+        row('Duração',byId('tempoDuracao')),
+        formatoValor==='experiencia'?row('Dias',byId('expDias')):'',
+        row('Objetivo',byId('objetivoAtividade')),
+        row('Justificativa',byId('justificativaTematica')),
+        row('Metodologia',byId('metodologiaAplicada')),
+        row('Descrição para publicação',byId('descricaoAtividade')),
+        row('Palavras-chave',tags),
+        row('Público-alvo',byId('publicoAlvo')),
+        row('Restrição de faixa etária',radio('restricaoEtaria')),
+        row('Idade mínima',byId('idadeMinima')),
+        row('Idade máxima',byId('idadeMaxima')),
+        row('Acesso à atividade',byId('acessoAtividade')),
+        row('Responsabilidade por inscrição',document.getElementById('inscricaoResponsabilidade')?.checked?'Sim':'Não'),
+        row('Recurso de acessibilidade indispensável',byId('recursosAcessibilidade'))
+    ].join('');
+    const infraRows=[
+        row('Recursos básicos de projeção',check('infra_projecao')),
+        row('Sistema básico de som',check('infra_som')),
+        row('Microfones',check('infra_microfones')),
+        row('Internet',check('infra_internet')),
+        row('Outros',check('infra_outros')),
+        document.getElementById('infra_outros')?.checked?table(['Recurso','Quantidade','Observações'],infraOutrosRows):''
+    ].join('');
+    let oficinaHTML='';
+    if(formatoValor==='oficina'){
+        oficinaHTML=section('5. Detalhes da Oficina',[
+            row('Quantidade máxima de público',radio('oficina_qtd_publico')),
+            row('Precisa de laboratório de informática?',radio('oficina_lab')),
+            row('Configurações mínimas dos PCs',byName('oficina_pc_specs')),
+            row('Instalar software?',radio('oficina_soft_req')),
+            row('Descrição do software',byName('oficina_soft_desc')),
+            row('Mobiliário',byId('mobiliario')),
+            row('Recurso financeiro para material',byId('materialAjuda')),
+            table(['Material','Qtd','Valor unit.','Subtotal'],materialRows),
+            row('Justificativa dos materiais',byId('justificativaMateriais'))
+        ].join(''));
+    }
+    let experienciaHTML='';
+    if(formatoValor==='experiencia'){
+        experienciaHTML=section('5. Detalhes da Experiência',[
+            row('Tipologias',tipologias.join(', ')),
+            row('Ações de acessibilidade',byName('exp_acess_recursos')),
+            row('Restrições de público',byName('exp_acess_restricoes')),
+            row('Funcionamento',radio('exp_oper_funcionamento')),
+            row('Permanência média do usuário',byName('exp_oper_permanencia')),
+            row('Quantidade simultânea de usuários',byName('exp_oper_qtd_simultanea')),
+            row('Fluxo de usuários estimado por hora',byName('exp_oper_fluxo_hora')),
+            row('Equipe operacional durante a experiência',byName('exp_oper_qtd_equipe')),
+            row('Ponto de energia?',radio('exp_infra_energia')),
+            row('Quantidade de pontos de energia',byName('exp_infra_pontos_energia_qtd')),
+            row('Equipamentos / finalidade da energia',byName('exp_infra_energia_equip')),
+            row('Especificação de energia',byName('exp_infra_energia_spec')),
+            row('Capacidade / carga',byName('exp_infra_energia_carga')),
+            row('Mobiliário próprio?',radio('exp_infra_mobiliario_opcao')),
+            row('Descrição do mobiliário próprio',byName('exp_infra_mobiliario_desc')),
+            row('Equipamento próprio?',radio('exp_infra_equip_proprios_opcao')),
+            table(['Equipamento','Quantidade','Observações'],expEquipRows),
+            row('Equipamento solicitado ao festival',byName('exp_infra_equip_solicitados')),
+            row('Recurso financeiro para material de apoio',byName('exp_material_ajuda')),
+            table(['Material','Qtd','Valor unit.','Subtotal'],expMaterialRows),
+            row('Justificativa dos materiais de apoio',byName('exp_justificativa_materiais')),
+            row('Montagem e desmontagem',byName('exp_montagem_desmontagem_desc')),
+            row('Quantidade da equipe operacional do proponente',byName('exp_infra_qtd_equipe')),
+            row('Ambiente',byName('exp_espaco_ambiente')),
+            row('Condição do ambiente',byName('exp_espaco_condicao')),
+            row('Croqui / planta simplificada',fileValue('exp_anexo_croqui')),
+            row('Imagens de referência',fileValue('exp_anexo_imagens')),
+            row('Vídeo demonstrativo',byName('exp_anexo_video'))
+        ].join(''));
+    }
+    const ajudaHTML=section('6. Ajuda de Custo',[
+        row('Precisa de recurso financeiro para ajuda de custo?',byId('ajudaCustoSelect')),
+        table(['Item','Quantidade','Valor unit.','Subtotal'],ajudaRows),
+        row('Justificativa da ajuda de custo',byId('justificativaAjudaCusto'))
+    ].join(''));
+    const guestSections=[];
+    document.querySelectorAll('.guest-card').forEach((card,idx)=>{
+        const qId=card.dataset.id;
+        const full=(suffix)=>`convidado${qId}_${suffix}`;
+        const guestRows=[
+            row('Foto',card.querySelector('.g-photo-preview img')?'Foto carregada':'Não informado'),
+            row('Nome completo',byName(full('nome'),card)),
+            row('Papel na atividade',byName(full('papel'),card)),
+            row('Nacionalidade',byName(full('nacionalidade'),card)),
+            row('CPF',byName(full('cpf'),card)),
+            row('Passaporte / documento internacional',byName(full('passaporte'),card)),
+            row('Estado',byName(full('estado'),card)),
+            row('Cidade',byName(full('cidade'),card)),
+            row('Bairro',byName(full('bairro'),card)),
+            row('País de origem',byName(full('pais_origem'),card)),
+            row('E-mail',byName(full('email'),card)),
+            row('Telefone',byName(full('telefone'),card)),
+            row('LinkedIn',byName(full('social_linkedin'),card)),
+            row('Instagram',byName(full('social_instagram'),card)),
+            row('Instituição representada',byName(full('instituicao'),card)),
+            row('Tipo de instituição',byName(full('tipo_instituicao'),card)),
+            row('Minibio',byName(full('minibio'),card)),
+            row('Raça / Cor',byName(full('raca'),card)),
+            row('Gênero',byName(full('genero'),card)),
+            row('Faixa etária',byName(full('idade'),card)),
+            row('Necessita de recursos de acessibilidade?',card.querySelector(`[name="${full('acessibilidade')}"]`)?.checked?'Sim':'Não'),
+            row('Recursos de acessibilidade do integrante',byName(full('acessibilidade_desc'),card))
+        ].join('');
+        guestSections.push(section(`7.${idx+1}. Integrante ${idx+1}`,guestRows));
+    });
+    const observacoesHTML=section('8. Informações Extras',row('Observações',byId('infoExtras')));
+    paperContainer.innerHTML=[
+        section('1. Proponente',proponenteRows),
+        section('2. Responsável pela Inscrição',responsavelRows),
+        section('3. Atividade',atividadeRows),
+        section('4. Recursos de Infraestrutura',infraRows),
+        oficinaHTML,
+        experienciaHTML,
+        ajudaHTML,
+        ...(guestSections.length?guestSections:[section('7. Integrantes','<div class="pdf-row"><span class="pdf-value">Nenhum integrante informado</span></div>')]),
+        observacoesHTML
+    ].join('');
+}
+
+function createPDFPage(pageNumber,generatedAt){
+    const page=document.createElement('div');
+    page.className='pdf-page';
+    page.innerHTML=`
+        <div class="pdf-page-header">
+            <img src="/static/logo.jpg" alt="REC'n'Play">
+            <div>
+                <div class="pdf-page-title">REC'n'Play 2026 - Ficha de Inscrição</div>
+                <div class="pdf-page-subtitle">Documento gerado automaticamente em ${generatedAt}</div>
+            </div>
+        </div>
+        <div class="pdf-page-content"></div>
+        <div class="pdf-page-footer">
+            <span>Chamada Pública REC'n'Play 2026</span>
+            <span class="pdf-page-number">Página ${pageNumber}</span>
+        </div>
+    `;
+    return {page,content:page.querySelector('.pdf-page-content')};
+}
+
+function paginatePaperView(generatedAt){
+    const pagesRoot=document.getElementById('pdf-pages');
+    const source=document.getElementById('pdf-content-injector');
+    pagesRoot.innerHTML='';
+    const sections=Array.from(source.children);
+    const pages=[];
+    let current=createPDFPage(1,generatedAt);
+    pagesRoot.appendChild(current.page);
+    pages.push(current.page);
+    const isOverflow=()=>current.content.scrollHeight>current.content.clientHeight+1;
+    const addPage=()=>{
+        current=createPDFPage(pages.length+1,generatedAt);
+        pagesRoot.appendChild(current.page);
+        pages.push(current.page);
+    };
+    const splitSection=(sectionEl)=>{
+        const title=sectionEl.querySelector('h2')?.innerText||'';
+        const children=Array.from(sectionEl.children).filter(child=>child.tagName!=='H2');
+        let part=null;
+        const startPart=()=>{
+            part=document.createElement('div');
+            part.className='pdf-section';
+            if(title){
+                const h=document.createElement('h2');
+                h.textContent=title;
+                part.appendChild(h);
+            }
+            current.content.appendChild(part);
+        };
+        startPart();
+        children.forEach(child=>{
+            const clone=child.cloneNode(true);
+            part.appendChild(clone);
+            if(isOverflow()){
+                part.removeChild(clone);
+                if(part.children.length<=1){
+                    part.appendChild(clone);
+                }else{
+                    addPage();
+                    startPart();
+                    part.appendChild(clone);
+                }
+            }
+        });
+    };
+    sections.forEach(sectionEl=>{
+        const clone=sectionEl.cloneNode(true);
+        current.content.appendChild(clone);
+        if(!isOverflow())return;
+        current.content.removeChild(clone);
+        if(current.content.children.length>0)addPage();
+        const retry=sectionEl.cloneNode(true);
+        current.content.appendChild(retry);
+        if(isOverflow()){
+            current.content.removeChild(retry);
+            splitSection(sectionEl);
+        }
+    });
+    pages.forEach((page,idx)=>{
+        const marker=page.querySelector('.pdf-page-number');
+        if(marker)marker.textContent=`Página ${idx+1} de ${pages.length}`;
+    });
+    return pages;
+}
+
+async function gerarPDFPreview(e){e.preventDefault();try{showToast('Iniciando processo...','info');if(typeof html2canvas==='undefined'||typeof window.jsPDF==='undefined'){showToast('Erro: Bibliotecas de PDF não carregadas.','error');return}const propPreviewImg=document.querySelector('#photoPreview img');const tipoProp=document.getElementById('tipoProponente').value;if(tipoProp==='pj'){if(!propPreviewImg){showToast('A logo da instituição é obrigatória.','error');document.getElementById('fotoProponente').focus();return}}let guestsMissingPhoto=false;document.querySelectorAll('.guest-card').forEach(card=>{const guestImg=card.querySelector('.g-photo-preview img');if(!guestImg)guestsMissingPhoto=true});if(guestsMissingPhoto){showToast('Todas as fotos dos integrantes são obrigatórias.','error');return}const hiddenContainers=document.querySelectorAll('.hidden');const restoredFields=[];hiddenContainers.forEach(container=>{if(container.classList.contains('hp-field-wrap'))return;container.querySelectorAll('input, select, textarea').forEach(field=>{if(!field.disabled){field.disabled=true;restoredFields.push(field)}if(field.required){field.dataset.wasRequired='true';field.required=false}})});const form=document.getElementById('inscricaoForm');const isValid=form.checkValidity();restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});if(!isValid){form.reportValidity();showToast('Por favor, preencha todos os campos obrigatórios.','error');return}const formato=document.getElementById('formatoAtividade').value;let minConvidados=1;if(formato==='debate')minConvidados=2;if(formato==='roda_de_conversa')minConvidados=3;if(guestCount<minConvidados){showToast(`Mínimo de ${minConvidados} integrantes necessário para este formato.`,'error');return}createPaperViewHTML();const generatedAt=new Date().toLocaleString('pt-BR');const pages=paginatePaperView(generatedAt);showToast('Gerando prévia do PDF...','info');if(document.fonts&&document.fonts.ready)await document.fonts.ready;const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const pdfWidth=pdf.internal.pageSize.getWidth();const pageHeight=pdf.internal.pageSize.getHeight();for(let i=0;i<pages.length;i++){const canvas=await html2canvas(pages[i],{scale:2,useCORS:true,backgroundColor:'#ffffff'});const imgData=canvas.toDataURL('image/jpeg',0.95);if(i>0)pdf.addPage();pdf.addImage(imgData,'JPEG',0,0,pdfWidth,pageHeight)}generatedPDFBlob=pdf.output('blob');const fileURL=URL.createObjectURL(generatedPDFBlob);document.getElementById('pdfPreviewFrame').src=fileURL;document.getElementById('pdfModalOverlay').classList.add('active')}catch(err){console.error(err);showToast('Erro ao gerar PDF: '+err.message,'error')}}
 
 function submitToBackend(){
     const btn=document.getElementById('btnConfirmSend');
@@ -1048,7 +1387,7 @@ function submitToBackend(){
     // RESTAURA ESTADO DO SELECT APÓS CAPTURA
     if(wasAcessoDisabled) acessoSelect.disabled = true;
 
-    restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});const emptyFileKeys=[];for(let[key,value]of formData.entries()){if(value instanceof File&&value.size===0)emptyFileKeys.push(key)}emptyFileKeys.forEach(key=>formData.delete(key));if(generatedPDFBlob)formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');const propPreviewImg=document.querySelector('#photoPreview img');if(propPreviewImg){const blob=dataURLtoBlob(propPreviewImg.src);if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')}document.querySelectorAll('.guest-card').forEach(card=>{const guestId=card.dataset.id;const guestPreviewImg=card.querySelector('.g-photo-preview img');if(guestPreviewImg){const blob=dataURLtoBlob(guestPreviewImg.src);if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)}});fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const flashSuccess=doc.querySelector('.flash-messages li.success');const flashError=doc.querySelector('.flash-messages li.error');if(flashError){document.open();document.write(html);document.close();showToast('Corrija os erros indicados.','error')}else{if(flashSuccess)showToast(flashSuccess.innerText,'success');else showToast('Proposta enviada com sucesso!','success');setTimeout(()=>{window.location.reload()},2000)}}).catch(err=>{console.error(err);showToast('Erro de conexão.','error');btn.innerHTML=originalText;btn.disabled=false})}
+    restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});const emptyFileKeys=[];for(let[key,value]of formData.entries()){if(value instanceof File&&value.size===0)emptyFileKeys.push(key)}emptyFileKeys.forEach(key=>formData.delete(key));if(generatedPDFBlob)formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');const propPreviewImg=document.querySelector('#photoPreview img');if(propPreviewImg){const blob=dataURLtoBlob(propPreviewImg.src);if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')}document.querySelectorAll('.guest-card').forEach(card=>{const guestId=card.dataset.id;const guestPreviewImg=card.querySelector('.g-photo-preview img');if(guestPreviewImg){const blob=dataURLtoBlob(guestPreviewImg.src);if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)}});fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const flashSuccess=doc.querySelector('.flash-messages li.success');const flashError=doc.querySelector('.flash-messages li.error');if(flashError){replacePageAtTop(doc,'error','Corrija os erros indicados.')}else{replacePageAtTop(doc,'success',flashSuccess?flashSuccess.innerText.trim():'Proposta enviada com sucesso!')}}).catch(err=>{console.error(err);showToast('Erro de conexão.','error');btn.innerHTML=originalText;btn.disabled=false})}
 
 document.getElementById('inscricaoForm').removeEventListener('submit',null); 
 document.getElementById('inscricaoForm').addEventListener('submit',gerarPDFPreview);document.getElementById('btnConfirmSend').addEventListener('click',submitToBackend);
@@ -1056,7 +1395,7 @@ document.getElementById('inscricaoForm').addEventListener('submit',gerarPDFPrevi
 function limparFormulario(){
     document.getElementById('inscricaoForm').reset();
     document.getElementById('guestsList').innerHTML='';guestCount=0;selectedTags=[];hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();setProponenteType('pj');toggleActivityFields();toggleInscricaoCheckbox();
-    document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';document.getElementById('photoPreview').classList.remove('error-border');document.getElementById('status_fotoProponente').innerText='Nenhum arquivo selecionado';document.getElementById('status_fotoProponente').style.color='#666';
+    document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';document.getElementById('photoPreview').classList.remove('error-border');resetUploadStatus(document.getElementById('status_fotoProponente'));resetUploadStatus(document.getElementById('status_expAnexoCroqui'));resetUploadStatus(document.getElementById('status_expAnexoImagens'));
     document.getElementById('materialTableBody').innerHTML='';materialRowCount=0;document.getElementById('infraTableBody').innerHTML='';infraRowCount=0;document.getElementById('ajudaCustoTableBody').innerHTML='';ajudaCustoRowCount=0;document.querySelectorAll('input.error').forEach(i=>i.classList.remove('error'));
     toggleSection(document.getElementById('infraOutrosField'),false);toggleSection(document.getElementById('inscricaoCheckboxGroup'),false);toggleSection(document.getElementById('ajudaCustoSection'),false);toggleSection(document.getElementById('ajudaCustoWrapper'),false);toggleSection(document.getElementById('expPontosEnergiaField'),false);toggleSection(document.getElementById('expMobiliarioField'),false);toggleSection(document.getElementById('expEquipPropriosTable'),false);
     if(document.getElementById('expEquipTableBody'))document.getElementById('expEquipTableBody').innerHTML='';expEquipRowCount=0;if(document.getElementById('expMaterialTableBody'))document.getElementById('expMaterialTableBody').innerHTML='';expMatRowCount=0;
