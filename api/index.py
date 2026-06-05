@@ -595,6 +595,10 @@ def home():
         }
         for campo, nome_amigavel in campos_exp_espaco.items():
             if not dados.get(campo): erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
+        
+        # VALIDAÇÃO DO CAMPO "OUTROS" DA CONDIÇÃO DO AMBIENTE
+        if dados.get('exp_espaco_condicao') == 'outros' and not dados.get('exp_espaco_condicao_outros', '').strip():
+            erros.append('Descreva a condição do ambiente ao selecionar "Outros".')
 
         # 4. Acessibilidade e Restrição
         if not dados.get('exp_acess_recursos', '').strip(): erros.append('O campo "Ações de acessibilidade" é obrigatório.')
@@ -969,6 +973,7 @@ def home():
                 'dias': dados.get('exp_dias'),
                 'espaco_ambiente': dados.get('exp_espaco_ambiente'),
                 'espaco_condicao': dados.get('exp_espaco_condicao'),
+                'espaco_condicao_outros': dados.get('exp_espaco_condicao_outros', '').strip() if dados.get('exp_espaco_condicao') == 'outros' else None,
                 'acess_recursos': dados.get('exp_acess_recursos'),
                 'acess_restricoes': dados.get('exp_acess_restricoes'),
                 'oper_funcionamento': dados.get('exp_oper_funcionamento'),
