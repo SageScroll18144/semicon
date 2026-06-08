@@ -431,7 +431,14 @@ def validate_origin():
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'GET':
-        return render_template('index.html', dados={}, guest_data_json='{}', turnstile_site_key=TURNSTILE_SITE_KEY)
+        return render_template(
+            'index.html',
+            dados={},
+            form_data_json='{}',
+            guest_data_json='{}',
+            exp_espaco_condicao_values=[],
+            turnstile_site_key=TURNSTILE_SITE_KEY
+        )
 
     dados = request.form
     arquivo_foto = request.files.get('fotoProponente')
@@ -442,12 +449,19 @@ def home():
 
     def render_with_data(code=400):
         form_dict = dict(dados)
+        exp_espaco_condicao_values = [valor for valor in dados.getlist('exp_espaco_condicao') if valor]
         guest_data = {}
         for key in dados:
             if key.startswith('convidado'):
                 guest_data[key] = dados[key]
-        return render_template('index.html', dados=form_dict, guest_data_json=json.dumps(guest_data, ensure_ascii=False),
-                               turnstile_site_key=TURNSTILE_SITE_KEY), code
+        return render_template(
+            'index.html',
+            dados=form_dict,
+            form_data_json=json.dumps(form_dict, ensure_ascii=False),
+            guest_data_json=json.dumps(guest_data, ensure_ascii=False),
+            exp_espaco_condicao_values=exp_espaco_condicao_values,
+            turnstile_site_key=TURNSTILE_SITE_KEY
+        ), code
 
     # INÍCIO: Verificações de Segurança
     honeypot_value = dados.get(HONEYPOT_FIELD_NAME, '').strip()
@@ -520,7 +534,9 @@ def home():
     if dados.get('emailRepresentante') and not validar_email(dados.get('emailRepresentante')):
         erros.append('O e-mail do representante não é válido.')
 
-    if dados.get('acessoAtividade') == 'inscricao':
+    acesso_atividade = dados.get('acessoAtividade')
+
+    if acesso_atividade == 'inscricao':
         if dados.get('inscricaoResponsabilidade') != 'sim':
             erros.append('É necessário aceitar a responsabilidade sobre o processo de inscrição e a segurança dos dados conforme a LGPD.')
 
@@ -550,7 +566,27 @@ def home():
             erros.append('A idade mínima não pode ser maior que a máxima.')
 
     formato = dados.get('formatoAtividade')
+    duracao = dados.get('tempoDuracao')
+    exp_espaco_condicao_values = [valor for valor in dados.getlist('exp_espaco_condicao') if valor]
     mostrar_ajuda_custo = (tipo_prop == 'pf') or (tipo_prop == 'pj' and categoria_prop in ['ong', 'coletivo'])
+
+    duracoes_por_formato = {
+        'debate': {'45min', '1h'},
+        'roda_de_conversa': {'45min', '1h'},
+        'oficina': {'1h', '1h30', '2h', '2h30', '3h'},
+        'experiencia': {'1h', '2h', '3h', '4h', 'dia_todo'},
+    }
+    acessos_por_formato = {
+        'debate': {'ordem_chegada'},
+        'roda_de_conversa': {'ordem_chegada'},
+        'oficina': {'ordem_chegada', 'livre', 'inscricao'},
+        'experiencia': {'ordem_chegada', 'livre', 'inscricao'},
+    }
+
+    if formato in duracoes_por_formato and duracao and duracao not in duracoes_por_formato[formato]:
+        erros.append('A duração selecionada não é válida para o formato escolhido.')
+    if formato in acessos_por_formato and acesso_atividade and acesso_atividade not in acessos_por_formato[formato]:
+        erros.append('O acesso selecionado não é válido para o formato escolhido.')
 
     if formato == 'oficina':
         if not dados.get('oficina_qtd_publico'): erros.append('Selecione a quantidade máxima de público.')
@@ -589,15 +625,13 @@ def home():
         if not dados.get('exp_dias'): erros.append('Informe a quantidade de dias (Experiência).')
 
         # 3. Espaço
-        campos_exp_espaco = {
-            'exp_espaco_ambiente': 'Ambiente (Experiência)',
-            'exp_espaco_condicao': 'Condição do ambiente (Experiência)'
-        }
-        for campo, nome_amigavel in campos_exp_espaco.items():
-            if not dados.get(campo): erros.append(f'O campo "{nome_amigavel}" é obrigatório.')
+        if not dados.get('exp_espaco_ambiente'):
+            erros.append('O campo "Ambiente (Experiência)" é obrigatório.')
+        if not exp_espaco_condicao_values:
+            erros.append('O campo "Condição do ambiente (Experiência)" é obrigatório.')
         
         # VALIDAÇÃO DO CAMPO "OUTROS" DA CONDIÇÃO DO AMBIENTE
-        if dados.get('exp_espaco_condicao') == 'outros' and not dados.get('exp_espaco_condicao_outros', '').strip():
+        if 'outros' in exp_espaco_condicao_values and not dados.get('exp_espaco_condicao_outros', '').strip():
             erros.append('Descreva a condição do ambiente ao selecionar "Outros".')
 
         # 4. Acessibilidade e Restrição
@@ -633,21 +667,18 @@ def home():
             has_exp_equip = any(key.startswith('exp_equip_item_') and dados[key].strip() for key in dados)
             if not has_exp_equip: erros.append('Liste pelo menos um equipamento próprio na tabela.')
 
-        # 9. Infra - Equipamentos solicitados
-        if not dados.get('exp_infra_equip_solicitados', '').strip(): erros.append('Informe os Equipamentos solicitados ao festival.')
-
-        # 10. Infra - Materiais de Apoio
+        # 9. Infra - Materiais de Apoio
         if not dados.get('exp_material_ajuda'): erros.append('Informe sobre recurso financeiro para material de apoio.')
         if dados.get('exp_material_ajuda') in ('sim', 'indispensavel'):
             has_exp_mat = any(key.startswith('exp_mat_item_') and dados[key].strip() for key in dados)
             if not has_exp_mat: erros.append('Liste pelo menos um material de apoio na tabela.')
             if not dados.get('exp_justificativa_materiais', '').strip(): erros.append('A justificativa dos materiais de apoio é obrigatória.')
 
-        # 11. Montagem e Equipe
+        # 10. Montagem e Equipe
         if not dados.get('exp_montagem_desmontagem_desc', '').strip(): erros.append('O campo "Montagem e desmontagem" é obrigatório.')
         if not dados.get('exp_infra_qtd_equipe', '').strip(): erros.append('O campo "Quantidade da equipe operacional do proponente" é obrigatório.')
 
-        # 12. Anexos
+        # 11. Anexos
         croqui_file = request.files.get('exp_anexo_croqui')
         if not croqui_file or croqui_file.filename.strip() == '':
             erros.append('O anexo "Croqui esquemático" é obrigatório.')
@@ -925,7 +956,7 @@ def home():
             'titulo': dados.get('tituloAtividade'),
             'formato': dados.get('formatoAtividade'),
             'duracao_prevista': dados.get('tempoDuracao'),
-            'acesso': dados.get('acessoAtividade'),
+            'acesso': acesso_atividade,
             'inscricao_responsabilidade': dados.get('inscricaoResponsabilidade') == 'sim',
             'aceite_termos': dados.get('aceite_termos') == 'sim',
             'direitos_autorais': dados.get('direitos_autorais') == 'sim',
@@ -972,8 +1003,8 @@ def home():
                 'tipologias': tipologias_selecionadas_exp,
                 'dias': dados.get('exp_dias'),
                 'espaco_ambiente': dados.get('exp_espaco_ambiente'),
-                'espaco_condicao': dados.get('exp_espaco_condicao'),
-                'espaco_condicao_outros': dados.get('exp_espaco_condicao_outros', '').strip() if dados.get('exp_espaco_condicao') == 'outros' else None,
+                'espaco_condicao': exp_espaco_condicao_values,
+                'espaco_condicao_outros': dados.get('exp_espaco_condicao_outros', '').strip() if 'outros' in exp_espaco_condicao_values else None,
                 'acess_recursos': dados.get('exp_acess_recursos'),
                 'acess_restricoes': dados.get('exp_acess_restricoes'),
                 'oper_funcionamento': dados.get('exp_oper_funcionamento'),
@@ -990,7 +1021,6 @@ def home():
                 'infra_mobiliario_desc': dados.get('exp_infra_mobiliario_desc') if dados.get('exp_infra_mobiliario_opcao') == 'sim' else None,
                 'infra_equip_proprios_opcao': dados.get('exp_infra_equip_proprios_opcao'),
                 'infra_equip_proprios_items': exp_equip_items,
-                'infra_equip_solicitados': dados.get('exp_infra_equip_solicitados'),
                 'material_ajuda': dados.get('exp_material_ajuda'),
                 'materiais': exp_materiais,
                 'justificativa_materiais': dados.get('exp_justificativa_materiais'),

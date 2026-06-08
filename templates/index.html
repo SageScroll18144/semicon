@@ -427,11 +427,11 @@
                 </div>
 
                 <!-- Objetivo -->
-                <div class="field-group"><label for="objetivoAtividade">Objetivo <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva de forma objetiva o propósito principal da atividade e o que ela pretende promover, discutir, desenvolver ou compartilhar com o público.">?</i></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required>{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
+                <div class="field-group"><label for="objetivoAtividade">Objetivo <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva de forma objetiva o propósito principal da atividade e o que ela pretende promover, discutir, desenvolver ou compartilhar com o público.">?</i></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required placeholder="Informação exclusiva para fins de avaliação">{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
                 <!-- Justificativa -->
-                <div class="field-group"><label for="justificativaTematica">Justificativa <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span> <i class="tooltip-icon" data-tooltip="Explique como a proposta se relaciona com os eixos temáticos, diretrizes curatoriais ou discussões contemporâneas abordadas pelo REC'n'Play 2026.">?</i></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required>{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
+                <div class="field-group"><label for="justificativaTematica">Justificativa <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span> <i class="tooltip-icon" data-tooltip="Explique como a proposta se relaciona com os eixos temáticos, diretrizes curatoriais ou discussões contemporâneas abordadas pelo REC'n'Play 2026.">?</i></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required placeholder="Informação exclusiva para fins de avaliação">{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
                 <!-- Metodologia -->
-                <div class="field-group"><label for="metodologiaAplicada">Metodologia <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva como a atividade será conduzida, incluindo dinâmica de participação, interação com o público e estrutura prevista para sua realização.">?</i></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required>{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
+                <div class="field-group"><label for="metodologiaAplicada">Metodologia <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva como a atividade será conduzida, incluindo dinâmica de participação, interação com o público e estrutura prevista para sua realização.">?</i></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required placeholder="Informação exclusiva para fins de avaliação">{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
                 <!-- Descrição para publicação -->
                 <div class="field-group"><label for="descricaoAtividade">Descrição para publicação <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span> <i class="tooltip-icon" data-tooltip="Texto resumido que aparecerá para o público. Priorize linguagem clara, objetiva e convidativa para o público geral.">?</i></label><textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="700" required placeholder="Essa descrição será usada no site e no aplicativo de programação do festival.">{{ dados.get('descricaoAtividade', '') }}</textarea><div class="char-counter" id="charCounterDesc">0 / 700</div></div>
                 <!-- Palavra-chave -->
@@ -442,24 +442,24 @@
                     <div class="oficina-step" style="border-bottom:none;margin-bottom:0;padding-bottom:0">
                         <span class="oficina-label">Tipologia da Experiência <span class="required">*</span></span>
                         <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:4px;">
-                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_tecnologica" value="sim"><label>Tecnológica</label></div>
-                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_interativa" value="sim"><label>Interativa</label></div>
-                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_imersiva" value="sim"><label>Imersiva</label></div>
-                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_demonstrativa" value="sim"><label>Demonstrativa</label></div>
-                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_hibrida" value="sim"><label>Híbrida</label></div>
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_tecnologica" value="sim" {{ 'checked' if dados.get('exp_tipologia_tecnologica') == 'sim' }}><label>Tecnológica</label></div>
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_interativa" value="sim" {{ 'checked' if dados.get('exp_tipologia_interativa') == 'sim' }}><label>Interativa</label></div>
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_imersiva" value="sim" {{ 'checked' if dados.get('exp_tipologia_imersiva') == 'sim' }}><label>Imersiva</label></div>
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_demonstrativa" value="sim" {{ 'checked' if dados.get('exp_tipologia_demonstrativa') == 'sim' }}><label>Demonstrativa</label></div>
+                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_hibrida" value="sim" {{ 'checked' if dados.get('exp_tipologia_hibrida') == 'sim' }}><label>Híbrida</label></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Duração | Dias (experiência) -->
                 <div class="field-row" style="margin-top:20px">
-                    <div class="field-group" id="duracaoGroup" style="grid-column: span 2"><label for="tempoDuracao">Duração <span class="required">*</span></label><select id="tempoDuracao" name="tempoDuracao" required><option value="">Selecione...</option></select><div class="helper-text">Selecione a quantidade de horas por dia</div></div>
                     <div class="field-group hidden" id="diasExpGroup"><label for="expDias">Dias <span class="required">*</span></label><select id="expDias" name="exp_dias"><option value="">Selecione...</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select><div class="helper-text">Selecione a quantidade de dias que a atividade acontecerá</div></div>
+                    <div class="field-group" id="duracaoGroup"><label for="tempoDuracao">Duração <span class="required">*</span></label><select id="tempoDuracao" name="tempoDuracao" required><option value="">Selecione...</option></select><div class="helper-text">Selecione a quantidade de horas por dia</div></div>
                 </div>
 
                 <!-- Público Alvo | Restrição de Idade -->
                 <div class="field-row">
-                    <div class="field-group"><label for="publicoAlvo">Público-alvo <span class="required">*</span></label><select id="publicoAlvo" name="publicoAlvo" required><option value="">Selecione...</option><option value="publico_geral" {{ 'selected' if dados.get('publicoAlvo') == 'publico_geral' }}>Público geral</option><option value="publico_especialista" {{ 'selected' if dados.get('publicoAlvo') == 'publico_especialista' }}>Público especialista</option><option value="professores" {{ 'selected' if dados.get('publicoAlvo') == 'professores' }}>Professores</option><option value="infantil" {{ 'selected' if dados.get('publicoAlvo') == 'infantil' }}>Infantil</option><option value="adolescente" {{ 'selected' if dados.get('publicoAlvo') == 'adolescente' }}>Adolescente</option><option value="apenas_mulheres" {{ 'selected' if dados.get('publicoAlvo') == 'apenas_mulheres' }}>Apenas mulheres</option></select></div>
+                    <div class="field-group"><label for="publicoAlvo">Público-alvo <span class="required">*</span></label><select id="publicoAlvo" name="publicoAlvo" required><option value="">Selecione...</option><option value="publico_geral" {{ 'selected' if dados.get('publicoAlvo') == 'publico_geral' }}>Público geral</option><option value="publico_especialista" {{ 'selected' if dados.get('publicoAlvo') == 'publico_especialista' }}>Especialista no tema</option><option value="professores" {{ 'selected' if dados.get('publicoAlvo') == 'professores' }}>Professores</option><option value="infantil" {{ 'selected' if dados.get('publicoAlvo') == 'infantil' }}>Infantil</option><option value="adolescente" {{ 'selected' if dados.get('publicoAlvo') == 'adolescente' }}>Adolescente</option><option value="apenas_mulheres" {{ 'selected' if dados.get('publicoAlvo') == 'apenas_mulheres' }}>Apenas mulheres</option></select></div>
                     <div class="field-group">
                         <label>Restrição de faixa etária?</label>
                         <div class="radio-group">
@@ -479,6 +479,7 @@
                     <select id="acessoAtividade" name="acessoAtividade" required onchange="toggleInscricaoCheckbox()">
                         <option value="">Selecione...</option>
                         <option value="ordem_chegada" {{ 'selected' if dados.get('acessoAtividade') == 'ordem_chegada' }}>Acesso por ordem de chegada</option>
+                        <option value="livre" {{ 'selected' if dados.get('acessoAtividade') == 'livre' }}>Livre</option>
                         <option value="inscricao" {{ 'selected' if dados.get('acessoAtividade') == 'inscricao' }}>Acesso por inscrição prévia</option>
                     </select>
                     <div class="helper-text hidden" id="acessoFixoNotice" style="color: var(--roxo-escuro); font-weight: 600; font-size: 12px; margin-top: 6px;">
@@ -494,19 +495,19 @@
                 <div id="expAcessOperacaoBox" class="purple-dashed-box hidden">
                     <div class="oficina-step">
                         <span class="oficina-label">Acessibilidade e Restrição</span>
-                        <div class="field-group"><label>Existem ações de acessibilidade na experiência? <span class="required">*</span></label><input type="text" name="exp_acess_recursos" maxlength="200" placeholder="Descreva as ações de acessibilidade..."></div>
-                        <div class="field-group"><label>Restrições de público (se houver)</label><textarea name="exp_acess_restricoes" maxlength="300" style="min-height:60px"></textarea></div>
+                        <div class="field-group"><label>Existem ações de acessibilidade na experiência? <span class="required">*</span></label><input type="text" name="exp_acess_recursos" maxlength="200" placeholder="Descreva as ações de acessibilidade..." value="{{ dados.get('exp_acess_recursos', '') }}" required></div>
+                        <div class="field-group"><label>Restrições de público (se houver)</label><textarea name="exp_acess_restricoes" maxlength="300" style="min-height:60px">{{ dados.get('exp_acess_restricoes', '') }}</textarea></div>
                     </div>
                     <div class="oficina-step" style="border-bottom:none;margin-bottom:0;padding-bottom:0">
                         <span class="oficina-label">Operação <i class="tooltip-icon" data-tooltip="Informações sobre o funcionamento, fluxo e operação da experiência durante o festival.">?</i></span>
-                        <div class="field-group"><label>Funcionamento <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" name="exp_oper_funcionamento" value="continuo"><label>Contínuo</label></div><div class="radio-option"><input type="radio" name="exp_oper_funcionamento" value="sessoes"><label>Por sessões</label></div></div></div>
+                        <div class="field-group"><label>Funcionamento <span class="required">*</span></label><div class="radio-group"><div class="radio-option"><input type="radio" name="exp_oper_funcionamento" value="continuo" {{ 'checked' if dados.get('exp_oper_funcionamento') == 'continuo' }} required><label>Contínuo</label></div><div class="radio-option"><input type="radio" name="exp_oper_funcionamento" value="sessoes" {{ 'checked' if dados.get('exp_oper_funcionamento') == 'sessoes' }}><label>Por sessões</label></div></div></div>
                         <div class="field-row">
-                            <div class="field-group"><label>Permanência média do usuário na experiência <span class="required">*</span></label><input type="text" name="exp_oper_permanencia" maxlength="50"></div>
-                            <div class="field-group"><label>Quantidade simultânea de usuários por experiência <span class="required">*</span></label><input type="number" name="exp_oper_qtd_simultanea" min="1"></div>
+                            <div class="field-group"><label>Permanência média do usuário na experiência <span class="required">*</span></label><input type="text" name="exp_oper_permanencia" maxlength="50" value="{{ dados.get('exp_oper_permanencia', '') }}" required></div>
+                            <div class="field-group"><label>Quantidade simultânea de usuários por experiência <span class="required">*</span></label><input type="number" name="exp_oper_qtd_simultanea" min="1" value="{{ dados.get('exp_oper_qtd_simultanea', '') }}" required></div>
                         </div>
                         <div class="field-row">
-                            <div class="field-group"><label>Fluxo de usuários estimado por hora <span class="required">*</span></label><input type="number" name="exp_oper_fluxo_hora" min="1"></div>
-                            <div class="field-group"><label>Quantidade de equipe operacional do proponente durante a experiência <span class="required">*</span></label><input type="number" name="exp_oper_qtd_equipe" min="1"></div>
+                            <div class="field-group"><label>Fluxo de usuários estimado por hora <span class="required">*</span></label><input type="number" name="exp_oper_fluxo_hora" min="1" value="{{ dados.get('exp_oper_fluxo_hora', '') }}" required></div>
+                            <div class="field-group"><label>Quantidade de equipe operacional do proponente durante a experiência <span class="required">*</span></label><input type="number" name="exp_oper_qtd_equipe" min="1" value="{{ dados.get('exp_oper_qtd_equipe', '') }}" required></div>
                         </div>
                     </div>
                 </div>
@@ -514,8 +515,6 @@
 
             <!-- ========== SEÇÃO: RECURSO DE INFRAESTRUTURA ========== -->
             <div class="form-section" id="secaoRecursoInfra">
-                <h2 class="section-title"><i class="fas fa-cogs"></i> Recurso de infraestrutura</h2>
-
                 <!-- Infra geral para Debate / Roda de conversa -->
                 <div id="generalInfraGroup">
                     <div class="field-group"><label>Recursos de infraestrutura necessários</label>
@@ -599,29 +598,29 @@
                         
                         <div class="field-group"><label>Ponto de energia? <span class="required">*</span></label>
                             <div class="radio-group">
-                                <div class="radio-option"><input type="radio" name="exp_infra_energia" value="sim" onchange="toggleExpPontosEnergia()"><label>Sim</label></div>
-                                <div class="radio-option"><input type="radio" name="exp_infra_energia" value="nao" onchange="toggleExpPontosEnergia()"><label>Não</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_energia" value="sim" onchange="toggleExpPontosEnergia()" {{ 'checked' if dados.get('exp_infra_energia') == 'sim' }} required><label>Sim</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_energia" value="nao" onchange="toggleExpPontosEnergia()" {{ 'checked' if dados.get('exp_infra_energia') == 'nao' }}><label>Não</label></div>
                             </div>
                         </div>
                         <div class="hidden" id="expPontosEnergiaField" style="margin-top:0; margin-bottom:20px; background:#fff; padding:16px; border:1px solid #EEE; border-radius:8px;">
-                            <div class="field-group"><label>Quantos Pontos? <span class="required">*</span></label><input type="number" name="exp_infra_pontos_energia_qtd" min="1" placeholder="Ex: 4"></div>
-                            <div class="field-group"><label>Quais equipamentos / finalidade <span class="required">*</span></label><input type="text" name="exp_infra_energia_equip" maxlength="200"></div>
-                            <div class="field-group"><label>Especificação <span class="required">*</span></label><input type="text" name="exp_infra_energia_spec" maxlength="200"></div>
-                            <div class="field-group"><label>Capacidade / Carga <span class="required">*</span></label><input type="text" name="exp_infra_energia_carga" maxlength="200"></div>
+                            <div class="field-group"><label>Quantos Pontos? <span class="required">*</span></label><input type="number" name="exp_infra_pontos_energia_qtd" min="1" placeholder="Ex: 4" value="{{ dados.get('exp_infra_pontos_energia_qtd', '') }}" required></div>
+                            <div class="field-group"><label>Quais equipamentos / finalidade <span class="required">*</span></label><input type="text" name="exp_infra_energia_equip" maxlength="200" value="{{ dados.get('exp_infra_energia_equip', '') }}" required></div>
+                            <div class="field-group"><label>Especificação <span class="required">*</span></label><input type="text" name="exp_infra_energia_spec" maxlength="200" value="{{ dados.get('exp_infra_energia_spec', '') }}" required></div>
+                            <div class="field-group"><label>Capacidade / Carga <span class="required">*</span></label><input type="text" name="exp_infra_energia_carga" maxlength="200" value="{{ dados.get('exp_infra_energia_carga', '') }}" required></div>
                         </div>
 
                         <div class="field-group"><label>Mobiliário próprio <span class="required">*</span></label>
                             <div class="radio-group">
-                                <div class="radio-option"><input type="radio" name="exp_infra_mobiliario_opcao" value="sim" onchange="toggleExpMobiliario()"><label>Sim</label></div>
-                                <div class="radio-option"><input type="radio" name="exp_infra_mobiliario_opcao" value="nao" onchange="toggleExpMobiliario()"><label>Não</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_mobiliario_opcao" value="sim" onchange="toggleExpMobiliario()" {{ 'checked' if dados.get('exp_infra_mobiliario_opcao') == 'sim' }} required><label>Sim</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_mobiliario_opcao" value="nao" onchange="toggleExpMobiliario()" {{ 'checked' if dados.get('exp_infra_mobiliario_opcao') == 'nao' }}><label>Não</label></div>
                             </div>
-                            <div class="field-group hidden" id="expMobiliarioField" style="margin-top:8px;margin-bottom:0"><label>Descreva o mobiliário próprio <span class="required">*</span></label><textarea name="exp_infra_mobiliario_desc" maxlength="500" style="min-height:70px" placeholder="Descreva os mobiliários próprios que serão utilizados..."></textarea></div>
+                            <div class="field-group hidden" id="expMobiliarioField" style="margin-top:8px;margin-bottom:0"><label>Descreva o mobiliário próprio <span class="required">*</span></label><textarea name="exp_infra_mobiliario_desc" maxlength="500" style="min-height:70px" placeholder="Descreva os mobiliários próprios que serão utilizados..." required>{{ dados.get('exp_infra_mobiliario_desc', '') }}</textarea></div>
                         </div>
 
                         <div class="field-group"><label>Equipamento próprio <span class="required">*</span></label>
                             <div class="radio-group">
-                                <div class="radio-option"><input type="radio" name="exp_infra_equip_proprios_opcao" value="sim" onchange="toggleExpEquipProprios()"><label>Sim</label></div>
-                                <div class="radio-option"><input type="radio" name="exp_infra_equip_proprios_opcao" value="nao" onchange="toggleExpEquipProprios()"><label>Não</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_equip_proprios_opcao" value="sim" onchange="toggleExpEquipProprios()" {{ 'checked' if dados.get('exp_infra_equip_proprios_opcao') == 'sim' }} required><label>Sim</label></div>
+                                <div class="radio-option"><input type="radio" name="exp_infra_equip_proprios_opcao" value="nao" onchange="toggleExpEquipProprios()" {{ 'checked' if dados.get('exp_infra_equip_proprios_opcao') == 'nao' }}><label>Não</label></div>
                             </div>
                         </div>
                         <div class="hidden" id="expEquipPropriosTable" style="margin-top:0">
@@ -630,25 +629,23 @@
                             <button type="button" class="btn-add-row" onclick="addExpEquipRow()"><i class="fas fa-plus"></i> Adicionar equipamento</button>
                         </div>
 
-                        <div class="field-group" style="margin-top:16px"><label>Equipamento solicitado ao festival <span class="required">*</span></label><textarea name="exp_infra_equip_solicitados" maxlength="500" style="min-height:70px"></textarea></div>
-
                         <div class="field-group" style="margin-top:16px"><label>Você precisa de recurso financeiro para aquisição de material de apoio?<span class="required">*</span></label>
-                            <select name="exp_material_ajuda" onchange="toggleExpMaterialTable(this)">
-                                <option value="nao">Não</option>
-                                <option value="sim">Sim</option>
-                                <option value="indispensavel">Indispensável</option>
+                            <select name="exp_material_ajuda" onchange="toggleExpMaterialTable(this)" required>
+                                <option value="nao" {{ 'selected' if dados.get('exp_material_ajuda') == 'nao' or not dados.get('exp_material_ajuda') }}>Não</option>
+                                <option value="sim" {{ 'selected' if dados.get('exp_material_ajuda') == 'sim' }}>Sim</option>
+                                <option value="indispensavel" {{ 'selected' if dados.get('exp_material_ajuda') == 'indispensavel' }}>Indispensável</option>
                             </select>
                         </div>
                         <div class="hidden exp-material-table-section">
                             <label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Lista de materiais e previsão de custo</label>
                             <table class="material-table" id="expMaterialTable"><thead><tr><th style="width:40%">Material</th><th style="width:20%">Qtd</th><th style="width:20%">Valor unit. (R$)</th><th style="width:20%">Subtotal (R$)</th><th></th></tr></thead><tbody id="expMaterialTableBody"></tbody><tfoot><tr class="material-total-row"><td colspan="3" style="text-align:right">TOTAL</td><td id="expMaterialTotal">R$ 0,00</td><td></td></tr></tfoot></table>
                             <button type="button" class="btn-add-row" onclick="addExpMaterialRow()"><i class="fas fa-plus"></i> Adicionar item</button>
-                            <div class="field-group" style="margin-top: 16px;"><label>Justificativa dos materiais <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea name="exp_justificativa_materiais" maxlength="500" style="min-height: 80px;" required placeholder="Explique o porquê da necessidade dos materiais listados acima..."></textarea></div>
+                            <div class="field-group" style="margin-top: 16px;"><label>Justificativa dos materiais <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea name="exp_justificativa_materiais" maxlength="500" style="min-height: 80px;" required placeholder="Explique o porquê da necessidade dos materiais listados acima...">{{ dados.get('exp_justificativa_materiais', '') }}</textarea></div>
                         </div>
 
-                        <div class="field-group" style="margin-top:16px"><label>Montagem e desmontagem <span class="required">*</span></label><textarea name="exp_montagem_desmontagem_desc" maxlength="300" style="min-height:70px" placeholder="Descreva o tempo e necessidades para montagem e desmontagem..."></textarea></div>
+                        <div class="field-group" style="margin-top:16px"><label>Montagem e desmontagem <span class="required">*</span></label><textarea name="exp_montagem_desmontagem_desc" maxlength="300" style="min-height:70px" placeholder="Descreva o tempo e necessidades para montagem e desmontagem..." required>{{ dados.get('exp_montagem_desmontagem_desc', '') }}</textarea></div>
                         
-                        <div class="field-group"><label>Quantidade da equipe operacional do proponente? <span class="required">*</span></label><input type="number" name="exp_infra_qtd_equipe" min="1"></div>
+                        <div class="field-group"><label>Quantidade da equipe operacional do proponente? <span class="required">*</span></label><input type="number" name="exp_infra_qtd_equipe" min="1" value="{{ dados.get('exp_infra_qtd_equipe', '') }}" required></div>
                     </div>
                 </div>
 
@@ -657,20 +654,20 @@
                     <div class="oficina-step" style="border-bottom:none;margin-bottom:0;padding-bottom:0">
                         <span class="oficina-label">Espaço</span>
                         <div class="field-group"><label>Ambiente <span class="required">*</span></label>
-                            <select name="exp_espaco_ambiente">
+                            <select name="exp_espaco_ambiente" required>
                                 <option value="">Selecione...</option>
-                                <option value="interno">Interno</option>
-                                <option value="externo">Externo</option>
-                                <option value="ambos">Ambos</option>
+                                <option value="interno" {{ 'selected' if dados.get('exp_espaco_ambiente') == 'interno' }}>Interno</option>
+                                <option value="externo" {{ 'selected' if dados.get('exp_espaco_ambiente') == 'externo' }}>Externo</option>
+                                <option value="ambos" {{ 'selected' if dados.get('exp_espaco_ambiente') == 'ambos' }}>Ambos</option>
                             </select>
                         </div>
                         <div class="field-group"><label>Condição do ambiente <span class="required">*</span></label>
-                            <select name="exp_espaco_condicao" onchange="toggleExpCondicaoOutros()">
-                                <option value="">Selecione...</option>
-                                <option value="isolamento_acustico" {{ 'selected' if dados.get('exp_espaco_condicao') == 'isolamento_acustico' }}>1. Isolamento acústico</option>
-                                <option value="sala_escura" {{ 'selected' if dados.get('exp_espaco_condicao') == 'sala_escura' }}>2. Sala escura</option>
-                                <option value="outros" {{ 'selected' if dados.get('exp_espaco_condicao') == 'outros' }}>3. Outros</option>
-                            </select>
+                            <div class="infra-checkboxes" id="expEspacoCondicao">
+                                <div class="checkbox-option"><input type="checkbox" id="exp_condicao_isolamento" name="exp_espaco_condicao" value="isolamento_acustico" onchange="toggleExpCondicaoOutros()" {{ 'checked' if 'isolamento_acustico' in exp_espaco_condicao_values }}><label for="exp_condicao_isolamento">1. Isolamento acústico</label></div>
+                                <div class="checkbox-option"><input type="checkbox" id="exp_condicao_sala_escura" name="exp_espaco_condicao" value="sala_escura" onchange="toggleExpCondicaoOutros()" {{ 'checked' if 'sala_escura' in exp_espaco_condicao_values }}><label for="exp_condicao_sala_escura">2. Sala escura</label></div>
+                                <div class="checkbox-option"><input type="checkbox" id="exp_condicao_outros" name="exp_espaco_condicao" value="outros" onchange="toggleExpCondicaoOutros()" {{ 'checked' if 'outros' in exp_espaco_condicao_values }}><label for="exp_condicao_outros">3. Outros</label></div>
+                            </div>
+                            <div class="helper-text">Você pode marcar mais de uma opção.</div>
                         </div>
                         <div class="field-group hidden" id="expCondicaoOutrosField">
                             <label>Descreva a condição do ambiente <span class="required">*</span></label>
@@ -685,7 +682,7 @@
                         <span class="oficina-label">Anexos</span>
                         <div class="field-group"><label>Croqui esquemático / Planta simplificada <span class="required">*</span></label><input type="file" name="exp_anexo_croqui" id="expAnexoCroqui" accept="application/pdf"><div class="file-status" id="status_expAnexoCroqui">Nenhum arquivo selecionado</div><div class="helper-text">Formato aceito: PDF. Máx 5MB.</div></div>
                         <div class="field-group"><label>Imagens de referência <span class="required">*</span></label><input type="file" name="exp_anexo_imagens" accept="image/jpeg,image/png" id="expAnexoImagens"><div class="file-status" id="status_expAnexoImagens">Nenhum arquivo selecionado</div><div class="helper-text">Formatos aceitos: JPG, PNG. Máx 5MB.</div></div>
-                        <div class="field-group"><label>Vídeo demonstrativo (opcional)</label><input type="url" name="exp_anexo_video" placeholder="https://youtu.be/..."></div>
+                        <div class="field-group"><label>Vídeo demonstrativo (opcional)</label><input type="url" name="exp_anexo_video" placeholder="https://youtu.be/..." value="{{ dados.get('exp_anexo_video', '') }}"></div>
                     </div>
                 </div>
 
@@ -912,7 +909,7 @@ function syncNomeRepresentante(){
 function checkGuestBairro(input){const card=input.closest('.guest-card');if(!card)return;const bf=card.querySelector('.g-bairro-field'),es=card.querySelector('.g-estado'),ci=card.querySelector('.g-cidade');const e=es?es.value:'',c=ci?ci.value.trim().toLowerCase():'';if(e==='PE'&&c==='recife')bf.classList.remove('hidden');else bf.classList.add('hidden')}
 
 // ===== DURAÇÃO E FORMATO =====
-const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'},{value:'2h',label:'2h'}],'roda_de_conversa':[{value:'45min',label:'45min'},{value:'1h',label:'1h'},{value:'2h',label:'2h'}],'oficina':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'2h30',label:'2h30'},{value:'3h',label:'3h'},{value:'4h',label:'4h'}],'experiencia':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'4h',label:'4h'},{value:'dia_todo',label:'Dia todo (9h)'},{value:'livre',label:'Livre'}]};
+const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'roda_de_conversa':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'oficina':[{value:'1h',label:'1h'},{value:'1h30',label:'1h30'},{value:'2h',label:'2h'},{value:'2h30',label:'2h30'},{value:'3h',label:'3h'}],'experiencia':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'3h',label:'3h'},{value:'4h',label:'4h'},{value:'dia_todo',label:'Dia todo'}]};
 
 function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value,s=document.getElementById('tempoDuracao'),cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op)});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv}}
 
@@ -979,7 +976,10 @@ function toggleLabFields(){const v=document.querySelector('input[name="oficina_l
 function toggleSoftwareFields(){const v=document.querySelector('input[name="oficina_soft_req"]:checked');const show=(v&&v.value==='sim');toggleSection(document.getElementById('softwareDetails'),show)}
 function toggleRestricao(){const show=document.getElementById('restricaoSim').checked;toggleSection(document.getElementById('faixaEtariaGroup'),show)}
 
+const savedFormData=JSON.parse({{ form_data_json | tojson }});
+const savedExpEspacoCondicoes={{ exp_espaco_condicao_values | tojson }};
 const savedFormato="{{ dados.get('formatoAtividade', '') }}",savedDuracao="{{ dados.get('tempoDuracao', '') }}";if(savedFormato){document.getElementById('formatoAtividade').value=savedFormato;updateDuracaoOptions();if(savedDuracao)document.getElementById('tempoDuracao').value=savedDuracao;toggleActivityFields();}
+toggleRestricao();
 
 // ===== TABELAS DINÂMICAS =====
 let materialRowCount=0;function addMaterialRow(){materialRowCount++;const tb=document.getElementById('materialTableBody'),tr=document.createElement('tr');tr.id='matRow'+materialRowCount;tr.innerHTML=`<td><input type="text" name="mat_item_${materialRowCount}" required></td><td><input type="number" name="mat_qtd_${materialRowCount}" min="1" value="1" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td><input type="number" name="mat_valor_${materialRowCount}" min="0" step="0.01" value="0" required onchange="calcMaterialTotal()" oninput="calcMaterialTotal()"></td><td class="mat-subtotal">R$ 0,00</td><td><button type="button" class="btn-remove-row" onclick="removeMaterialRow('matRow${materialRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr);calcMaterialTotal()}
@@ -993,6 +993,70 @@ function toggleExpMaterialTable(sel){const v=sel.value;const section=sel.closest
 function addExpMaterialRow(){expMatRowCount++;const tb=document.getElementById('expMaterialTableBody'),tr=document.createElement('tr');tr.id='expMatRow'+expMatRowCount;tr.innerHTML=`<td><input type="text" name="exp_mat_item_${expMatRowCount}" required></td><td><input type="number" name="exp_mat_qtd_${expMatRowCount}" min="1" value="1" required onchange="calcExpMaterialTotal()" oninput="calcExpMaterialTotal()"></td><td><input type="number" name="exp_mat_valor_${expMatRowCount}" min="0" step="0.01" value="0" required onchange="calcExpMaterialTotal()" oninput="calcExpMaterialTotal()"></td><td class="exp-mat-subtotal">R$ 0,00</td><td><button type="button" class="btn-remove-row" onclick="removeExpMaterialRow('expMatRow${expMatRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr);calcExpMaterialTotal()}
 function removeExpMaterialRow(id){document.getElementById(id).remove();calcExpMaterialTotal()}
 function calcExpMaterialTotal(){let t=0;document.querySelectorAll('#expMaterialTableBody tr').forEach(tr=>{const q=parseFloat(tr.querySelector('input[name^="exp_mat_qtd"]')?.value)||0,v=parseFloat(tr.querySelector('input[name^="exp_mat_valor"]')?.value)||0,s=q*v;tr.querySelector('.exp-mat-subtotal').textContent='R$ '+s.toFixed(2).replace('.',',');t+=s});document.getElementById('expMaterialTotal').textContent='R$ '+t.toFixed(2).replace('.',',')}
+
+function restoreExperienceState(){
+    if(!savedFormData || savedFormData.formatoAtividade!=='experiencia')return;
+    if(savedFormData.exp_dias !== undefined){
+        document.getElementById('expDias').value=savedFormData.exp_dias;
+    }
+    document.querySelectorAll('input[name="exp_espaco_condicao"]').forEach(input=>{
+        input.checked=savedExpEspacoCondicoes.includes(input.value);
+    });
+    document.querySelectorAll('input[name^="exp_tipologia_"]').forEach(input=>{
+        input.checked=savedFormData[input.name]==='sim';
+    });
+    toggleExpPontosEnergia();
+    toggleExpMobiliario();
+    toggleExpEquipProprios();
+    toggleExpCondicaoOutros();
+
+    const expMaterialSelect=document.querySelector('[name="exp_material_ajuda"]');
+    const hasSavedExpMaterialRows=Object.keys(savedFormData).some(key=>/^exp_mat_item_\d+$/.test(key));
+    if(expMaterialSelect){
+        if(hasSavedExpMaterialRows && (savedFormData.exp_material_ajuda==='sim' || savedFormData.exp_material_ajuda==='indispensavel')){
+            const section=expMaterialSelect.closest('.purple-dashed-box').querySelector('.exp-material-table-section');
+            toggleSection(section,true);
+        }else{
+            toggleExpMaterialTable(expMaterialSelect);
+        }
+    }
+
+    if(savedFormData.exp_infra_equip_proprios_opcao==='sim'){
+        const sourceIndexes=new Set();
+        Object.keys(savedFormData).forEach(key=>{
+            const match=key.match(/^exp_equip_item_(\d+)$/);
+            if(match)sourceIndexes.add(parseInt(match[1],10));
+        });
+        Array.from(sourceIndexes).sort((a,b)=>a-b).forEach(sourceIdx=>{
+            addExpEquipRow();
+            const targetIdx=expEquipRowCount;
+            const item=document.querySelector(`[name="exp_equip_item_${targetIdx}"]`);
+            const qtd=document.querySelector(`[name="exp_equip_qtd_${targetIdx}"]`);
+            const obs=document.querySelector(`[name="exp_equip_obs_${targetIdx}"]`);
+            if(item)item.value=savedFormData[`exp_equip_item_${sourceIdx}`]||'';
+            if(qtd)qtd.value=savedFormData[`exp_equip_qtd_${sourceIdx}`]||'1';
+            if(obs)obs.value=savedFormData[`exp_equip_obs_${sourceIdx}`]||'';
+        });
+    }
+    if(hasSavedExpMaterialRows && (savedFormData.exp_material_ajuda==='sim' || savedFormData.exp_material_ajuda==='indispensavel')){
+        const sourceIndexes=new Set();
+        Object.keys(savedFormData).forEach(key=>{
+            const match=key.match(/^exp_mat_item_(\d+)$/);
+            if(match)sourceIndexes.add(parseInt(match[1],10));
+        });
+        Array.from(sourceIndexes).sort((a,b)=>a-b).forEach(sourceIdx=>{
+            addExpMaterialRow();
+            const targetIdx=expMatRowCount;
+            const item=document.querySelector(`[name="exp_mat_item_${targetIdx}"]`);
+            const qtd=document.querySelector(`[name="exp_mat_qtd_${targetIdx}"]`);
+            const valor=document.querySelector(`[name="exp_mat_valor_${targetIdx}"]`);
+            if(item)item.value=savedFormData[`exp_mat_item_${sourceIdx}`]||'';
+            if(qtd)qtd.value=savedFormData[`exp_mat_qtd_${sourceIdx}`]||'1';
+            if(valor)valor.value=savedFormData[`exp_mat_valor_${sourceIdx}`]||'0';
+        });
+        calcExpMaterialTotal();
+    }
+}
 
 // ===== MÁSCARAS =====
 function maskCPF(i){let v=i.value.replace(/\D/g,'');if(v.length>11)v=v.substring(0,11);if(v.length>9)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6,9)+'-'+v.substring(9);else if(v.length>6)v=v.substring(0,3)+'.'+v.substring(3,6)+'.'+v.substring(6);else if(v.length>3)v=v.substring(0,3)+'.'+v.substring(3);i.value=v}
@@ -1030,7 +1094,37 @@ setupFileLoadStatus('expAnexoImagens','status_expAnexoImagens','Carregando image
 function toggleExpPontosEnergia(){const val=document.querySelector('input[name="exp_infra_energia"]:checked')?.value;toggleSection(document.getElementById('expPontosEnergiaField'),val==='sim');}
 function toggleExpMobiliario(){const val=document.querySelector('input[name="exp_infra_mobiliario_opcao"]:checked')?.value;toggleSection(document.getElementById('expMobiliarioField'),val==='sim');}
 function toggleExpEquipProprios(){const val=document.querySelector('input[name="exp_infra_equip_proprios_opcao"]:checked')?.value;toggleSection(document.getElementById('expEquipPropriosTable'),val==='sim');}
-function toggleExpCondicaoOutros(){const select=document.querySelector('[name="exp_espaco_condicao"]'),field=document.getElementById('expCondicaoOutrosField'),input=field?.querySelector('input');const show=select?.value==='outros';toggleSection(field,show);if(input){input.required=show;if(!show)input.value=''}}
+function toggleExpCondicaoOutros(){const field=document.getElementById('expCondicaoOutrosField'),input=field?.querySelector('input');const selectedValues=Array.from(document.querySelectorAll('input[name="exp_espaco_condicao"]:checked')).map(option=>option.value);const show=selectedValues.includes('outros');toggleSection(field,show);if(input){input.required=show;if(!show)input.value=''}}
+
+function validateExperienciaClient(){
+    if(document.getElementById('formatoAtividade')?.value!=='experiencia')return true;
+    if(!document.querySelector('#expTipologiaBox input[name^="exp_tipologia_"]:checked')){
+        showToast('Selecione pelo menos uma tipologia da experiência.','error');
+        document.querySelector('#expTipologiaBox input[name^="exp_tipologia_"]')?.focus();
+        return false;
+    }
+    const condicaoMarcadas=document.querySelectorAll('input[name="exp_espaco_condicao"]:checked');
+    if(condicaoMarcadas.length===0){
+        showToast('Selecione ao menos uma condição do ambiente.','error');
+        document.querySelector('input[name="exp_espaco_condicao"]')?.focus();
+        return false;
+    }
+    if(document.querySelector('input[name="exp_infra_equip_proprios_opcao"]:checked')?.value==='sim'){
+        const hasEquipRows=Array.from(document.querySelectorAll('#expEquipTableBody input[name^="exp_equip_item_"]')).some(input=>input.value.trim());
+        if(!hasEquipRows){
+            showToast('Liste pelo menos um equipamento próprio na experiência.','error');
+            return false;
+        }
+    }
+    if(['sim','indispensavel'].includes(document.querySelector('[name="exp_material_ajuda"]')?.value)){
+        const hasMaterialRows=Array.from(document.querySelectorAll('#expMaterialTableBody input[name^="exp_mat_item_"]')).some(input=>input.value.trim());
+        if(!hasMaterialRows){
+            showToast('Liste pelo menos um material de apoio na experiência.','error');
+            return false;
+        }
+    }
+    return true;
+}
 
 let expEquipRowCount=0;function addExpEquipRow(){expEquipRowCount++;const tb=document.getElementById('expEquipTableBody'),tr=document.createElement('tr');tr.id='expEquipRow'+expEquipRowCount;tr.innerHTML=`<td><input type="text" name="exp_equip_item_${expEquipRowCount}" required></td><td><input type="number" name="exp_equip_qtd_${expEquipRowCount}" min="1" value="1" required style="width:70px"></td><td><input type="text" name="exp_equip_obs_${expEquipRowCount}" maxlength="200"></td><td><button type="button" class="btn-remove-row" onclick="removeExpEquipRow('expEquipRow${expEquipRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr)}
 function removeExpEquipRow(id){document.getElementById(id).remove()}
@@ -1051,7 +1145,8 @@ function addGuest(scroll=true,data=null){
 function removeGuest(btn){const card=btn.closest('.guest-card');card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();guestCount--;document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests)},300)}
 function toggleGuestDocs(sel){const card=sel.closest('.guest-card'),isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>toggleSection(f,!isBR));card.querySelectorAll('.g-doc-br').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>toggleSection(f,!isBR))}
 function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card'),d=card.querySelector('.g-acess-detail');toggleSection(d,cb.checked);const desc=d.querySelector('.g-acess-desc');if(!cb.checked){desc.value=''}}
-(function(){const r='{{ guest_data_json | safe }}';try{const g=JSON.parse(r),k=Object.keys(g),idx=new Set();k.forEach(x=>{const m=x.match(/^convidado(\d+)_/);if(m)idx.add(parseInt(m[1]))});if(idx.size>0)Array.from(idx).sort((a,b)=>a-b).forEach(i=>{const p='convidado'+i+'_',sd={};k.filter(x=>x.startsWith(p)).forEach(x=>sd[x]=g[x]);addGuest(false,sd)});else addGuest(false)}catch(e){addGuest(false)}})();
+(function(){const r=JSON.parse({{ guest_data_json | tojson }});try{const g=r,k=Object.keys(g),idx=new Set();k.forEach(x=>{const m=x.match(/^convidado(\d+)_/);if(m)idx.add(parseInt(m[1]))});if(idx.size>0)Array.from(idx).sort((a,b)=>a-b).forEach(i=>{const p='convidado'+i+'_',sd={};k.filter(x=>x.startsWith(p)).forEach(x=>sd[x]=g[x]);addGuest(false,sd)});else addGuest(false)}catch(e){addGuest(false)}})();
+restoreExperienceState();
 
 // ===== PDF GENERATION =====
 let generatedPDFBlob=null;
@@ -1092,6 +1187,12 @@ function replacePageAtTop(doc,category,message){
     document.close();
     setTimeout(()=>{
         if(typeof initTagsWidget==='function')initTagsWidget();
+        if(typeof toggleActivityFields==='function')toggleActivityFields();
+        if(typeof toggleVisibilityByCategory==='function')toggleVisibilityByCategory();
+        if(typeof toggleInscricaoCheckbox==='function')toggleInscricaoCheckbox();
+        if(typeof toggleInfraOutros==='function')toggleInfraOutros();
+        if(typeof toggleRestricao==='function')toggleRestricao();
+        if(typeof restoreExperienceState==='function')restoreExperienceState();
         window.scrollTo({top:0,left:0,behavior:'auto'});
     },0);
 }
@@ -1113,8 +1214,10 @@ function createPaperViewHTML(){
     const esc=(value)=>String(value??'').replace(/[&<>"']/g,(m)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     const clean=(value)=>{const text=String(value??'').trim();return text?esc(text).replace(/\n/g,'<br>'):'Não informado'};
     const selectedText=(el)=>{if(!el)return'';if(el.tagName==='SELECT')return el.value?(el.options[el.selectedIndex]?.text||''):'';return el.value||''};
+    const selectedMultiText=(name,root=document)=>Array.from(root.querySelectorAll(`input[name="${name}"]:checked`)).map(input=>input.closest('.checkbox-option')?.querySelector('label')?.innerText||input.value).join(', ');
     const byId=(id)=>selectedText(document.getElementById(id));
     const byName=(name,root=document)=>selectedText(root.querySelector(`[name="${name}"]`));
+    const byNameMulti=(name,root=document)=>selectedMultiText(name,root);
     const radio=(name,root=document)=>{const checked=root.querySelector(`input[name="${name}"]:checked`);return checked?(checked.closest('.radio-option')?.querySelector('label')?.innerText||checked.value):''};
     const check=(id)=>document.getElementById(id)?.checked?'Sim':'Não';
     const row=(label,value)=>`<div class="pdf-row"><span class="pdf-label">${esc(label)}:</span> <span class="pdf-value">${clean(value)}</span></div>`;
@@ -1167,8 +1270,8 @@ function createPaperViewHTML(){
         row('Nome da atividade',byId('tituloAtividade')),
         row('Eixo temático',byId('eixo')),
         row('Formato',formato),
-        row('Duração',byId('tempoDuracao')),
         formatoValor==='experiencia'?row('Dias',byId('expDias')):'',
+        row('Duração',byId('tempoDuracao')),
         row('Objetivo',byId('objetivoAtividade')),
         row('Justificativa',byId('justificativaTematica')),
         row('Metodologia',byId('metodologiaAplicada')),
@@ -1223,15 +1326,14 @@ function createPaperViewHTML(){
             row('Descrição do mobiliário próprio',byName('exp_infra_mobiliario_desc')),
             row('Equipamento próprio?',radio('exp_infra_equip_proprios_opcao')),
             table(['Equipamento','Quantidade','Observações'],expEquipRows),
-            row('Equipamento solicitado ao festival',byName('exp_infra_equip_solicitados')),
             row('Recurso financeiro para material de apoio',byName('exp_material_ajuda')),
             table(['Material','Qtd','Valor unit.','Subtotal'],expMaterialRows),
             row('Justificativa dos materiais de apoio',byName('exp_justificativa_materiais')),
             row('Montagem e desmontagem',byName('exp_montagem_desmontagem_desc')),
             row('Quantidade da equipe operacional do proponente',byName('exp_infra_qtd_equipe')),
             row('Ambiente',byName('exp_espaco_ambiente')),
-            row('Condição do ambiente',byName('exp_espaco_condicao')),
-            document.querySelector('[name="exp_espaco_condicao"]')?.value==='outros'?row('Condição do ambiente - outros',byName('exp_espaco_condicao_outros')):'',
+            row('Condição do ambiente',byNameMulti('exp_espaco_condicao')),
+            Array.from(document.querySelectorAll('input[name="exp_espaco_condicao"]:checked')).some(option=>option.value==='outros')?row('Condição do ambiente - outros',byName('exp_espaco_condicao_outros')):'',
             row('Croqui / planta simplificada',fileValue('exp_anexo_croqui')),
             row('Imagens de referência',fileValue('exp_anexo_imagens')),
             row('Vídeo demonstrativo',byName('exp_anexo_video'))
@@ -1381,7 +1483,7 @@ function paginatePaperView(generatedAt){
     return pages;
 }
 
-async function gerarPDFPreview(e){e.preventDefault();try{showToast('Iniciando processo...','info');if(typeof html2canvas==='undefined'||typeof window.jsPDF==='undefined'){showToast('Erro: Bibliotecas de PDF não carregadas.','error');return}const propPreviewImg=document.querySelector('#photoPreview img');const tipoProp=document.getElementById('tipoProponente').value;if(tipoProp==='pj'){if(!propPreviewImg){showToast('A logo da instituição é obrigatória.','error');document.getElementById('fotoProponente').focus();return}}let guestsMissingPhoto=false;document.querySelectorAll('.guest-card').forEach(card=>{const guestImg=card.querySelector('.g-photo-preview img');if(!guestImg)guestsMissingPhoto=true});if(guestsMissingPhoto){showToast('Todas as fotos dos integrantes são obrigatórias.','error');return}const hiddenContainers=document.querySelectorAll('.hidden');const restoredFields=[];hiddenContainers.forEach(container=>{if(container.classList.contains('hp-field-wrap'))return;container.querySelectorAll('input, select, textarea').forEach(field=>{if(!field.disabled){field.disabled=true;restoredFields.push(field)}if(field.required){field.dataset.wasRequired='true';field.required=false}})});const form=document.getElementById('inscricaoForm');const isValid=form.checkValidity();restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});if(!isValid){form.reportValidity();showToast('Por favor, preencha todos os campos obrigatórios.','error');return}const formato=document.getElementById('formatoAtividade').value;let minConvidados=1;if(formato==='debate')minConvidados=2;if(formato==='roda_de_conversa')minConvidados=3;if(guestCount<minConvidados){showToast(`Mínimo de ${minConvidados} integrantes necessário para este formato.`,'error');return}createPaperViewHTML();const generatedAt=new Date().toLocaleString('pt-BR');const pages=paginatePaperView(generatedAt);showToast('Gerando prévia do PDF...','info');if(document.fonts&&document.fonts.ready)await document.fonts.ready;const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const pdfWidth=pdf.internal.pageSize.getWidth();const pageHeight=pdf.internal.pageSize.getHeight();for(let i=0;i<pages.length;i++){const canvas=await html2canvas(pages[i],{scale:2,useCORS:true,backgroundColor:'#ffffff'});const imgData=canvas.toDataURL('image/jpeg',0.95);if(i>0)pdf.addPage();pdf.addImage(imgData,'JPEG',0,0,pdfWidth,pageHeight)}generatedPDFBlob=pdf.output('blob');const fileURL=URL.createObjectURL(generatedPDFBlob);document.getElementById('pdfPreviewFrame').src=fileURL;document.getElementById('pdfModalOverlay').classList.add('active')}catch(err){console.error(err);showToast('Erro ao gerar PDF: '+err.message,'error')}}
+async function gerarPDFPreview(e){e.preventDefault();try{showToast('Iniciando processo...','info');if(typeof html2canvas==='undefined'||typeof window.jsPDF==='undefined'){showToast('Erro: Bibliotecas de PDF não carregadas.','error');return}const propPreviewImg=document.querySelector('#photoPreview img');const tipoProp=document.getElementById('tipoProponente').value;if(tipoProp==='pj'){if(!propPreviewImg){showToast('A logo da instituição é obrigatória.','error');document.getElementById('fotoProponente').focus();return}}let guestsMissingPhoto=false;document.querySelectorAll('.guest-card').forEach(card=>{const guestImg=card.querySelector('.g-photo-preview img');if(!guestImg)guestsMissingPhoto=true});if(guestsMissingPhoto){showToast('Todas as fotos dos integrantes são obrigatórias.','error');return}const hiddenContainers=document.querySelectorAll('.hidden');const restoredFields=[];hiddenContainers.forEach(container=>{if(container.classList.contains('hp-field-wrap'))return;container.querySelectorAll('input, select, textarea').forEach(field=>{if(!field.disabled){field.disabled=true;restoredFields.push(field)}if(field.required){field.dataset.wasRequired='true';field.required=false}})});const form=document.getElementById('inscricaoForm');const isValid=form.checkValidity();restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});if(!isValid){form.reportValidity();showToast('Por favor, preencha todos os campos obrigatórios.','error');return}if(!validateExperienciaClient())return;const formato=document.getElementById('formatoAtividade').value;let minConvidados=1;if(formato==='debate')minConvidados=2;if(formato==='roda_de_conversa')minConvidados=3;if(guestCount<minConvidados){showToast(`Mínimo de ${minConvidados} integrantes necessário para este formato.`,'error');return}createPaperViewHTML();const generatedAt=new Date().toLocaleString('pt-BR');const pages=paginatePaperView(generatedAt);showToast('Gerando prévia do PDF...','info');if(document.fonts&&document.fonts.ready)await document.fonts.ready;const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const pdfWidth=pdf.internal.pageSize.getWidth();const pageHeight=pdf.internal.pageSize.getHeight();for(let i=0;i<pages.length;i++){const canvas=await html2canvas(pages[i],{scale:2,useCORS:true,backgroundColor:'#ffffff'});const imgData=canvas.toDataURL('image/jpeg',0.95);if(i>0)pdf.addPage();pdf.addImage(imgData,'JPEG',0,0,pdfWidth,pageHeight)}generatedPDFBlob=pdf.output('blob');const fileURL=URL.createObjectURL(generatedPDFBlob);document.getElementById('pdfPreviewFrame').src=fileURL;document.getElementById('pdfModalOverlay').classList.add('active')}catch(err){console.error(err);showToast('Erro ao gerar PDF: '+err.message,'error')}}
 
 function submitToBackend(){
     const btn=document.getElementById('btnConfirmSend');
