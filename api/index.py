@@ -13,6 +13,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from cryptography.fernet import Fernet
+from typing import Dict, List, Set
 
 # ──────────────────────────────────────────────
 # INÍCIO: Configurações Anti-Spam / Segurança
@@ -46,6 +47,210 @@ CAMPOS_OBRIGATORIOS_BASE = [
     'acessoAtividade'
 ]
 
+
+# ──────────────────────────────────────────────
+# INÍCIO: Matcher de Pareceristas
+# ──────────────────────────────────────────────
+GRUPOS_TAGS = {
+    "tecnologia_base": [
+        "Blockchain", "Dados", "Cibersegurança", "Cloud",
+        "Computação Quântica", "Desenvolvimento de Software"
+    ],
+    "ia_xr": [
+        "Inteligência Artificial", "XR / Realidade Virtual e Aumentada",
+        "Desenvolvimento de Software"
+    ],
+    "automacao_iot_robotica": [
+        "Automação", "Internet das Coisas", "Robótica",
+        "Sistemas Embarcados", "Cultura Maker",
+        "Simulação e Modelagem", "Desenvolvimento de Software"
+    ],
+    "negocios_inovacao": [
+        "Empreendedorismo", "Inovação", "Startup", "Empresa Júnior",
+        "Modelagem de Negócios", "Internacionalização", "Investimentos",
+        "Transformação Digital", "Gestão de Comunidades"
+    ],
+    "marketing_pessoas_vendas": [
+        "Marketing", "Branding", "RH", "Cultura Organizacional",
+        "Carreira Profissional", "Desenvolvimento de Times",
+        "Comportamento do Consumidor", "Vendas B2B e B2C",
+        "Agro", "Futuro do trabalho", "Atacado e Varejo"
+    ],
+    "comunicacao_conteudo": [
+        "Comunicação", "Criação de Conteúdo", "Podcast", "Audiovisual"
+    ],
+    "ux_games": [
+        "Experiência do Usuário (UX / CX)", "Interface do Usuário (UI)",
+        "Gameficação", "Desenvolvimento de Jogos", "E-Sports",
+        "Desenvolvimento de Software"
+    ],
+    "artes_cultura": [
+        "Artes Visuais", "Fotografia", "Literatura", "Moda",
+        "Música", "Dança", "Gastronomia", "Teatro"
+    ],
+    "cidades_territorio": [
+        "Urbanismo", "Arquitetura", "Mobilidade Urbana", "Território",
+        "Cidadania Digital", "Intervenções Urbanas", "Cidades Inteligentes"
+    ],
+    "sustentabilidade": [
+        "Meio Ambiente", "ESG", "Economia Circular", "Mudanças Climáticas",
+        "Energia Renovável", "Gestão de Resíduos", "ODS"
+    ],
+    "diversidade_impacto": [
+        "Acessibilidade", "PcD", "Mulheres", "LGBTQIAPN+",
+        "Pessoa Idosa", "Equidade Racial", "Neurodivergência",
+        "Diversidade e Inclusão", "Periferias", "Desinformação",
+        "Cultura Popular", "Patrimônio", "Artes", "Impacto Social",
+        "Educação e Formação", "Infância"
+    ]
+}
+
+
+PARECERISTAS = [
+    {
+        "id": 1,
+        "nome": "Parecerista Sustentabilidade",
+        "tags": ["Economia Circular", "ESG", "Meio Ambiente", "ODS"],
+        "limite_atividades": 10,
+        "atividades_atribuidas": 0
+    },
+    {
+        "id": 2,
+        "nome": "Parecerista Negócios",
+        "tags": ["Empreendedorismo", "Inovação", "Startup", "Transformação Digital"],
+        "limite_atividades": 10,
+        "atividades_atribuidas": 0
+    },
+    {
+        "id": 3,
+        "nome": "Parecerista Impacto",
+        "tags": ["Impacto Social", "Educação e Formação", "Diversidade e Inclusão", "ESG"],
+        "limite_atividades": 10,
+        "atividades_atribuidas": 0
+    }
+]
+
+
+def normalizar(texto: str) -> str:
+    return texto.strip().lower()
+
+
+def normalizar_tags(tags: List[str]) -> Set[str]:
+    return {normalizar(tag) for tag in tags}
+
+
+def criar_mapa_tag_para_grupos(grupos_tags: Dict[str, List[str]]) -> Dict[str, Set[str]]:
+    mapa = {}
+
+    for grupo, tags in grupos_tags.items():
+        for tag in tags:
+            tag_normalizada = normalizar(tag)
+
+            if tag_normalizada not in mapa:
+                mapa[tag_normalizada] = set()
+
+            mapa[tag_normalizada].add(grupo)
+
+    return mapa
+
+
+TAG_PARA_GRUPOS = criar_mapa_tag_para_grupos(GRUPOS_TAGS)
+
+
+def obter_grupos_das_tags(tags: List[str]) -> Set[str]:
+    grupos = set()
+
+    for tag in tags:
+        tag_normalizada = normalizar(tag)
+        grupos.update(TAG_PARA_GRUPOS.get(tag_normalizada, set()))
+
+    return grupos
+
+
+def calcular_score(
+    atividade_tags: List[str],
+    parecerista_tags: List[str],
+    peso_tag_direta: float = 0.8,
+    peso_macrogrupo: float = 0.2
+) -> Dict:
+    tags_atividade = normalizar_tags(atividade_tags)
+    tags_parecerista = normalizar_tags(parecerista_tags)
+
+    tags_em_comum = tags_atividade.intersection(tags_parecerista)
+
+    score_direto = (
+        len(tags_em_comum) / len(tags_atividade)
+        if tags_atividade
+        else 0
+    )
+
+    grupos_atividade = obter_grupos_das_tags(atividade_tags)
+    grupos_parecerista = obter_grupos_das_tags(parecerista_tags)
+
+    grupos_em_comum = grupos_atividade.intersection(grupos_parecerista)
+
+    score_macrogrupo = (
+        len(grupos_em_comum) / len(grupos_atividade)
+        if grupos_atividade
+        else 0
+    )
+
+    score_final = (
+        score_direto * peso_tag_direta
+        + score_macrogrupo * peso_macrogrupo
+    )
+
+    return {
+        "score_final": round(score_final, 4),
+        "score_direto": round(score_direto, 4),
+        "score_macrogrupo": round(score_macrogrupo, 4),
+        "tags_em_comum": sorted(tags_em_comum),
+        "grupos_atividade": sorted(grupos_atividade),
+        "grupos_parecerista": sorted(grupos_parecerista),
+        "grupos_em_comum": sorted(grupos_em_comum)
+    }
+
+
+def ranquear_pareceristas(
+    atividade: Dict,
+    pareceristas: List[Dict],
+    score_minimo: float = 0.0
+) -> List[Dict]:
+    ranking = []
+
+    for parecerista in pareceristas:
+        if parecerista["atividades_atribuidas"] >= parecerista["limite_atividades"]:
+            continue
+
+        resultado = calcular_score(
+            atividade["tags"],
+            parecerista["tags"]
+        )
+
+        if resultado["score_final"] >= score_minimo:
+            ranking.append({
+                "atividade_id": atividade.get("id"),
+                "atividade_titulo": atividade.get("titulo"),
+                "parecerista_id": parecerista["id"],
+                "parecerista_nome": parecerista["nome"],
+                **resultado,
+                "atividades_atribuidas": parecerista["atividades_atribuidas"]
+            })
+
+    ranking.sort(
+        key=lambda item: (
+            item["score_final"],
+            item["score_direto"],
+            -item["atividades_atribuidas"]
+        ),
+        reverse=True
+    )
+
+    return ranking
+# ──────────────────────────────────────────────
+# FIM: Matcher de Pareceristas
+# ──────────────────────────────────────────────
+
 try:
     from upstash_redis import Redis
 except ImportError:
@@ -70,6 +275,73 @@ else:
 # ──────────────────────────────────────────────
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
+
+
+def normalizar_tags_atividade(tags_texto, sugestao_texto):
+    tags = [tag.strip() for tag in (tags_texto or '').split(',') if tag.strip()]
+    sugestao = (sugestao_texto or '').strip()
+    if sugestao:
+        tags.append(sugestao)
+    return tags
+
+
+def carregar_pareceristas():
+    """Carrega avaliadores do Supabase; se indisponível, usa o fallback local."""
+    if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
+        return PARECERISTAS
+
+    try:
+        query = urllib.parse.urlencode({
+            "select": "ID_avaliador,nome,email,tags_responsavel,limite_atividades,atividades_atribuidas",
+            "order": "ID_avaliador.asc"
+        })
+        req = urllib.request.Request(
+            f"{SUPABASE_URL}/rest/v1/avaliadores?{query}",
+            method='GET',
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+                "Content-Type": "application/json"
+            }
+        )
+
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            rows = json.loads(resp.read().decode('utf-8'))
+
+        pareceristas = []
+        for row in rows:
+            tags = row.get("tags_responsavel") or []
+            if isinstance(tags, str):
+                tags = [tag.strip() for tag in tags.split(',') if tag.strip()]
+
+            pareceristas.append({
+                "id": row.get("ID_avaliador"),
+                "nome": row.get("nome") or f"Avaliador {row.get('ID_avaliador')}",
+                "email": row.get("email"),
+                "tags": tags,
+                "limite_atividades": row.get("limite_atividades") or 10,
+                "atividades_atribuidas": row.get("atividades_atribuidas") or 0
+            })
+
+        return pareceristas or PARECERISTAS
+    except Exception as e:
+        print(f"⚠️ Não foi possível carregar avaliadores do Supabase. Usando fallback local. Erro: {e}")
+        return PARECERISTAS
+
+
+def selecionar_avaliadores(dados, quantidade=3):
+    atividade = {
+        "id": None,
+        "titulo": dados.get('tituloAtividade'),
+        "tags": normalizar_tags_atividade(dados.get('tags'), dados.get('tagSuggestion'))
+    }
+    ranking = ranquear_pareceristas(atividade, carregar_pareceristas())
+    ids = [item["parecerista_id"] for item in ranking[:quantidade]]
+
+    while len(ids) < quantidade:
+        ids.append(None)
+
+    return ids, ranking[:quantidade]
 
 
 def strip_base64_for_supabase(data):
@@ -97,7 +369,10 @@ def save_to_supabase(inscricao):
 
         body = json.dumps({
             "status": "pending",
-            "payload": clean_payload
+            "payload": clean_payload,
+            "ID_avaliador_1": inscricao.get("ID_avaliador_1"),
+            "ID_avaliador_2": inscricao.get("ID_avaliador_2"),
+            "ID_avaliador_3": inscricao.get("ID_avaliador_3")
         }, ensure_ascii=False, default=str)
 
         req = urllib.request.Request(
@@ -599,7 +874,7 @@ def home():
             if len(dados.get('oficina_soft_desc', '')) > 200: erros.append('Descrição do software: máximo 200 caracteres.')
         if not dados.get('oficina_mobiliario'): erros.append('Selecione o mobiliário necessário.')
         if mostrar_ajuda_custo:
-            if not dados.get('oficina_material_ajuda'): erros.append('Informe sobre ajuda de custo com material.')
+            if not dados.get('oficina_material_ajuda'): erros.append('Informe sobre recurso financeiro para aquisição de materiais de apoio.')
             if dados.get('oficina_material_ajuda') in ('sim', 'indispensavel'):
                 has_items = False
                 for key in dados:
@@ -748,6 +1023,14 @@ def home():
                 erros.append(f'O e-mail do integrante {i} ({nome}) é inválido.')
             papel = dados.get(f'{prefixo}papel', '').strip()
             if not papel: erros.append(f'Selecione o papel do integrante {i}.')
+            papeis_por_formato = {
+                'debate': {'palestrante', 'mediador'},
+                'roda_de_conversa': {'palestrante', 'mediador'},
+                'oficina': {'oficineiro', 'monitor'},
+                'experiencia': {'facilitador', 'monitor'}
+            }
+            if papel and formato in papeis_por_formato and papel not in papeis_por_formato[formato]:
+                erros.append(f'O papel selecionado para o integrante {i} não é válido para este formato de atividade.')
             nacionalidade = dados.get(f'{prefixo}nacionalidade', '').strip()
             if not nacionalidade: erros.append(f'Nacionalidade do integrante {i} é obrigatória.')
             telefone = dados.get(f'{prefixo}telefone', '').strip()
@@ -798,6 +1081,7 @@ def home():
 
     # Validação de Convidados (Atualizado: Roda de conversa exige 3, Debate exige 2)
     min_convidados = 2 if formato == 'debate' else 3 if formato == 'roda_de_conversa' else 1
+    max_convidados = 4 if formato == 'oficina' else 5
     if not tem_convidado:
         if min_convidados > 1:
             nome_formato = 'Debate' if formato == 'debate' else 'Roda de conversa'
@@ -807,6 +1091,8 @@ def home():
     elif len(convidados) < min_convidados:
         nome_formato = 'Debate' if formato == 'debate' else 'Roda de conversa'
         erros.append(f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes. Você adicionou apenas {len(convidados)}.')
+    elif len(convidados) > max_convidados:
+        erros.append(f'Para este formato, é permitido no máximo {max_convidados} integrantes.')
 
     if erros:
         for erro in erros:
@@ -935,8 +1221,13 @@ def home():
 
     # Captura condicional do Nome
     nome_proponente_val = dados.get('nomeInstituicao') if tipo_prop == 'pj' else dados.get('nomeInstituicaoPF')
+    ids_avaliadores, avaliadores_sugeridos = selecionar_avaliadores(dados)
 
     inscricao = {
+        'ID_avaliador_1': ids_avaliadores[0],
+        'ID_avaliador_2': ids_avaliadores[1],
+        'ID_avaliador_3': ids_avaliadores[2],
+        'avaliadores_sugeridos': avaliadores_sugeridos,
         'proponente': {
             'tipo': tipo_prop,
             'nome_instituicao': nome_proponente_val,

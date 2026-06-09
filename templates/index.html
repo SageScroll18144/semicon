@@ -575,7 +575,7 @@
 
                     <div class="oficina-step hidden" id="oficinaMaterialStep">
                         <span class="oficina-label">3. Materiais</span>
-                        <div class="field-group" id="materialAjudaGroup"><label>Você precisa de recurso financeiro para aquisição de material?<span class="required">*</span></label>
+                        <div class="field-group" id="materialAjudaGroup"><label>Você precisa de recurso financeiro para aquisição de materiais de apoio?<span class="required">*</span></label>
                             <select id="materialAjuda" name="oficina_material_ajuda" onchange="toggleMaterialTable()">
                                 <option value="nao" {{ 'selected' if dados.get('oficina_material_ajuda') == 'nao' or not dados.get('oficina_material_ajuda') }}>Não</option>
                                 <option value="sim" {{ 'selected' if dados.get('oficina_material_ajuda') == 'sim' }}>Sim</option>
@@ -629,7 +629,7 @@
                             <button type="button" class="btn-add-row" onclick="addExpEquipRow()"><i class="fas fa-plus"></i> Adicionar equipamento</button>
                         </div>
 
-                        <div class="field-group" style="margin-top:16px"><label>Você precisa de recurso financeiro para aquisição de material de apoio?<span class="required">*</span></label>
+                        <div class="field-group" style="margin-top:16px"><label>Você precisa de recurso financeiro para aquisição de materiais de apoio?<span class="required">*</span></label>
                             <select name="exp_material_ajuda" onchange="toggleExpMaterialTable(this)" required>
                                 <option value="nao" {{ 'selected' if dados.get('exp_material_ajuda') == 'nao' or not dados.get('exp_material_ajuda') }}>Não</option>
                                 <option value="sim" {{ 'selected' if dados.get('exp_material_ajuda') == 'sim' }}>Sim</option>
@@ -689,7 +689,7 @@
                 <!-- ===== AJUDA DE CUSTO ===== -->
                 <div class="field-group hidden" id="ajudaCustoWrapper" style="margin-top: 30px;">
                     <h2 class="section-title" style="border-bottom: none; margin-bottom: 16px; padding-bottom: 0;"><i class="fas fa-hand-holding-usd"></i> Ajuda de Custo</h2>
-                    <label>Você precisa de recurso financeiro para ajuda de custo? <span class="required">*</span></label>
+                    <label>Você necessita de ajuda de custo para despesas relacionadas à realização desta atividade? <span class="required">*</span></label>
                     <select id="ajudaCustoSelect" name="ajuda_custo" onchange="toggleAjudaCustoTable()">
                         <option value="">Selecione...</option>
                         <option value="nao" {{ 'selected' if dados.get('ajuda_custo') == 'nao' or not dados.get('ajuda_custo') }}>Não</option>
@@ -742,7 +742,7 @@
         </div></div></div>
         <div class="guest-subsection"><div class="guest-subsection-title">Identificação</div>
             <div class="field-row"><div class="field-group" style="grid-column:span 2"><label>Nome completo <span class="required">*</span></label><input type="text" class="g-nome" name="convidadoX_nome" required></div></div>
-            <div class="field-row"><div class="field-group"><label>Papel na atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="palestrante">Palestrante</option><option value="mediador">Mediador</option><option value="facilitador" data-format-role="facilitador">Facilitador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
+            <div class="field-row"><div class="field-group"><label>Papel na atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="palestrante">Palestrante</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
             
             <div class="lgpd-notice">
                 <i class="fas fa-shield-alt"></i>
@@ -913,17 +913,34 @@ const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}]
 
 function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value,s=document.getElementById('tempoDuracao'),cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op)});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv}}
 
+const PAPEL_OPTIONS={
+    'debate':[{value:'palestrante',label:'Palestrante'},{value:'mediador',label:'Mediador'}],
+    'roda_de_conversa':[{value:'palestrante',label:'Palestrante'},{value:'mediador',label:'Mediador'}],
+    'oficina':[{value:'oficineiro',label:'Oficineiro'},{value:'monitor',label:'Monitor'}],
+    'experiencia':[{value:'facilitador',label:'Facilitador'},{value:'monitor',label:'Monitor'}]
+};
+
 function syncGuestRoleOptions(){
     const formato=document.getElementById('formatoAtividade').value;
-    const allowFacilitador=(formato==='oficina'||formato==='experiencia');
+    const options=PAPEL_OPTIONS[formato]||PAPEL_OPTIONS['debate'];
     document.querySelectorAll('.g-papel').forEach(select=>{
-        const opt=select.querySelector('option[value="facilitador"]');
-        if(!opt)return;
-        opt.hidden=!allowFacilitador;
-        opt.disabled=!allowFacilitador;
-        if(!allowFacilitador&&select.value==='facilitador')select.value='';
+        const current=select.value;
+        select.innerHTML='<option value="">Selecione...</option>';
+        options.forEach(item=>{
+            const option=document.createElement('option');
+            option.value=item.value;
+            option.textContent=item.label;
+            select.appendChild(option);
+        });
+        if(options.some(item=>item.value===current))select.value=current;
     });
 }
+
+let guestCount=0;
+const DEFAULT_MAX_GUESTS=5;
+const OFICINA_MAX_GUESTS=4;
+function getMaxGuests(){return document.getElementById('formatoAtividade')?.value==='oficina'?OFICINA_MAX_GUESTS:DEFAULT_MAX_GUESTS}
+function syncGuestLimit(){const maxGuests=getMaxGuests();document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);if(guestCount>maxGuests)showToast(`Oficina permite no máximo ${maxGuests} integrantes. Remova ${guestCount-maxGuests} integrante(s) para continuar.`,'error')}
 
 function toggleActivityFields(){
     const f=document.getElementById('formatoAtividade').value;
@@ -968,6 +985,7 @@ function toggleActivityFields(){
     while (guestCount < minGuestsRequired) {
         addGuest(false);
     }
+    syncGuestLimit();
 }
 
 function toggleInscricaoCheckbox(){const v=document.getElementById('acessoAtividade').value;const show=(v==='inscricao');toggleSection(document.getElementById('inscricaoCheckboxGroup'),show);if(!show){document.getElementById('inscricaoResponsabilidade').checked=false}}
@@ -1130,19 +1148,19 @@ let expEquipRowCount=0;function addExpEquipRow(){expEquipRowCount++;const tb=doc
 function removeExpEquipRow(id){document.getElementById(id).remove()}
 
 // ===== GUEST LOGIC =====
-let guestCount=0;const maxGuests=5;
 function populateAgeDropdowns(){const f=[{value:'0 a 18',label:'0 a 18'},{value:'19 a 25',label:'19 a 25'},{value:'26 a 35',label:'26 a 35'},{value:'36 a 60',label:'36 a 60'}];document.querySelectorAll('.g-idade').forEach(s=>{if(s.options.length<=1)f.forEach(x=>{const o=document.createElement('option');o.value=x.value;o.textContent=x.label;s.appendChild(o)})})}
 
 function addGuest(scroll=true,data=null){
-    if(guestCount>=maxGuests){showToast('Máximo de 5 integrantes.','error');return}
+    const maxGuests=getMaxGuests();
+    if(guestCount>=maxGuests){showToast(`Máximo de ${maxGuests} integrantes para este formato.`,'error');return}
     guestCount++;const c=document.getElementById('guestTemplate').content.cloneNode(true),card=c.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount)});
     const fi=card.querySelector('.g-foto'),fl=card.querySelector('.g-foto-label'),fs=card.querySelector('.g-foto-status');fi.id=`guest_file_${guestCount}`;fl.setAttribute('for',fi.id);
     fi.addEventListener('change',function(e){var p=card.querySelector('.g-photo-preview'),s=card.querySelector('.g-foto-status');p.classList.remove('error-border');if(this.files&&this.files[0]){openCropModal(this.files[0],this,p,s)}else{p.innerHTML='<i class="fas fa-user"></i>';resetUploadStatus(s);}});
     const ti=card.querySelector('.g-telefone');if(ti)ti.addEventListener('input',maskPhone);const gi=card.querySelector('.g-cpf');if(gi)gi.addEventListener('paste',function(e){e.preventDefault();const p=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').substring(0,11);e.target.value=p;maskCPF(e.target)});
     if(data){card.querySelectorAll('input, select').forEach(i=>{if(i.name&&data[i.name]!==undefined){if(i.type==='checkbox'){i.checked=(data[i.name]==='sim'||data[i.name]===true);if(i.name.endsWith('_acessibilidade')&&i.checked)toggleGuestAcessibilidade(i)}else if(i.type==='radio')i.checked=(i.value===data[i.name]);else i.value=data[i.name]}});const ns=card.querySelector('.g-nacionalidade');if(ns)toggleGuestDocs(ns);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
-    document.getElementById('guestsList').appendChild(card);populateAgeDropdowns();syncGuestRoleOptions();document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);if(scroll&&!data)card.scrollIntoView({behavior:'smooth',block:'center'})
+    document.getElementById('guestsList').appendChild(card);populateAgeDropdowns();syncGuestRoleOptions();syncGuestLimit();if(scroll&&!data)card.scrollIntoView({behavior:'smooth',block:'center'})
 }
-function removeGuest(btn){const card=btn.closest('.guest-card');card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();guestCount--;document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests)},300)}
+function removeGuest(btn){const card=btn.closest('.guest-card');card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();guestCount--;syncGuestLimit()},300)}
 function toggleGuestDocs(sel){const card=sel.closest('.guest-card'),isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>toggleSection(f,!isBR));card.querySelectorAll('.g-doc-br').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>toggleSection(f,!isBR))}
 function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card'),d=card.querySelector('.g-acess-detail');toggleSection(d,cb.checked);const desc=d.querySelector('.g-acess-desc');if(!cb.checked){desc.value=''}}
 (function(){const r=JSON.parse({{ guest_data_json | tojson }});try{const g=r,k=Object.keys(g),idx=new Set();k.forEach(x=>{const m=x.match(/^convidado(\d+)_/);if(m)idx.add(parseInt(m[1]))});if(idx.size>0)Array.from(idx).sort((a,b)=>a-b).forEach(i=>{const p='convidado'+i+'_',sd={};k.filter(x=>x.startsWith(p)).forEach(x=>sd[x]=g[x]);addGuest(false,sd)});else addGuest(false)}catch(e){addGuest(false)}})();
@@ -1301,7 +1319,7 @@ function createPaperViewHTML(){
             row('Instalar software?',radio('oficina_soft_req')),
             row('Descrição do software',byName('oficina_soft_desc')),
             row('Mobiliário',byId('mobiliario')),
-            row('Recurso financeiro para material',byId('materialAjuda')),
+            row('Recurso financeiro para aquisição de materiais de apoio',byId('materialAjuda')),
             table(['Material','Qtd','Valor unit.','Subtotal'],materialRows),
             row('Justificativa dos materiais',byId('justificativaMateriais'))
         ].join(''));
@@ -1326,7 +1344,7 @@ function createPaperViewHTML(){
             row('Descrição do mobiliário próprio',byName('exp_infra_mobiliario_desc')),
             row('Equipamento próprio?',radio('exp_infra_equip_proprios_opcao')),
             table(['Equipamento','Quantidade','Observações'],expEquipRows),
-            row('Recurso financeiro para material de apoio',byName('exp_material_ajuda')),
+            row('Recurso financeiro para aquisição de materiais de apoio',byName('exp_material_ajuda')),
             table(['Material','Qtd','Valor unit.','Subtotal'],expMaterialRows),
             row('Justificativa dos materiais de apoio',byName('exp_justificativa_materiais')),
             row('Montagem e desmontagem',byName('exp_montagem_desmontagem_desc')),
@@ -1340,7 +1358,7 @@ function createPaperViewHTML(){
         ].join(''));
     }
     const ajudaHTML=section('6. Ajuda de Custo',[
-        row('Precisa de recurso financeiro para ajuda de custo?',byId('ajudaCustoSelect')),
+        row('Ajuda de custo para despesas relacionadas à realização da atividade',byId('ajudaCustoSelect')),
         table(['Item','Quantidade','Valor unit.','Subtotal'],ajudaRows),
         row('Justificativa da ajuda de custo',byId('justificativaAjudaCusto'))
     ].join(''));
@@ -1483,7 +1501,69 @@ function paginatePaperView(generatedAt){
     return pages;
 }
 
-async function gerarPDFPreview(e){e.preventDefault();try{showToast('Iniciando processo...','info');if(typeof html2canvas==='undefined'||typeof window.jsPDF==='undefined'){showToast('Erro: Bibliotecas de PDF não carregadas.','error');return}const propPreviewImg=document.querySelector('#photoPreview img');const tipoProp=document.getElementById('tipoProponente').value;if(tipoProp==='pj'){if(!propPreviewImg){showToast('A logo da instituição é obrigatória.','error');document.getElementById('fotoProponente').focus();return}}let guestsMissingPhoto=false;document.querySelectorAll('.guest-card').forEach(card=>{const guestImg=card.querySelector('.g-photo-preview img');if(!guestImg)guestsMissingPhoto=true});if(guestsMissingPhoto){showToast('Todas as fotos dos integrantes são obrigatórias.','error');return}const hiddenContainers=document.querySelectorAll('.hidden');const restoredFields=[];hiddenContainers.forEach(container=>{if(container.classList.contains('hp-field-wrap'))return;container.querySelectorAll('input, select, textarea').forEach(field=>{if(!field.disabled){field.disabled=true;restoredFields.push(field)}if(field.required){field.dataset.wasRequired='true';field.required=false}})});const form=document.getElementById('inscricaoForm');const isValid=form.checkValidity();restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});if(!isValid){form.reportValidity();showToast('Por favor, preencha todos os campos obrigatórios.','error');return}if(!validateExperienciaClient())return;const formato=document.getElementById('formatoAtividade').value;let minConvidados=1;if(formato==='debate')minConvidados=2;if(formato==='roda_de_conversa')minConvidados=3;if(guestCount<minConvidados){showToast(`Mínimo de ${minConvidados} integrantes necessário para este formato.`,'error');return}createPaperViewHTML();const generatedAt=new Date().toLocaleString('pt-BR');const pages=paginatePaperView(generatedAt);showToast('Gerando prévia do PDF...','info');if(document.fonts&&document.fonts.ready)await document.fonts.ready;const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const pdfWidth=pdf.internal.pageSize.getWidth();const pageHeight=pdf.internal.pageSize.getHeight();for(let i=0;i<pages.length;i++){const canvas=await html2canvas(pages[i],{scale:2,useCORS:true,backgroundColor:'#ffffff'});const imgData=canvas.toDataURL('image/jpeg',0.95);if(i>0)pdf.addPage();pdf.addImage(imgData,'JPEG',0,0,pdfWidth,pageHeight)}generatedPDFBlob=pdf.output('blob');const fileURL=URL.createObjectURL(generatedPDFBlob);document.getElementById('pdfPreviewFrame').src=fileURL;document.getElementById('pdfModalOverlay').classList.add('active')}catch(err){console.error(err);showToast('Erro ao gerar PDF: '+err.message,'error')}}
+async function gerarPDFPreview(e){
+    e.preventDefault();
+    try{
+        showToast('Iniciando processo...','info');
+        if(typeof html2canvas==='undefined'||typeof window.jsPDF==='undefined'){showToast('Erro: Bibliotecas de PDF não carregadas.','error');return}
+        const propPreviewImg=document.querySelector('#photoPreview img');
+        const tipoProp=document.getElementById('tipoProponente').value;
+        if(tipoProp==='pj'&&!propPreviewImg){showToast('A logo da instituição é obrigatória.','error');document.getElementById('fotoProponente').focus();return}
+        let guestsMissingPhoto=false;
+        document.querySelectorAll('.guest-card').forEach(card=>{const guestImg=card.querySelector('.g-photo-preview img');if(!guestImg)guestsMissingPhoto=true});
+        if(guestsMissingPhoto){showToast('Todas as fotos dos integrantes são obrigatórias.','error');return}
+
+        const hiddenContainers=document.querySelectorAll('.hidden');
+        const restoredFields=[];
+        hiddenContainers.forEach(container=>{
+            if(container.classList.contains('hp-field-wrap'))return;
+            container.querySelectorAll('input, select, textarea').forEach(field=>{
+                if(!field.disabled){field.disabled=true;restoredFields.push(field)}
+                if(field.required){field.dataset.wasRequired='true';field.required=false}
+            });
+        });
+
+        const form=document.getElementById('inscricaoForm');
+        const isValid=form.checkValidity();
+        restoredFields.forEach(field=>{
+            field.disabled=false;
+            if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}
+        });
+        if(!isValid){form.reportValidity();showToast('Por favor, preencha todos os campos obrigatórios.','error');return}
+        if(!validateExperienciaClient())return;
+
+        const formato=document.getElementById('formatoAtividade').value;
+        let minConvidados=1;
+        if(formato==='debate')minConvidados=2;
+        if(formato==='roda_de_conversa')minConvidados=3;
+        if(guestCount<minConvidados){showToast(`Mínimo de ${minConvidados} integrantes necessário para este formato.`,'error');return}
+        const maxConvidados=getMaxGuests();
+        if(guestCount>maxConvidados){showToast(`Máximo de ${maxConvidados} integrantes para este formato.`,'error');return}
+
+        createPaperViewHTML();
+        const generatedAt=new Date().toLocaleString('pt-BR');
+        const pages=paginatePaperView(generatedAt);
+        showToast('Gerando prévia do PDF...','info');
+        if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+        const{jsPDF}=window.jspdf;
+        const pdf=new jsPDF('p','mm','a4');
+        const pdfWidth=pdf.internal.pageSize.getWidth();
+        const pageHeight=pdf.internal.pageSize.getHeight();
+        for(let i=0;i<pages.length;i++){
+            const canvas=await html2canvas(pages[i],{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+            const imgData=canvas.toDataURL('image/jpeg',0.95);
+            if(i>0)pdf.addPage();
+            pdf.addImage(imgData,'JPEG',0,0,pdfWidth,pageHeight);
+        }
+        generatedPDFBlob=pdf.output('blob');
+        const fileURL=URL.createObjectURL(generatedPDFBlob);
+        document.getElementById('pdfPreviewFrame').src=fileURL;
+        document.getElementById('pdfModalOverlay').classList.add('active');
+    }catch(err){
+        console.error(err);
+        showToast('Erro ao gerar PDF: '+err.message,'error');
+    }
+}
 
 function submitToBackend(){
     const btn=document.getElementById('btnConfirmSend');
