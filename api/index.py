@@ -420,6 +420,17 @@ def validar_email(email):
     return re.match(padrao, email) is not None
 
 
+def validar_telefone(telefone):
+    digitos = re.sub(r'\D', '', telefone or '')
+    if len(digitos) not in (10, 11):
+        return False
+    if digitos == digitos[0] * len(digitos):
+        return False
+    if digitos[2:] == digitos[2] * len(digitos[2:]):
+        return False
+    return digitos[0] != '0' and digitos[1] != '0'
+
+
 def validar_cpf(cpf):
     cpf = re.sub(r'\D', '', cpf)
     if len(cpf) != 11: return False
@@ -718,6 +729,7 @@ def home():
     dados = request.form
     arquivo_foto = request.files.get('fotoProponente')
     pdf_file = request.files.get('pdf_comprovante')
+    pdf_validado_cliente = bool(pdf_file and pdf_file.filename and dados.get('pdf_validado_cliente') == 'sim')
 
     salvar_uploads_temporarios(request.files)
     erros = []
@@ -808,6 +820,8 @@ def home():
 
     if dados.get('emailRepresentante') and not validar_email(dados.get('emailRepresentante')):
         erros.append('O e-mail do representante não é válido.')
+    if dados.get('telefoneRepresentante') and not validar_telefone(dados.get('telefoneRepresentante')):
+        erros.append('O telefone do representante não é válido.')
 
     acesso_atividade = dados.get('acessoAtividade')
 
@@ -818,12 +832,17 @@ def home():
     tags_val = dados.get('tags', '').strip()
     suggestion = dados.get('tagSuggestion', '').strip()
     tag_count = 0
+    tags_list = []
     if tags_val:
         tags_list = [t.strip() for t in tags_val.split(',') if t.strip()]
         tag_count = len(tags_list)
     if suggestion: tag_count += 1
     if tag_count < 3: erros.append('Selecione pelo menos 3 tags.')
     if tag_count > 5: erros.append('O limite máximo de tags é 5.')
+    tags_permitidas = {tag for grupo_tags in GRUPOS_TAGS.values() for tag in grupo_tags}
+    tags_invalidas = [tag for tag in tags_list if tag not in tags_permitidas]
+    if tags_invalidas:
+        erros.append('Remova tags inválidas: ' + ', '.join(tags_invalidas) + '.')
 
     # Limites de caracteres (Removido 'objetivoAtividade')
     for campo, limite in [('objetivoAtividade', 500), ('justificativaTematica', 700),
@@ -835,9 +854,11 @@ def home():
     if dados.get('restricaoEtaria') == 'sim':
         idade_min = dados.get('idadeMinima', '').strip()
         idade_max = dados.get('idadeMaxima', '').strip()
-        if not idade_min or not idade_max:
-            erros.append('Preencha a idade mínima e máxima.')
-        elif int(idade_min) > int(idade_max):
+        if idade_min and not idade_min.isdigit():
+            erros.append('A idade mínima deve ser um número válido.')
+        if idade_max and not idade_max.isdigit():
+            erros.append('A idade máxima deve ser um número válido.')
+        if idade_min.isdigit() and idade_max.isdigit() and int(idade_min) > int(idade_max):
             erros.append('A idade mínima não pode ser maior que a máxima.')
 
     formato = dados.get('formatoAtividade')
@@ -854,7 +875,7 @@ def home():
     acessos_por_formato = {
         'debate': {'ordem_chegada'},
         'roda_de_conversa': {'ordem_chegada'},
-        'oficina': {'ordem_chegada', 'livre', 'inscricao'},
+        'oficina': {'ordem_chegada', 'inscricao'},
         'experiencia': {'ordem_chegada', 'livre', 'inscricao'},
     }
 
@@ -1036,6 +1057,8 @@ def home():
             if not nacionalidade: erros.append(f'Nacionalidade do integrante {i} é obrigatória.')
             telefone = dados.get(f'{prefixo}telefone', '').strip()
             if not telefone: erros.append(f'Telefone do integrante {i} é obrigatório.')
+            elif not validar_telefone(telefone):
+                erros.append(f'O telefone do integrante {i} ({nome}) não é válido.')
             idade = dados.get(f'{prefixo}idade', '').strip()
             estado = dados.get(f'{prefixo}estado', '').strip()
             cidade_c = dados.get(f'{prefixo}cidade', '').strip()
@@ -1054,9 +1077,10 @@ def home():
             elif nacionalidade == 'estrangeiro':
                 if not dados.get(f'{prefixo}passaporte', '').strip():
                     erros.append(f'O Passaporte/Documento do integrante estrangeiro {i} ({nome}) é obrigatório.')
+            cargo_profissao = dados.get(f'{prefixo}cargo_profissao', '').strip()
+            if not cargo_profissao: erros.append(f'Cargo/Profissão exercida do integrante {i} é obrigatório.')
             inst = dados.get(f'{prefixo}instituicao', '').strip()
             tipo_inst = dados.get(f'{prefixo}tipo_instituicao', '').strip()
-            if not inst: erros.append(f'Instituição do integrante {i} é obrigatória.')
             if not tipo_inst: erros.append(f'Tipo de instituição do integrante {i} é obrigatório.')
             minibio = dados.get(f'{prefixo}minibio', '').strip()
             if not minibio: erros.append(f'Minibio del integrante {i} é obrigatória.')
@@ -1068,7 +1092,8 @@ def home():
                 'nome': nome, 'email': email, 'nacionalidade': nacionalidade,
                 'cpf': criptografar_documento(cpf_conv, somente_digitos=True) if cpf_conv else None,
                 'passaporte': criptografar_documento(dados.get(f'{prefixo}passaporte')) if dados.get(f'{prefixo}passaporte') else None,
-                'telefone': telefone, 'instituicao': inst, 'tipo_instituicao': tipo_inst,
+                'telefone': telefone, 'cargo_profissao': cargo_profissao,
+                'instituicao': inst, 'tipo_instituicao': tipo_inst,
                 'minibio': minibio, 'papel': papel, 'raca': raca, 'genero': genero,
                 'idade': idade,
                 'acessibilidade': dados.get(f'{prefixo}acessibilidade') == 'sim',
@@ -1080,25 +1105,35 @@ def home():
                 'foto_base64': foto_conv_base64
             })
 
-    # Validação de Convidados (Atualizado: Roda de conversa exige 3, Debate exige 2)
-    min_convidados = 2 if formato == 'debate' else 3 if formato == 'roda_de_conversa' else 1
-    max_convidados = 4 if formato == 'oficina' else 5
+    limites_convidados_por_formato = {
+        'oficina': {'nome': 'Oficina', 'min': 1, 'max': 4},
+        'roda_de_conversa': {'nome': 'Roda de conversa', 'min': 2, 'max': 3},
+        'debate': {'nome': 'Debate', 'min': 2, 'max': 5},
+        'experiencia': {'nome': 'Experiência', 'min': 1, 'max': 5},
+    }
+    limites_convidados = limites_convidados_por_formato.get(
+        formato,
+        {'nome': 'este formato', 'min': 1, 'max': 5}
+    )
+    min_convidados = limites_convidados['min']
+    max_convidados = limites_convidados['max']
+    nome_formato = limites_convidados['nome']
     if not tem_convidado:
         if min_convidados > 1:
-            nome_formato = 'Debate' if formato == 'debate' else 'Roda de conversa'
             erros.append(f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes.')
         else:
             erros.append('Adicione pelo menos 1 integrante.')
     elif len(convidados) < min_convidados:
-        nome_formato = 'Debate' if formato == 'debate' else 'Roda de conversa'
         erros.append(f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes. Você adicionou apenas {len(convidados)}.')
     elif len(convidados) > max_convidados:
-        erros.append(f'Para este formato, é permitido no máximo {max_convidados} integrantes.')
+        erros.append(f'Para {nome_formato}, é permitido no máximo {max_convidados} integrantes.')
 
-    if erros:
+    if erros and not pdf_validado_cliente:
         for erro in erros:
             flash(erro, 'error')
         return render_with_data(400)
+    if erros and pdf_validado_cliente:
+        print('Aviso: validacoes de formulario ignoradas apos PDF validado no cliente: ' + ' | '.join(erros))
 
     foto_proponente_base64 = None
     if tipo_prop == 'pj':
