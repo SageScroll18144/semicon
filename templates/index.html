@@ -1192,9 +1192,12 @@ function validatePhoneNumber(v){const d=v.replace(/\D/g,'');return (d.length===1
 function validatePhoneFrontend(i){const v=i.value.trim(),d=v.replace(/\D/g,'');if(!v){i.classList.remove('error');i.setCustomValidity('');return true}const ok=validatePhoneNumber(v);i.classList.toggle('error',!ok);i.setCustomValidity(ok?'':'Informe um telefone válido com DDD.');if(!ok)showToast(d.length<10?'Telefone incompleto — informe DDD e número.':'Telefone inválido. Informe DDD e número válidos.','error');return ok}
 function isVisibleForValidation(field){return !field.disabled&&!field.closest('.hidden')&&!field.closest('.hp-field-wrap')}
 function getFieldLabel(field){
-    const label=field.id?document.querySelector(`label[for="${field.id}"]`):null;
     const fieldGroup=field.closest('.field-group');
     const groupLabel=fieldGroup?Array.from(fieldGroup.children).find(child=>child.tagName==='LABEL'):null;
+    if(field.type==='radio'){
+        return groupLabel?.innerText?.replace(/\*/g,'').trim()||field.name||'campo obrigatório';
+    }
+    const label=field.id?document.querySelector(`label[for="${field.id}"]`):null;
     const optionLabel=field.closest('.checkbox-option,.radio-option')?.querySelector('label');
     return (label||groupLabel||optionLabel)?.innerText?.replace(/\*/g,'').trim()||field.name||'campo obrigatório'
 }
