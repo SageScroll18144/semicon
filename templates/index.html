@@ -629,18 +629,20 @@
                             <button type="button" class="btn-add-row" onclick="addExpEquipRow()"><i class="fas fa-plus"></i> Adicionar equipamento</button>
                         </div>
 
-                        <div class="field-group" style="margin-top:16px"><label>Você precisa de recurso financeiro para aquisição de materiais de apoio?<span class="required">*</span></label>
-                            <select name="exp_material_ajuda" onchange="toggleExpMaterialTable(this)" required>
-                                <option value="nao" {{ 'selected' if dados.get('exp_material_ajuda') == 'nao' or not dados.get('exp_material_ajuda') }}>Não</option>
-                                <option value="sim" {{ 'selected' if dados.get('exp_material_ajuda') == 'sim' }}>Sim</option>
-                                <option value="indispensavel" {{ 'selected' if dados.get('exp_material_ajuda') == 'indispensavel' }}>Indispensável</option>
-                            </select>
-                        </div>
-                        <div class="hidden exp-material-table-section">
-                            <label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Lista de materiais e previsão de custo</label>
-                            <table class="material-table" id="expMaterialTable"><thead><tr><th style="width:40%">Material</th><th style="width:20%">Qtd</th><th style="width:20%">Valor unit. (R$)</th><th style="width:20%">Subtotal (R$)</th><th></th></tr></thead><tbody id="expMaterialTableBody"></tbody><tfoot><tr class="material-total-row"><td colspan="3" style="text-align:right">TOTAL</td><td id="expMaterialTotal">R$ 0,00</td><td></td></tr></tfoot></table>
-                            <button type="button" class="btn-add-row" onclick="addExpMaterialRow()"><i class="fas fa-plus"></i> Adicionar item</button>
-                            <div class="field-group" style="margin-top: 16px;"><label>Justificativa dos materiais <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea name="exp_justificativa_materiais" maxlength="500" style="min-height: 80px;" required placeholder="Explique o porquê da necessidade dos materiais listados acima...">{{ dados.get('exp_justificativa_materiais', '') }}</textarea></div>
+                        <div class="hidden" id="expMaterialAjudaStep">
+                            <div class="field-group" style="margin-top:16px"><label>Você precisa de recurso financeiro para aquisição de materiais de apoio?<span class="required">*</span></label>
+                                <select name="exp_material_ajuda" onchange="toggleExpMaterialTable(this)" required>
+                                    <option value="nao" {{ 'selected' if dados.get('exp_material_ajuda') == 'nao' or not dados.get('exp_material_ajuda') }}>Não</option>
+                                    <option value="sim" {{ 'selected' if dados.get('exp_material_ajuda') == 'sim' }}>Sim</option>
+                                    <option value="indispensavel" {{ 'selected' if dados.get('exp_material_ajuda') == 'indispensavel' }}>Indispensável</option>
+                                </select>
+                            </div>
+                            <div class="hidden exp-material-table-section">
+                                <label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Lista de materiais e previsão de custo</label>
+                                <table class="material-table" id="expMaterialTable"><thead><tr><th style="width:40%">Material</th><th style="width:20%">Qtd</th><th style="width:20%">Valor unit. (R$)</th><th style="width:20%">Subtotal (R$)</th><th></th></tr></thead><tbody id="expMaterialTableBody"></tbody><tfoot><tr class="material-total-row"><td colspan="3" style="text-align:right">TOTAL</td><td id="expMaterialTotal">R$ 0,00</td><td></td></tr></tfoot></table>
+                                <button type="button" class="btn-add-row" onclick="addExpMaterialRow()"><i class="fas fa-plus"></i> Adicionar item</button>
+                                <div class="field-group" style="margin-top: 16px;"><label>Justificativa dos materiais <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500 caracteres)</span></label><textarea name="exp_justificativa_materiais" maxlength="500" style="min-height: 80px;" required placeholder="Explique o porquê da necessidade dos materiais listados acima...">{{ dados.get('exp_justificativa_materiais', '') }}</textarea></div>
+                            </div>
                         </div>
 
                         <div class="field-group" style="margin-top:16px"><label>Montagem e desmontagem <span class="required">*</span></label><textarea name="exp_montagem_desmontagem_desc" maxlength="300" style="min-height:70px" placeholder="Descreva o tempo e necessidades para montagem e desmontagem..." required>{{ dados.get('exp_montagem_desmontagem_desc', '') }}</textarea></div>
@@ -854,9 +856,11 @@ function applyCrop(){const ci=document.getElementById('cropImage'),cv=document.g
 const ci=document.getElementById('cropImage');ci.addEventListener('mousedown',function(e){cropState.isDragging=true;cropState.startX=e.clientX-parseFloat(ci.style.left);cropState.startY=e.clientY-parseFloat(ci.style.top);e.preventDefault()});document.addEventListener('mousemove',function(e){if(!cropState.isDragging)return;let x=e.clientX-cropState.startX,y=e.clientY-cropState.startY;const w=parseFloat(ci.style.width),h=parseFloat(ci.style.height);if(x>0)x=0;if(y>0)y=0;if(x+w<cropState.modalSize)x=cropState.modalSize-w;if(y+h<cropState.modalSize)y=cropState.modalSize-h;ci.style.left=x+'px';ci.style.top=y+'px'});document.addEventListener('mouseup',function(){cropState.isDragging=false});ci.addEventListener('touchstart',function(e){cropState.isDragging=true;const t=e.touches[0];cropState.startX=t.clientX-parseFloat(ci.style.left);cropState.startY=t.clientY-parseFloat(ci.style.top);e.preventDefault()},{passive:false});document.addEventListener('touchmove',function(e){if(!cropState.isDragging)return;const t=e.touches[0];let x=t.clientX-cropState.startX,y=t.clientY-cropState.startY;const w=parseFloat(ci.style.width),h=parseFloat(ci.style.height);if(x>0)x=0;if(y>0)y=0;if(x+w<cropState.modalSize)x=cropState.modalSize-w;if(y+h<cropState.modalSize)y=cropState.modalSize-h;ci.style.left=x+'px';ci.style.top=y+'px'},{passive:false});document.addEventListener('touchend',function(){cropState.isDragging=false});
 
 // ===== VISIBILITY TOGGLES =====
-function toggleVisibilityByCategory(){toggleMaterialAjudaOficina();toggleAjudaCustoVisibility()}
-function toggleMaterialAjudaOficina(){const t=document.getElementById('tipoProponente').value,c=document.getElementById('categoria')?document.getElementById('categoria').value:'',s=document.getElementById('oficinaMaterialStep');const show=(t==='pf'||(t==='pj'&&(c==='ong'||c==='coletivo')));toggleSection(s,show);if(!show&&document.getElementById('materialAjuda')){document.getElementById('materialAjuda').value='nao';toggleMaterialTable()}}
-function toggleAjudaCustoVisibility(){const t=document.getElementById('tipoProponente').value,c=document.getElementById('categoria')?document.getElementById('categoria').value:'',w=document.getElementById('ajudaCustoWrapper');const show=(t==='pf'||(t==='pj'&&(c==='ong'||c==='coletivo')));toggleSection(w,show);if(!show){document.getElementById('ajudaCustoSelect').value='';toggleAjudaCustoTable()}}
+function canRequestFinancialSupport(){const t=document.getElementById('tipoProponente').value,c=document.getElementById('categoria')?document.getElementById('categoria').value:'';return(t==='pf'||(t==='pj'&&(c==='ong'||c==='coletivo')))}
+function toggleVisibilityByCategory(){toggleMaterialAjudaOficina();toggleMaterialAjudaExperiencia();toggleAjudaCustoVisibility()}
+function toggleMaterialAjudaOficina(){const s=document.getElementById('oficinaMaterialStep'),show=canRequestFinancialSupport();toggleSection(s,show);if(!show&&document.getElementById('materialAjuda')){document.getElementById('materialAjuda').value='nao';toggleMaterialTable()}}
+function toggleMaterialAjudaExperiencia(){const s=document.getElementById('expMaterialAjudaStep'),select=document.querySelector('[name="exp_material_ajuda"]'),show=canRequestFinancialSupport();toggleSection(s,show);if(!show&&select){select.value='nao';toggleExpMaterialTable(select)}}
+function toggleAjudaCustoVisibility(){const w=document.getElementById('ajudaCustoWrapper'),show=canRequestFinancialSupport();toggleSection(w,show);if(!show){document.getElementById('ajudaCustoSelect').value='';toggleAjudaCustoTable()}}
 
 let infraRowCount=0;function toggleInfraOutros(){var cb=document.getElementById('infra_outros'),f=document.getElementById('infraOutrosField');if(cb.checked){toggleSection(f,true);if(infraRowCount===0)addInfraRow()}else{toggleSection(f,false);document.getElementById('infraTableBody').innerHTML='';infraRowCount=0}}
 function addInfraRow(){infraRowCount++;const tb=document.getElementById('infraTableBody'),tr=document.createElement('tr');tr.id='infraRow'+infraRowCount;tr.innerHTML=`<td><input type="text" name="infra_item_${infraRowCount}" maxlength="100" required></td><td><input type="number" name="infra_qtd_${infraRowCount}" min="1" value="1" required style="width:70px"></td><td><input type="text" name="infra_obs_${infraRowCount}" maxlength="200"></td><td><button type="button" class="btn-remove-row" onclick="removeInfraRow('infraRow${infraRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr)}
@@ -961,7 +965,8 @@ function toggleActivityFields(){
     toggleSection(document.getElementById('experienciaAnexosBox'),isExperiencia);
     toggleExpCondicaoOutros();
     
-    if(isOficina){toggleLabFields();toggleSoftwareFields();toggleVisibilityByCategory()}
+    if(isOficina){toggleLabFields();toggleSoftwareFields()}
+    toggleVisibilityByCategory();
 
     // Lógica de bloqueio de acesso
     const acessoSelect = document.getElementById('acessoAtividade');
@@ -1134,7 +1139,8 @@ function validateExperienciaClient(){
             return false;
         }
     }
-    if(['sim','indispensavel'].includes(document.querySelector('[name="exp_material_ajuda"]')?.value)){
+    const expMaterialAjudaVisivel=!document.getElementById('expMaterialAjudaStep')?.classList.contains('hidden');
+    if(expMaterialAjudaVisivel&&['sim','indispensavel'].includes(document.querySelector('[name="exp_material_ajuda"]')?.value)){
         const hasMaterialRows=Array.from(document.querySelectorAll('#expMaterialTableBody input[name^="exp_mat_item_"]')).some(input=>input.value.trim());
         if(!hasMaterialRows){
             showToast('Liste pelo menos um material de apoio na experiência.','error');
@@ -1271,6 +1277,8 @@ function createPaperViewHTML(){
     const ajudaRows=moneyRows('#ajudaCustoTableBody','.ac-subtotal');
     const expEquipRows=simpleRows('#expEquipTableBody');
     const expMaterialRows=moneyRows('#expMaterialTableBody','.exp-mat-subtotal');
+    const showOficinaMaterialAjuda=!document.getElementById('oficinaMaterialStep')?.classList.contains('hidden');
+    const showExpMaterialAjuda=!document.getElementById('expMaterialAjudaStep')?.classList.contains('hidden');
     const proponenteRows=[
         row('Tipo de proponente',tipoProp==='pj'?'Pessoa Jurídica':'Pessoa Física'),
         row('Nome',tipoProp==='pj'?byId('nomeInstituicao'):byId('nomeInstituicaoPF')),
@@ -1319,9 +1327,9 @@ function createPaperViewHTML(){
             row('Instalar software?',radio('oficina_soft_req')),
             row('Descrição do software',byName('oficina_soft_desc')),
             row('Mobiliário',byId('mobiliario')),
-            row('Recurso financeiro para aquisição de materiais de apoio',byId('materialAjuda')),
-            table(['Material','Qtd','Valor unit.','Subtotal'],materialRows),
-            row('Justificativa dos materiais',byId('justificativaMateriais'))
+            showOficinaMaterialAjuda?row('Recurso financeiro para aquisição de materiais de apoio',byId('materialAjuda')):'',
+            showOficinaMaterialAjuda?table(['Material','Qtd','Valor unit.','Subtotal'],materialRows):'',
+            showOficinaMaterialAjuda?row('Justificativa dos materiais',byId('justificativaMateriais')):''
         ].join(''));
     }
     let experienciaHTML='';
@@ -1344,9 +1352,9 @@ function createPaperViewHTML(){
             row('Descrição do mobiliário próprio',byName('exp_infra_mobiliario_desc')),
             row('Equipamento próprio?',radio('exp_infra_equip_proprios_opcao')),
             table(['Equipamento','Quantidade','Observações'],expEquipRows),
-            row('Recurso financeiro para aquisição de materiais de apoio',byName('exp_material_ajuda')),
-            table(['Material','Qtd','Valor unit.','Subtotal'],expMaterialRows),
-            row('Justificativa dos materiais de apoio',byName('exp_justificativa_materiais')),
+            showExpMaterialAjuda?row('Recurso financeiro para aquisição de materiais de apoio',byName('exp_material_ajuda')):'',
+            showExpMaterialAjuda?table(['Material','Qtd','Valor unit.','Subtotal'],expMaterialRows):'',
+            showExpMaterialAjuda?row('Justificativa dos materiais de apoio',byName('exp_justificativa_materiais')):'',
             row('Montagem e desmontagem',byName('exp_montagem_desmontagem_desc')),
             row('Quantidade da equipe operacional do proponente',byName('exp_infra_qtd_equipe')),
             row('Ambiente',byName('exp_espaco_ambiente')),

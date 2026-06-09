@@ -943,11 +943,12 @@ def home():
             if not has_exp_equip: erros.append('Liste pelo menos um equipamento próprio na tabela.')
 
         # 9. Infra - Materiais de Apoio
-        if not dados.get('exp_material_ajuda'): erros.append('Informe sobre recurso financeiro para material de apoio.')
-        if dados.get('exp_material_ajuda') in ('sim', 'indispensavel'):
-            has_exp_mat = any(key.startswith('exp_mat_item_') and dados[key].strip() for key in dados)
-            if not has_exp_mat: erros.append('Liste pelo menos um material de apoio na tabela.')
-            if not dados.get('exp_justificativa_materiais', '').strip(): erros.append('A justificativa dos materiais de apoio é obrigatória.')
+        if mostrar_ajuda_custo:
+            if not dados.get('exp_material_ajuda'): erros.append('Informe sobre recurso financeiro para aquisição de materiais de apoio.')
+            if dados.get('exp_material_ajuda') in ('sim', 'indispensavel'):
+                has_exp_mat = any(key.startswith('exp_mat_item_') and dados[key].strip() for key in dados)
+                if not has_exp_mat: erros.append('Liste pelo menos um material de apoio na tabela.')
+                if not dados.get('exp_justificativa_materiais', '').strip(): erros.append('A justificativa dos materiais de apoio é obrigatória.')
 
         # 10. Montagem e Equipe
         if not dados.get('exp_montagem_desmontagem_desc', '').strip(): erros.append('O campo "Montagem e desmontagem" é obrigatório.')
@@ -1192,7 +1193,7 @@ def home():
                         })
 
         # 3. Tabela Dinâmica de Materiais de Apoio
-        if dados.get('exp_material_ajuda') in ('sim', 'indispensavel'):
+        if mostrar_ajuda_custo and dados.get('exp_material_ajuda') in ('sim', 'indispensavel'):
             for key in sorted(dados.keys()):
                 if key.startswith('exp_mat_item_'):
                     idx = key.split('_')[-1]
@@ -1282,9 +1283,9 @@ def home():
                 'pc_specs': dados.get('oficina_pc_specs'),
                 'software_req': dados.get('oficina_soft_req'),
                 'software_desc': dados.get('oficina_soft_desc'),
-                'material_ajuda': dados.get('oficina_material_ajuda'),
-                'materiais': materiais,
-                'justificativa_materiais': dados.get('oficina_justificativa_materiais'),
+                'material_ajuda': dados.get('oficina_material_ajuda') if mostrar_ajuda_custo else None,
+                'materiais': materiais if mostrar_ajuda_custo else [],
+                'justificativa_materiais': dados.get('oficina_justificativa_materiais') if mostrar_ajuda_custo else None,
                 'mobiliario': dados.get('oficina_mobiliario'),
             } if formato == 'oficina' else None,
             # ──────────────────────────────────────────────────────────
@@ -1312,9 +1313,9 @@ def home():
                 'infra_mobiliario_desc': dados.get('exp_infra_mobiliario_desc') if dados.get('exp_infra_mobiliario_opcao') == 'sim' else None,
                 'infra_equip_proprios_opcao': dados.get('exp_infra_equip_proprios_opcao'),
                 'infra_equip_proprios_items': exp_equip_items,
-                'material_ajuda': dados.get('exp_material_ajuda'),
-                'materiais': exp_materiais,
-                'justificativa_materiais': dados.get('exp_justificativa_materiais'),
+                'material_ajuda': dados.get('exp_material_ajuda') if mostrar_ajuda_custo else None,
+                'materiais': exp_materiais if mostrar_ajuda_custo else [],
+                'justificativa_materiais': dados.get('exp_justificativa_materiais') if mostrar_ajuda_custo else None,
                 'montagem_desmontagem_desc': dados.get('exp_montagem_desmontagem_desc'),
                 'infra_qtd_equipe': dados.get('exp_infra_qtd_equipe'),
                 'anexo_video': dados.get('exp_anexo_video'),
