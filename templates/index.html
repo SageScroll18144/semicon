@@ -73,11 +73,11 @@
         .field-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
         .field-group label .required { color: var(--vermelho-obrigatorio); font-weight: 700; margin-left: 2px; }
         .field-group .helper-text { font-size: 11px; color: #999; margin-top: 4px; }
-        .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="number"], .field-group input[type="url"], .field-group select, .field-group textarea { width: 100%; padding: 10px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: #333; background: #fff; border: 1.5px solid var(--cinza-borda); border-radius: 8px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="number"], .field-group input[type="url"], .field-group select, .field-group textarea { display: block; width: 100%; margin: 0; padding: 10px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: #333; background: #fff; border: 1.5px solid var(--cinza-borda); border-radius: 8px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
         .field-group input:disabled, .field-group select:disabled, .field-group textarea:disabled { background: #F0F0F0; color: #999; cursor: not-allowed; }
         .field-group input:focus, .field-group select:focus, .field-group textarea:focus { border-color: var(--roxo-principal); box-shadow: 0 0 0 3px rgba(204,0,204,0.10); }
         .field-group input.error, .field-group select.error { border-color: var(--vermelho-obrigatorio); }
-        .field-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+        .field-group select { appearance: none; -webkit-appearance: none; -moz-appearance: none; min-height: 42px; line-height: 1.4; padding-left: 14px; padding-right: 36px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; cursor: pointer; }
         .field-group textarea { resize: vertical; min-height: 100px; }
         .field-group input[readonly] { background: #F0F0F0; cursor: not-allowed; }
 
@@ -382,7 +382,7 @@
                             <input type="file" id="fotoProponente" name="fotoProponente" accept="image/png,image/jpeg,image/webp" class="hidden-file-input">
                             <label for="fotoProponente" class="custom-file-btn"><i class="fas fa-camera"></i> Escolher Logo</label>
                             <div class="file-status" id="status_fotoProponente">Nenhum arquivo selecionado</div>
-                            <div class="helper-text">Tamanho 512x512. Formatos: PNG, JPG, WebP. Máx 5MB.</div>
+                            <div class="helper-text">Tamanho 512x512. Formatos: PNG, JPG, WebP. Entre 100KB e 5MB.</div>
                         </div>
                     </div>
                 </div>
@@ -441,11 +441,11 @@
                 </div>
 
                 <!-- Objetivo -->
-                <div class="field-group"><label for="objetivoAtividade">Objetivo <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva de forma objetiva o propósito principal da atividade e o que ela pretende promover, discutir, desenvolver ou compartilhar com o público.">?</i></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required placeholder="Informação exclusiva para fins de avaliação">{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
+                <div class="field-group"><label for="objetivoAtividade">Objetivo <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva de forma objetiva o propósito principal da atividade e o que ela pretende promover, discutir, desenvolver ou compartilhar com o público.">?</i></label><textarea id="objetivoAtividade" name="objetivoAtividade" maxlength="500" required placeholder="O que a atividade pretende alcançar ou proporcionar aos participantes (Informação exclusiva para fins de avaliação)">{{ dados.get('objetivoAtividade', '') }}</textarea><div class="char-counter" id="charCounterObj">0 / 500</div></div>
                 <!-- Justificativa -->
-                <div class="field-group"><label for="justificativaTematica">Justificativa <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span> <i class="tooltip-icon" data-tooltip="Explique como a proposta se relaciona com os eixos temáticos, diretrizes curatoriais ou discussões contemporâneas abordadas pelo REC'n'Play 2026.">?</i></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required placeholder="Informação exclusiva para fins de avaliação">{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
+                <div class="field-group"><label for="justificativaTematica">Justificativa <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span> <i class="tooltip-icon" data-tooltip="Explique como a proposta se relaciona com os eixos temáticos, diretrizes curatoriais ou discussões contemporâneas abordadas pelo REC'n'Play 2026.">?</i></label><textarea id="justificativaTematica" name="justificativaTematica" maxlength="700" required placeholder="A relevância da proposta e sua relação com os eixos temáticos e diretrizes curatoriais da edição (Informação exclusiva para fins de avaliação)">{{ dados.get('justificativaTematica', '') }}</textarea><div class="char-counter" id="charCounterJust">0 / 700</div></div>
                 <!-- Metodologia -->
-                <div class="field-group"><label for="metodologiaAplicada">Metodologia <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva como a atividade será conduzida, incluindo dinâmica de participação, interação com o público e estrutura prevista para sua realização.">?</i></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required placeholder="Informação exclusiva para fins de avaliação">{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
+                <div class="field-group"><label for="metodologiaAplicada">Metodologia <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 500)</span> <i class="tooltip-icon" data-tooltip="Descreva como a atividade será conduzida, incluindo dinâmica de participação, interação com o público e estrutura prevista para sua realização.">?</i></label><textarea id="metodologiaAplicada" name="metodologiaAplicada" maxlength="500" required placeholder="Como a atividade será conduzida, incluindo dinâmica de participação, interação com o público e organização da atividade (Informação exclusiva para fins de avaliação)">{{ dados.get('metodologiaAplicada', '') }}</textarea><div class="char-counter" id="charCounterMet">0 / 500</div></div>
                 <!-- Descrição para publicação -->
                 <div class="field-group"><label for="descricaoAtividade">Descrição para publicação <span class="required">*</span> <span style="font-weight:400;color:#999">(Máx 700)</span> <i class="tooltip-icon" data-tooltip="Texto resumido que aparecerá para o público. Priorize linguagem clara, objetiva e convidativa para o público geral.">?</i></label><textarea id="descricaoAtividade" name="descricaoAtividade" maxlength="700" required placeholder="Essa descrição será usada no site e no aplicativo de programação do festival.">{{ dados.get('descricaoAtividade', '') }}</textarea><div class="char-counter" id="charCounterDesc">0 / 700</div></div>
                 <!-- Palavra-chave -->
@@ -460,7 +460,6 @@
                             <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_interativa" value="sim" {{ 'checked' if dados.get('exp_tipologia_interativa') == 'sim' }}><label>Interativa</label></div>
                             <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_imersiva" value="sim" {{ 'checked' if dados.get('exp_tipologia_imersiva') == 'sim' }}><label>Imersiva</label></div>
                             <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_demonstrativa" value="sim" {{ 'checked' if dados.get('exp_tipologia_demonstrativa') == 'sim' }}><label>Demonstrativa</label></div>
-                            <div class="checkbox-option"><input type="checkbox" name="exp_tipologia_hibrida" value="sim" {{ 'checked' if dados.get('exp_tipologia_hibrida') == 'sim' }}><label>Híbrida</label></div>
                         </div>
                     </div>
                 </div>
@@ -509,7 +508,8 @@
                 <div id="expAcessOperacaoBox" class="purple-dashed-box hidden">
                     <div class="oficina-step">
                         <span class="oficina-label">Acessibilidade e Restrição</span>
-                        <div class="field-group"><label>Existem ações de acessibilidade na experiência? <span class="required">*</span></label><input type="text" name="exp_acess_recursos" maxlength="200" placeholder="Descreva as ações de acessibilidade..." value="{{ dados.get('exp_acess_recursos', '') }}" required></div>
+                        <div class="field-group"><label for="expAcessibilidade">Existem ações de acessibilidade na experiência? <span class="required">*</span></label><select id="expAcessibilidade" name="exp_acessibilidade" required onchange="toggleExpAcessibilidade()"><option value="">Selecione...</option><option value="sim" {{ 'selected' if dados.get('exp_acessibilidade') == 'sim' or (not dados.get('exp_acessibilidade') and dados.get('exp_acess_recursos')) }}>Sim</option><option value="nao" {{ 'selected' if dados.get('exp_acessibilidade') == 'nao' }}>Não</option></select></div>
+                        <div class="field-group hidden" id="expAcessRecursosField"><label for="expAcessRecursos">Quais ações? <span class="required">*</span></label><input type="text" id="expAcessRecursos" name="exp_acess_recursos" maxlength="200" placeholder="Descreva as ações de acessibilidade..." value="{{ dados.get('exp_acess_recursos', '') }}" required></div>
                         <div class="field-group"><label>Restrições de público (se houver)</label><textarea name="exp_acess_restricoes" maxlength="300" style="min-height:60px">{{ dados.get('exp_acess_restricoes', '') }}</textarea></div>
                     </div>
                     <div class="oficina-step" style="border-bottom:none;margin-bottom:0;padding-bottom:0">
@@ -531,7 +531,7 @@
             <div class="form-section" id="secaoRecursoInfra">
                 <!-- Infra geral para Debate / Roda de conversa -->
                 <div id="generalInfraGroup">
-                    <div class="field-group"><label>Recursos de infraestrutura necessários</label>
+                    <div class="field-group"><label>Recursos de infraestrutura necessários oferecidos pelo festival</label>
                         <div class="infra-checkboxes">
                             <div class="checkbox-option"><input type="checkbox" id="infra_projecao" name="infra_projecao" value="sim" {{ 'checked' if dados.get('infra_projecao') == 'sim' }}><label for="infra_projecao">Recursos básicos de projeção</label></div>
                             <div class="checkbox-option"><input type="checkbox" id="infra_som" name="infra_som" value="sim" {{ 'checked' if dados.get('infra_som') == 'sim' }}><label for="infra_som">Sistema básico de som</label></div>
@@ -755,7 +755,7 @@
             <input type="file" class="g-foto hidden-file-input" name="convidadoX_foto" accept="image/png,image/jpeg,image/webp">
             <label class="custom-file-btn g-foto-label"><i class="fas fa-camera"></i> Escolher Foto</label>
             <div class="file-status g-foto-status">Nenhum arquivo selecionado</div>
-            <div class="helper-text">Tamanho 512x512. Formatos: PNG, JPG, WebP. Máx 5MB.</div>
+            <div class="helper-text">Tamanho 512x512. Formatos: PNG, JPG, WebP. Entre 500KB e 5MB.</div>
         </div></div></div>
         <div class="guest-subsection"><div class="guest-subsection-title">Identificação</div>
             <div class="field-row"><div class="field-group" style="grid-column:span 2"><label>Nome completo <span class="required">*</span></label><input type="text" class="g-nome" name="convidadoX_nome" required></div></div>
@@ -772,7 +772,7 @@
                 <div class="field-group"><label>Cidade <span class="required">*</span></label><select class="g-cidade" name="convidadoX_cidade" required onchange="checkGuestBairro(this)"><option value="">Selecione o estado primeiro...</option></select></div>
             </div>
             <div class="field-group hidden g-bairro-field g-doc-br bairro-field" style="margin-top:0"><label>Bairro</label><input type="text" class="g-bairro" name="convidadoX_bairro" placeholder="Informe o bairro (opcional)"></div>
-            <div class="field-row g-doc-ext hidden"><div class="field-group"><label>País de origem <span class="required">*</span></label><select class="g-pais" name="convidadoX_pais_origem" required><option value="">Carregando países...</option></select></div><div class="field-group"><label>Cidade de origem <span class="required">*</span></label><select class="g-cidade-origem" name="convidadoX_cidade_origem" required><option value="">Selecione o país primeiro...</option></select></div></div>
+            <div class="field-row g-doc-ext hidden"><div class="field-group"><label>País de origem <span class="required">*</span></label><select class="g-pais" name="convidadoX_pais_origem" required><option value="">Carregando países...</option></select></div><div class="field-group"><label>Estado de origem <span class="required">*</span></label><select class="g-estado-origem" name="convidadoX_estado_origem" required><option value="">Selecione o país primeiro...</option></select></div><div class="field-group"><label>Cidade de origem</label><input type="text" class="g-cidade-origem" name="convidadoX_cidade_origem" maxlength="100" placeholder="Informe a cidade (opcional)"></div></div>
         </div>
         <div class="guest-subsection"><div class="guest-subsection-title">Contato</div>
             <div class="field-row"><div class="field-group"><label>E-mail <span class="required">*</span></label><input type="email" class="g-email" name="convidadoX_email" required onblur="validateEmailFrontend(this)"></div><div class="field-group"><label>Telefone <span class="required">*</span></label><input type="text" class="g-telefone" name="convidadoX_telefone" required></div></div>
@@ -813,6 +813,7 @@ function toggleSection(section, show) {
 // ===== LOGO CROP =====
 (function(){var a=document.getElementById('logoImg'),b=document.getElementById('logoCrop');if(!a||!b)return;function c(){var d=a.naturalWidth,e=a.naturalHeight;if(!d||!e)return;var f=b.offsetWidth,g=d/e,h=f/g*0.6;b.style.height=Math.round(h)+'px'}if(a.complete&&a.naturalWidth)c();else a.addEventListener('load',c);window.addEventListener('resize',c)})();
 
+const LOGO_MIN_BYTES=100*1024,PHOTO_MIN_BYTES=500*1024,IMAGE_MAX_BYTES=5*1024*1024;
 let cropState={targetFileInput:null,targetPreview:null,targetStatusLabel:null,imgSrc:'',natW:0,natH:0,offsetX:0,offsetY:0,isDragging:false,startX:0,startY:0,modalSize:400};
 
 function setFileStatus(el,message,state=''){
@@ -823,6 +824,23 @@ function setFileStatus(el,message,state=''){
 }
 function resetUploadStatus(statusEl,message='Nenhum arquivo selecionado'){
     setFileStatus(statusEl,message);
+}
+function formatUploadSize(bytes){
+    if(bytes>=1024*1024)return(bytes/(1024*1024)).toFixed(bytes%(1024*1024)===0?0:1)+'MB';
+    return Math.round(bytes/1024)+'KB';
+}
+function uploadPlaceholder(preview){
+    return preview&&preview.classList.contains('g-photo-preview')?'<i class="fas fa-user"></i>':'<i class="fas fa-image"></i>';
+}
+function validateImageFileSize(file,minBytes,maxBytes,label,targetInput,targetPreview,targetStatusLabel){
+    if(!file)return false;
+    if(file.size>=minBytes&&file.size<=maxBytes)return true;
+    const message=`${label} deve ter entre ${formatUploadSize(minBytes)} e ${formatUploadSize(maxBytes)}. Arquivo atual: ${formatUploadSize(file.size)}.`;
+    if(targetInput)targetInput.value='';
+    if(targetPreview){targetPreview.innerHTML=uploadPlaceholder(targetPreview);targetPreview.classList.add('error-border')}
+    setFileStatus(targetStatusLabel,message,'error');
+    showToast(message,'error');
+    return false;
 }
 function openCropModal(file,targetInput,targetPreview,targetStatusLabel){
     cropState.targetFileInput=targetInput;
@@ -1032,7 +1050,7 @@ function updateDuracaoOptions(){const f=document.getElementById('formatoAtividad
 const PAPEL_OPTIONS={
     'debate':[{value:'ministrante',label:'Ministrante'},{value:'mediador',label:'Mediador'}],
     'roda_de_conversa':[{value:'ministrante',label:'Ministrante'},{value:'mediador',label:'Mediador'}],
-    'oficina':[{value:'oficineiro',label:'Oficineiro'},{value:'monitor',label:'Monitor'}],
+    'oficina':[{value:'oficineiro',label:'Oficineiro'}],
     'experiencia':[{value:'facilitador',label:'Facilitador'},{value:'monitor',label:'Monitor'}]
 };
 
@@ -1041,7 +1059,7 @@ function syncGuestRoleOptions(){
     const options=PAPEL_OPTIONS[formato]||PAPEL_OPTIONS['debate'];
     document.querySelectorAll('.g-papel').forEach(select=>{
         const current=select.value;
-        select.innerHTML='<option value="">Selecione...</option>';
+        select.innerHTML=options.length===1?'':'<option value="">Selecione...</option>';
         options.forEach(item=>{
             const option=document.createElement('option');
             option.value=item.value;
@@ -1049,6 +1067,7 @@ function syncGuestRoleOptions(){
             select.appendChild(option);
         });
         if(options.some(item=>item.value===current))select.value=current;
+        else if(options.length===1)select.value=options[0].value;
     });
 }
 
@@ -1082,6 +1101,7 @@ function toggleActivityFields(){
     toggleSection(document.getElementById('experienciaInfraBox'),isExperiencia);
     toggleSection(document.getElementById('experienciaEspacoBox'),isExperiencia);
     toggleSection(document.getElementById('experienciaAnexosBox'),isExperiencia);
+    toggleExpAcessibilidade();
     toggleExpCondicaoOutros();
     
     if(isOficina){toggleLabFields();toggleSoftwareFields()}
@@ -1301,7 +1321,7 @@ document.addEventListener('blur',function(e){if(e.target.matches('#telefoneRepre
 function setupCounter(id,max){var el=document.getElementById(id);if(!el)return;var cnt=el.parentElement.querySelector('.char-counter');if(!cnt)return;el.addEventListener('input',function(){cnt.innerText=this.value.length+' / '+max});cnt.innerText=el.value.length+' / '+max}
 setupCounter('objetivoAtividade',500);setupCounter('justificativaTematica',700);setupCounter('metodologiaAplicada',500);setupCounter('descricaoAtividade',700);setupCounter('infoExtras',700);
 
-document.getElementById('fotoProponente').addEventListener('change',function(e){var p=document.getElementById('photoPreview');var s=document.getElementById('status_fotoProponente');p.classList.remove('error-border');if(this.files&&this.files[0]){openCropModal(this.files[0],this,p,s);}else{p.innerHTML='<i class="fas fa-image"></i>';resetUploadStatus(s);}});
+document.getElementById('fotoProponente').addEventListener('change',function(e){var p=document.getElementById('photoPreview');var s=document.getElementById('status_fotoProponente');p.classList.remove('error-border');if(this.files&&this.files[0]){if(!validateImageFileSize(this.files[0],LOGO_MIN_BYTES,IMAGE_MAX_BYTES,'O logotipo',this,p,s))return;openCropModal(this.files[0],this,p,s);}else{p.innerHTML='<i class="fas fa-image"></i>';resetUploadStatus(s);}});
 
 function setupFileLoadStatus(inputId,statusId,loadingMessage='Carregando arquivo...'){
     const input=document.getElementById(inputId),status=document.getElementById(statusId);
@@ -1321,6 +1341,7 @@ setupFileLoadStatus('expAnexoImagens','status_expAnexoImagens','Carregando image
 
 // ===== EXPERIÊNCIA TOGGLES =====
 function toggleExpPontosEnergia(){const val=document.querySelector('input[name="exp_infra_energia"]:checked')?.value;toggleSection(document.getElementById('expPontosEnergiaField'),val==='sim');}
+function toggleExpAcessibilidade(){const val=document.getElementById('expAcessibilidade')?.value,field=document.getElementById('expAcessRecursosField'),input=document.getElementById('expAcessRecursos'),show=val==='sim';toggleSection(field,show);if(input){input.required=show;if(!show)input.value=''}}
 function toggleExpMobiliario(){const val=document.querySelector('input[name="exp_infra_mobiliario_opcao"]:checked')?.value;toggleSection(document.getElementById('expMobiliarioField'),val==='sim');}
 function toggleExpEquipProprios(){const val=document.querySelector('input[name="exp_infra_equip_proprios_opcao"]:checked')?.value;toggleSection(document.getElementById('expEquipPropriosTable'),val==='sim');}
 function toggleExpCondicaoOutros(){const field=document.getElementById('expCondicaoOutrosField'),input=field?.querySelector('input');const selectedValues=Array.from(document.querySelectorAll('input[name="exp_espaco_condicao"]:checked')).map(option=>option.value);const show=selectedValues.includes('outros');toggleSection(field,show);if(input){input.required=show;if(!show)input.value=''}}
@@ -1465,6 +1486,7 @@ const FOREIGN_CITIES_BY_COUNTRY={
     'Uruguai':['Montevidéu','Salto','Paysandú','Maldonado','Rivera'],
     'Venezuela':['Caracas','Maracaibo','Valência','Barquisimeto','Maracay']
 };
+const FOREIGN_STATES_BY_COUNTRY={};
 const COUNTRY_OPTIONS=Object.keys(FOREIGN_CITIES_BY_COUNTRY).sort((a,b)=>a.localeCompare(b,'pt-BR'));
 const COUNTRY_CODE_BY_NAME={
     'africa do sul':'za','alemanha':'de','angola':'ao','argentina':'ar','australia':'au','austria':'at',
@@ -1529,19 +1551,20 @@ function updateBrazilCityOptions(card,clear=false){
     setLocationSelectLoading(city,'Carregando cidades oficiais...');
     fetchLocationSuggestions({tipo:'cidade',country:'br',estado:estado,all:'1'}).then(items=>items.length?items:fetchIBGECityOptions(estado)).then(items=>{setLocationSelectOptions(city,items.length?items:fallback,'Selecione...',clear?'':undefined);checkGuestBairro(city)});
 }
-function updateForeignCityOptions(card,clear=false){
-    const country=card.querySelector('.g-pais'),city=card.querySelector('.g-cidade-origem');updateCountryCodeFromSelection(country);
-    const countryCode=getCountryCodeFromInput(country),key=findCountryKey(country?.value),fallback=normalizeLocationItems(key?FOREIGN_CITIES_BY_COUNTRY[key]:[]);
-    if(clear&&city)delete city.dataset.pendingValue;
-    if(!countryCode){setLocationSelectLoading(city,'Selecione o país primeiro...');return}
-    setLocationSelectLoading(city,'Carregando cidades...');
-    fetchLocationSuggestions({tipo:'cidade',country:countryCode,all:'1'}).then(items=>setLocationSelectOptions(city,items.length?items:fallback,'Selecione...',clear?'':undefined));
+function updateForeignStateOptions(card,clear=false){
+    const country=card.querySelector('.g-pais'),state=card.querySelector('.g-estado-origem');updateCountryCodeFromSelection(country);
+    if(!state)return;
+    const countryCode=getCountryCodeFromInput(country),key=findCountryKey(country?.value),fallback=normalizeLocationItems(key?FOREIGN_STATES_BY_COUNTRY[key]:[]);
+    if(clear&&state)delete state.dataset.pendingValue;
+    if(!countryCode){setLocationSelectLoading(state,'Selecione o país primeiro...');return}
+    setLocationSelectLoading(state,'Carregando estados...');
+    fetchLocationSuggestions({tipo:'estado',country:countryCode,all:'1'}).then(items=>setLocationSelectOptions(state,items.length?items:fallback,'Selecione...',clear?'':undefined));
 }
 function updateCountryOptions(card){
     const country=card.querySelector('.g-pais'),fallback=countryFallbackItems();
     setLocationSelectLoading(country,'Carregando países...');
     updateCountryCodeFromSelection(country);
-    fetchLocationSuggestions({tipo:'pais',all:'1'}).then(items=>{setLocationSelectOptions(country,items.length?items:fallback,'Selecione...');updateCountryCodeFromSelection(country);updateForeignCityOptions(card,false)});
+    fetchLocationSuggestions({tipo:'pais',all:'1'}).then(items=>{setLocationSelectOptions(country,items.length?items:fallback,'Selecione...');updateCountryCodeFromSelection(country);updateForeignStateOptions(card,false)});
 }
 function setupGuestLocationLists(card){
     const cityInput=card.querySelector('.g-cidade'),countryInput=card.querySelector('.g-pais');
@@ -1549,15 +1572,15 @@ function setupGuestLocationLists(card){
         card.dataset.locationBound='true';
         card.querySelector('.g-estado')?.addEventListener('change',function(){updateBrazilCityOptions(card,true);checkGuestBairro(this)});
         cityInput?.addEventListener('change',function(){checkGuestBairro(this)});
-        countryInput?.addEventListener('change',function(){updateCountryCodeFromSelection(this);updateForeignCityOptions(card,true)});
+        countryInput?.addEventListener('change',function(){updateCountryCodeFromSelection(this);updateForeignStateOptions(card,true)});
     }
     updateCountryOptions(card);
     updateBrazilCityOptions(card,false);
-    updateForeignCityOptions(card,false);
+    updateForeignStateOptions(card,false);
 }
 
 // ===== GUEST LOGIC =====
-function populateAgeDropdowns(){const f=[{value:'0 a 18',label:'0 a 18'},{value:'19 a 25',label:'19 a 25'},{value:'26 a 35',label:'26 a 35'},{value:'36 a 59',label:'36 a 59'},{value:'60+',label:'60+'}];document.querySelectorAll('.g-idade').forEach(s=>{if(s.options.length<=1)f.forEach(x=>{const o=document.createElement('option');o.value=x.value;o.textContent=x.label;s.appendChild(o)})})}
+function populateAgeDropdowns(){const f=[{value:'0 a 18',label:'0 a 18'},{value:'19 a 25',label:'19 a 25'},{value:'26 a 35',label:'26 a 35'},{value:'36 a 45',label:'36 a 45'},{value:'46 a 59',label:'46 a 59'},{value:'60+',label:'60+'}];document.querySelectorAll('.g-idade').forEach(s=>{if(s.options.length<=1)f.forEach(x=>{const o=document.createElement('option');o.value=x.value;o.textContent=x.label;s.appendChild(o)})})}
 function renumberGuests(){document.querySelectorAll('.guest-card').forEach((card,index)=>{const n=index+1;card.dataset.id=n;card.querySelector('.num').innerText=n;card.querySelectorAll('input,select,textarea').forEach(field=>{if(field.name)field.name=field.name.replace(/convidado\d+_/,'convidado'+n+'_')});const file=card.querySelector('.g-foto'),label=card.querySelector('.g-foto-label');if(file&&label){file.id=`guest_file_${n}`;label.setAttribute('for',file.id)}setupGuestLocationLists(card)});guestCount=document.querySelectorAll('.guest-card').length;syncGuestRemovalLocks()}
 
 function addGuest(scroll=true,data=null){
@@ -1566,13 +1589,13 @@ function addGuest(scroll=true,data=null){
     guestCount++;const c=document.getElementById('guestTemplate').content.cloneNode(true),card=c.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select,textarea').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount)});
     setupGuestLocationLists(card);
     const fi=card.querySelector('.g-foto'),fl=card.querySelector('.g-foto-label'),fs=card.querySelector('.g-foto-status');fi.id=`guest_file_${guestCount}`;fl.setAttribute('for',fi.id);
-    fi.addEventListener('change',function(e){var p=card.querySelector('.g-photo-preview'),s=card.querySelector('.g-foto-status');p.classList.remove('error-border');if(this.files&&this.files[0]){openCropModal(this.files[0],this,p,s)}else{p.innerHTML='<i class="fas fa-user"></i>';resetUploadStatus(s);}});
+    fi.addEventListener('change',function(e){var p=card.querySelector('.g-photo-preview'),s=card.querySelector('.g-foto-status');p.classList.remove('error-border');if(this.files&&this.files[0]){if(!validateImageFileSize(this.files[0],PHOTO_MIN_BYTES,IMAGE_MAX_BYTES,'A fotografia',this,p,s))return;openCropModal(this.files[0],this,p,s)}else{p.innerHTML='<i class="fas fa-user"></i>';resetUploadStatus(s);}});
     const ti=card.querySelector('.g-telefone');if(ti)ti.addEventListener('input',maskPhone);const gi=card.querySelector('.g-cpf');if(gi)gi.addEventListener('paste',function(e){e.preventDefault();const p=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').substring(0,11);e.target.value=p;maskCPF(e.target)});
-    if(data){card.querySelectorAll('input, select, textarea').forEach(i=>{if(i.name&&data[i.name]!==undefined){if(i.type==='checkbox'){i.checked=(data[i.name]==='sim'||data[i.name]===true);if(i.name.endsWith('_acessibilidade')&&i.checked)toggleGuestAcessibilidade(i)}else if(i.type==='radio')i.checked=(i.value===data[i.name]);else{if(i.classList.contains('g-cidade')||i.classList.contains('g-pais')||i.classList.contains('g-cidade-origem'))i.dataset.pendingValue=data[i.name];i.value=data[i.name]}}});updateBrazilCityOptions(card,false);updateForeignCityOptions(card,false);const ns=card.querySelector('.g-nacionalidade');if(ns)toggleGuestDocs(ns);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
+    if(data){card.querySelectorAll('input, select, textarea').forEach(i=>{const dataKey=(i.name&&data[i.name]!==undefined)?i.name:'';if(dataKey){if(i.type==='checkbox'){i.checked=(data[dataKey]==='sim'||data[dataKey]===true);if(i.name.endsWith('_acessibilidade')&&i.checked)toggleGuestAcessibilidade(i)}else if(i.type==='radio')i.checked=(i.value===data[dataKey]);else{if(i.classList.contains('g-cidade')||i.classList.contains('g-pais')||i.classList.contains('g-estado-origem'))i.dataset.pendingValue=data[dataKey];i.value=data[dataKey]}}});updateBrazilCityOptions(card,false);updateForeignStateOptions(card,false);const ns=card.querySelector('.g-nacionalidade');if(ns)toggleGuestDocs(ns);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
     document.getElementById('guestsList').appendChild(card);populateAgeDropdowns();syncGuestRoleOptions();syncGuestLimit();if(scroll&&!data)card.scrollIntoView({behavior:'smooth',block:'center'})
 }
 function removeGuest(btn){const card=btn.closest('.guest-card'),cards=Array.from(document.querySelectorAll('.guest-card')),index=cards.indexOf(card),minGuests=getMinGuests();if(index>-1&&index<minGuests){showToast(`Este formato exige no mínimo ${minGuests} integrante(s).`, 'error');return}card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();renumberGuests();syncGuestLimit()},300)}
-function toggleGuestDocs(sel){const card=sel.closest('.guest-card'),isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>toggleSection(f,!isBR));card.querySelectorAll('.g-doc-br').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>toggleSection(f,!isBR));updateBrazilCityOptions(card,false);updateForeignCityOptions(card,false);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
+function toggleGuestDocs(sel){const card=sel.closest('.guest-card'),isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>toggleSection(f,!isBR));card.querySelectorAll('.g-doc-br').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>toggleSection(f,!isBR));updateBrazilCityOptions(card,false);updateForeignStateOptions(card,false);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
 function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card'),d=card.querySelector('.g-acess-detail');toggleSection(d,cb.checked);const desc=d.querySelector('.g-acess-desc');if(!cb.checked){desc.value=''}}
 (function(){const r=JSON.parse({{ guest_data_json | tojson }});try{const g=r,k=Object.keys(g),idx=new Set();k.forEach(x=>{const m=x.match(/^convidado(\d+)_/);if(m)idx.add(parseInt(m[1]))});if(idx.size>0)Array.from(idx).sort((a,b)=>a-b).forEach(i=>{const p='convidado'+i+'_',sd={};k.filter(x=>x.startsWith(p)).forEach(x=>sd[x]=g[x]);addGuest(false,sd)});else addGuest(false)}catch(e){addGuest(false)}})();
 restoreExperienceState();
@@ -1739,9 +1762,11 @@ function createPaperViewHTML(){
     }
     let experienciaHTML='';
     if(formatoValor==='experiencia'){
+        const hasExpAcessibilidade=document.getElementById('expAcessibilidade')?.value==='sim';
         experienciaHTML=section('5. Detalhes da Experiência',[
             row('Tipologias',tipologias.join(', ')),
-            row('Ações de acessibilidade',byName('exp_acess_recursos')),
+            row('Existem ações de acessibilidade?',byName('exp_acessibilidade')),
+            hasExpAcessibilidade?row('Quais ações?',byName('exp_acess_recursos')):'',
             row('Restrições de público',byName('exp_acess_restricoes')),
             row('Funcionamento',radio('exp_oper_funcionamento')),
             row('Permanência média do usuário',byName('exp_oper_permanencia')),
@@ -1790,6 +1815,7 @@ function createPaperViewHTML(){
             row('Cidade',byName(full('cidade'),card)),
             row('Bairro',byName(full('bairro'),card)),
             row('País de origem',byName(full('pais_origem'),card)),
+            row('Estado de origem',byName(full('estado_origem'),card)),
             row('Cidade de origem',byName(full('cidade_origem'),card)),
             row('E-mail',byName(full('email'),card)),
             row('Telefone',byName(full('telefone'),card)),
@@ -2015,7 +2041,55 @@ function submitToBackend(){
     // RESTAURA ESTADO DO SELECT APÓS CAPTURA
     if(wasAcessoDisabled) acessoSelect.disabled = true;
 
-    restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});const emptyFileKeys=[];for(let[key,value]of formData.entries()){if(value instanceof File&&value.size===0)emptyFileKeys.push(key)}emptyFileKeys.forEach(key=>formData.delete(key));if(generatedPDFBlob){formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');formData.set('pdf_validado_cliente','sim')}const propPreviewImg=document.querySelector('#photoPreview img');if(propPreviewImg){const blob=dataURLtoBlob(propPreviewImg.src);if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')}document.querySelectorAll('.guest-card').forEach(card=>{const guestId=card.dataset.id;const guestPreviewImg=card.querySelector('.g-photo-preview img');if(guestPreviewImg){const blob=dataURLtoBlob(guestPreviewImg.src);if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)}});fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const flashSuccess=doc.querySelector('.flash-messages li.success');const flashError=doc.querySelector('.flash-messages li.error');if(flashError){replacePageAtTop(doc,'error','Corrija os erros indicados.')}else{const successMessage=flashSuccess?flashSuccess.innerText.trim():'Proposta enviada com sucesso!';try{sessionStorage.setItem('form_success_message',successMessage)}catch(e){}alert(successMessage);window.location.href='/'}}).catch(err=>{console.error(err);showToast('Erro de conexão.','error');btn.innerHTML=originalText;btn.disabled=false})}
+    restoredFields.forEach(field=>{
+        field.disabled=false;
+        if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}
+    });
+    const emptyFileKeys=[];
+    for(let[key,value]of formData.entries()){
+        if(value instanceof File&&value.size===0)emptyFileKeys.push(key)
+    }
+    emptyFileKeys.forEach(key=>formData.delete(key));
+    if(generatedPDFBlob){
+        formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');
+        formData.set('pdf_validado_cliente','sim')
+    }
+    const propInput=document.getElementById('fotoProponente');
+    const propPreviewImg=document.querySelector('#photoPreview img');
+    if(propInput?.files?.[0])formData.set('fotoProponente_original_size',String(propInput.files[0].size));
+    if(propPreviewImg){
+        const blob=dataURLtoBlob(propPreviewImg.src);
+        if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')
+    }
+    document.querySelectorAll('.guest-card').forEach(card=>{
+        const guestId=card.dataset.id;
+        const guestInput=card.querySelector('.g-foto');
+        const guestPreviewImg=card.querySelector('.g-photo-preview img');
+        if(guestInput?.files?.[0])formData.set(`convidado${guestId}_foto_original_size`,String(guestInput.files[0].size));
+        if(guestPreviewImg){
+            const blob=dataURLtoBlob(guestPreviewImg.src);
+            if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)
+        }
+    });
+    fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{
+        const parser=new DOMParser();
+        const doc=parser.parseFromString(html,'text/html');
+        const flashSuccess=doc.querySelector('.flash-messages li.success');
+        const flashError=doc.querySelector('.flash-messages li.error');
+        if(flashError){
+            replacePageAtTop(doc,'error','Corrija os erros indicados.');
+        }else{
+            const successMessage=flashSuccess?flashSuccess.innerText.trim():'Proposta enviada com sucesso!';
+            try{sessionStorage.setItem('form_success_message',successMessage)}catch(e){}
+            alert(successMessage);
+            window.location.href='/'
+        }
+    }).catch(err=>{
+        console.error(err);
+        showToast('Erro de conexão.','error');
+        btn.innerHTML=originalText;
+        btn.disabled=false
+    })}
 
 document.getElementById('inscricaoForm').removeEventListener('submit',null); 
 document.getElementById('inscricaoForm').addEventListener('submit',gerarPDFPreview);document.getElementById('btnConfirmSend').addEventListener('click',submitToBackend);

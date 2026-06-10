@@ -38,6 +38,11 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'chave-padrao-apenas-para-de
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Aumentado para suportar PDF + Imagens
 
 EXTENSOES_PERMITIDAS = {'png', 'jpg', 'jpeg', 'webp'}
+KB = 1024
+MB = 1024 * 1024
+LOGO_MIN_BYTES = 100 * KB
+PHOTO_MIN_BYTES = 500 * KB
+IMAGE_MAX_BYTES = 5 * MB
 
 CAMPOS_OBRIGATORIOS_BASE = [
     'tipoProponente', 
@@ -416,6 +421,55 @@ def extensao_permitida(nome_arquivo):
            nome_arquivo.rsplit('.', 1)[1].lower() in EXTENSOES_PERMITIDAS
 
 
+def formatar_tamanho_upload(tamanho_bytes):
+    if tamanho_bytes >= MB:
+        valor = tamanho_bytes / MB
+        return f'{valor:g}MB'
+    return f'{round(tamanho_bytes / KB)}KB'
+
+
+def tamanho_arquivo_upload(arquivo):
+    if not arquivo or not arquivo.filename:
+        return None
+    try:
+        posicao_atual = arquivo.tell()
+        arquivo.seek(0, os.SEEK_END)
+        tamanho = arquivo.tell()
+        arquivo.seek(posicao_atual)
+        return tamanho
+    except Exception:
+        try:
+            arquivo.seek(0)
+        except Exception:
+            pass
+        return None
+
+
+def tamanho_original_upload(dados, campo_tamanho, arquivo):
+    valor = dados.get(campo_tamanho, '').strip()
+    if valor:
+        try:
+            tamanho = int(valor)
+            if tamanho >= 0:
+                return tamanho
+        except (TypeError, ValueError):
+            pass
+    return tamanho_arquivo_upload(arquivo)
+
+
+def validar_tamanho_upload_imagem(dados, campo_tamanho, arquivo, minimo, maximo, rotulo):
+    tamanho = tamanho_original_upload(dados, campo_tamanho, arquivo)
+    if tamanho is None:
+        return None
+    if tamanho < minimo or tamanho > maximo:
+        return (
+            f'{rotulo} deve ter entre {formatar_tamanho_upload(minimo)} '
+            f'e {formatar_tamanho_upload(maximo)}. '
+            f'Arquivo atual: {formatar_tamanho_upload(tamanho)}.'
+        )
+    return None
+
+
 def validar_email(email):
     padrao = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     return re.match(padrao, email) is not None
@@ -718,6 +772,7 @@ def validate_origin():
 LOCATION_COUNTRIES_CACHE = None
 LOCATION_BR_CITIES_CACHE = {}
 LOCATION_FOREIGN_CITIES_CACHE = {}
+LOCATION_FOREIGN_STATES_CACHE = {}
 
 
 def _normalize_location_text(value):
@@ -861,6 +916,24 @@ def _foreign_city_labels(country_code):
     return labels
 
 
+def _foreign_state_labels(country_code):
+    country_code = (country_code or '').strip().lower()
+    if not country_code:
+        return []
+    if country_code in LOCATION_FOREIGN_STATES_CACHE:
+        return LOCATION_FOREIGN_STATES_CACHE[country_code]
+
+    api_name = _country_api_name(country_code)
+    if not api_name:
+        return []
+    data = _fetch_json('https://countriesnow.space/api/v0.1/countries/states', {'country': api_name})
+    country_data = data.get('data') if isinstance(data, dict) else {}
+    raw_states = country_data.get('states', []) if isinstance(country_data, dict) else []
+    labels = sorted({state.get('name', '').strip() for state in raw_states if state.get('name')})
+    LOCATION_FOREIGN_STATES_CACHE[country_code] = labels
+    return labels
+
+
 @app.route('/api/localidades', methods=['GET'])
 def api_localidades():
     query = request.args.get('q', '').strip()
@@ -868,12 +941,15 @@ def api_localidades():
     country = request.args.get('country', '').strip().lower()
     estado = request.args.get('estado', '').strip().upper()
     all_requested = request.args.get('all', '').strip().lower() in {'1', 'true', 'sim'}
-    if tipo not in {'cidade', 'pais'} or (not all_requested and len(query) < 2):
+    if tipo not in {'cidade', 'pais', 'estado'} or (not all_requested and len(query) < 2):
         return jsonify({'suggestions': []})
 
     try:
         if tipo == 'pais':
             suggestions = _all_country_suggestions() if all_requested else _country_suggestions(query)
+        elif tipo == 'estado':
+            labels = _foreign_state_labels(country)
+            suggestions = [{'label': label} for label in labels] if all_requested else _filter_location_labels(labels, query)
         elif country == 'br':
             labels = _br_city_labels(estado)
             suggestions = [{'label': label} for label in labels] if all_requested else _filter_location_labels(labels, query)
@@ -904,7 +980,6 @@ def home():
     pdf_file = request.files.get('pdf_comprovante')
     pdf_validado_cliente = bool(pdf_file and pdf_file.filename and dados.get('pdf_validado_cliente') == 'sim')
 
-    salvar_uploads_temporarios(request.files)
     erros = []
     erros_envio = []
 
@@ -941,11 +1016,43 @@ def home():
         elif not verify_turnstile(turnstile_token, request.remote_addr):
             erros.append('Falha na verificação de segurança. Recarregue a página e tente novamente.')
 
+    if dados.get('tipoProponente', '') == 'pj' and arquivo_foto and arquivo_foto.filename:
+        erro_tamanho = validar_tamanho_upload_imagem(
+            dados,
+            'fotoProponente_original_size',
+            arquivo_foto,
+            LOGO_MIN_BYTES,
+            IMAGE_MAX_BYTES,
+            'O logotipo'
+        )
+        if erro_tamanho:
+            erros.append(erro_tamanho)
+
+    for i in range(1, 6):
+        prefixo = f'convidado{i}_'
+        if not dados.get(f'{prefixo}nome', '').strip():
+            continue
+        foto_conv = request.files.get(f'{prefixo}foto')
+        if not foto_conv or not foto_conv.filename:
+            continue
+        erro_tamanho = validar_tamanho_upload_imagem(
+            dados,
+            f'{prefixo}foto_original_size',
+            foto_conv,
+            PHOTO_MIN_BYTES,
+            IMAGE_MAX_BYTES,
+            f'A fotografia do integrante {i}'
+        )
+        if erro_tamanho:
+            erros.append(erro_tamanho)
+
     if erros:
         for erro in erros:
             flash(erro, 'error')
         return render_with_data(400)
     # FIM: Verificações de Segurança
+
+    salvar_uploads_temporarios(request.files)
 
     tipo_prop = dados.get('tipoProponente', '')
     categoria_prop = dados.get('categoria', '')
@@ -1043,6 +1150,9 @@ def home():
     duracao = dados.get('tempoDuracao')
     exp_espaco_condicao_values = [valor for valor in dados.getlist('exp_espaco_condicao') if valor]
     mostrar_ajuda_custo = (tipo_prop == 'pf') or (tipo_prop == 'pj' and categoria_prop in ['ong', 'coletivo'])
+    exp_acessibilidade = dados.get('exp_acessibilidade', '').strip()
+    if not exp_acessibilidade and dados.get('exp_acess_recursos', '').strip():
+        exp_acessibilidade = 'sim'
 
     duracoes_por_formato = {
         'debate': {'45min', '1h'},
@@ -1109,7 +1219,13 @@ def home():
             erros.append('Descreva a condição do ambiente ao selecionar "Outros".')
 
         # 4. Acessibilidade e Restrição
-        if not dados.get('exp_acess_recursos', '').strip(): erros.append('O campo "Ações de acessibilidade" é obrigatório.')
+        if exp_acessibilidade not in {'sim', 'nao'}:
+            erros.append('Informe se existem ações de acessibilidade na experiência.')
+        elif exp_acessibilidade == 'sim':
+            if not dados.get('exp_acess_recursos', '').strip():
+                erros.append('O campo "Quais ações?" é obrigatório ao selecionar acessibilidade.')
+            elif len(dados.get('exp_acess_recursos', '')) > 200:
+                erros.append('Ações de acessibilidade: máximo 200 caracteres.')
 
         # 5. Operação
         campos_exp_op = {
@@ -1226,7 +1342,7 @@ def home():
             papeis_por_formato = {
                 'debate': {'palestrante', 'mediador'},
                 'roda_de_conversa': {'palestrante', 'mediador'},
-                'oficina': {'oficineiro', 'monitor'},
+                'oficina': {'oficineiro'},
                 'experiencia': {'facilitador', 'monitor'}
             }
             if papel and formato in papeis_por_formato and papel not in papeis_por_formato[formato]:
@@ -1242,13 +1358,14 @@ def home():
             cidade_c = dados.get(f'{prefixo}cidade', '').strip()
             bairro_c = dados.get(f'{prefixo}bairro', '').strip()
             pais_origem = dados.get(f'{prefixo}pais_origem', '').strip()
+            estado_origem = dados.get(f'{prefixo}estado_origem', '').strip()
             cidade_origem = dados.get(f'{prefixo}cidade_origem', '').strip()
             if nacionalidade == 'brasileiro' and (not estado or not cidade_c):
                 erros.append(f'Estado e cidade do integrante {i} são obrigatórios.')
             elif nacionalidade == 'estrangeiro':
                 if not dados.get(f'{prefixo}passaporte', '').strip(): erros.append(f'Passaporte do integrante estrangeiro {i} é obrigatório.')
                 if not pais_origem: erros.append(f'País de origem do integrante {i} é obrigatório.')
-                if not cidade_origem: erros.append(f'Cidade de origem do integrante {i} é obrigatória.')
+                if not estado_origem: erros.append(f'Estado de origem do integrante {i} é obrigatório.')
             cpf_conv = dados.get(f'{prefixo}cpf', '').strip()
             if nacionalidade == 'brasileiro':
                 if not cpf_conv:
@@ -1283,6 +1400,7 @@ def home():
                 'social_instagram': dados.get(f'{prefixo}social_instagram'),
                 'cidade': cidade_c, 'estado': estado, 'bairro': bairro_c,
                 'pais_origem': pais_origem,
+                'estado_origem': estado_origem,
                 'cidade_origem': cidade_origem,
                 'foto_base64': foto_conv_base64
             })
