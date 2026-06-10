@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import os
 import re
 import json
@@ -7,6 +7,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 from urllib.parse import urlparse
+import unicodedata
 import copy
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -714,6 +715,178 @@ def validate_origin():
 # ──────────────────────────────────────────────
 
 
+LOCATION_COUNTRIES_CACHE = None
+LOCATION_BR_CITIES_CACHE = {}
+LOCATION_FOREIGN_CITIES_CACHE = {}
+
+
+def _normalize_location_text(value):
+    text = unicodedata.normalize('NFD', value or '')
+    text = ''.join(char for char in text if unicodedata.category(char) != 'Mn')
+    return text.strip().casefold()
+
+
+def _fetch_json(url, payload=None, timeout=10):
+    data = None
+    headers = {
+        'Accept': 'application/json',
+        'User-Agent': 'forms-recnplay/1.0',
+    }
+    method = 'GET'
+    if payload is not None:
+        data = json.dumps(payload).encode('utf-8')
+        headers['Content-Type'] = 'application/json'
+        method = 'POST'
+    req = urllib.request.Request(url, data=data, method=method, headers=headers)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read().decode('utf-8'))
+
+
+def _load_countriesnow_names_by_code():
+    data = _fetch_json('https://countriesnow.space/api/v0.1/countries/iso')
+    names = {}
+    for item in data.get('data', []):
+        code = (item.get('Iso2') or item.get('iso2') or '').strip().lower()
+        name = (item.get('name') or '').strip()
+        if code and name:
+            names[code] = name
+    return names
+
+
+def _load_countries():
+    global LOCATION_COUNTRIES_CACHE
+    if LOCATION_COUNTRIES_CACHE is not None:
+        return LOCATION_COUNTRIES_CACHE
+
+    countriesnow_names = {}
+    try:
+        countriesnow_names = _load_countriesnow_names_by_code()
+    except Exception as e:
+        print(f"Erro ao consultar CountriesNow ISO: {e}")
+
+    data = _fetch_json('https://restcountries.com/v3.1/all?fields=name,cca2,translations')
+    countries = []
+    for item in data:
+        code = (item.get('cca2') or '').strip().lower()
+        name = item.get('name') or {}
+        translations = item.get('translations') or {}
+        por = translations.get('por') or {}
+        label = (por.get('common') or name.get('common') or '').strip()
+        english_name = (name.get('common') or label).strip()
+        if not code or not label:
+            continue
+        countries.append({
+            'label': label,
+            'code': code,
+            'api_name': countriesnow_names.get(code, english_name),
+            'search': _normalize_location_text(' '.join(filter(None, [
+                label,
+                english_name,
+                name.get('official', ''),
+                por.get('official', ''),
+            ]))),
+        })
+    LOCATION_COUNTRIES_CACHE = sorted(countries, key=lambda item: item['label'])
+    return LOCATION_COUNTRIES_CACHE
+
+
+def _filter_location_labels(labels, query, limit=20):
+    normalized_query = _normalize_location_text(query)
+    results = []
+    seen = set()
+    for label in labels:
+        normalized_label = _normalize_location_text(label)
+        if normalized_query not in normalized_label or normalized_label in seen:
+            continue
+        seen.add(normalized_label)
+        results.append({'label': label})
+        if len(results) >= limit:
+            break
+    return results
+
+
+def _country_suggestions(query, limit=20):
+    normalized_query = _normalize_location_text(query)
+    results = []
+    for country in _load_countries():
+        if normalized_query not in country['search']:
+            continue
+        results.append({'label': country['label'], 'code': country['code']})
+        if len(results) >= limit:
+            break
+    return results
+
+
+def _all_country_suggestions():
+    return [{'label': country['label'], 'code': country['code']} for country in _load_countries()]
+
+
+def _country_api_name(country_code):
+    country_code = (country_code or '').strip().lower()
+    for country in _load_countries():
+        if country['code'] == country_code:
+            return country['api_name']
+    return ''
+
+
+def _br_city_labels(estado=''):
+    estado = (estado or '').strip().upper()
+    cache_key = estado or 'BR'
+    if cache_key in LOCATION_BR_CITIES_CACHE:
+        return LOCATION_BR_CITIES_CACHE[cache_key]
+
+    if estado and re.fullmatch(r'[A-Z]{2}', estado):
+        url = f'https://servicodados.ibge.gov.br/api/v1/localidades/estados/{estado}/municipios?orderBy=nome'
+    else:
+        url = 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome'
+    data = _fetch_json(url)
+    labels = [item.get('nome', '').strip() for item in data if item.get('nome')]
+    LOCATION_BR_CITIES_CACHE[cache_key] = labels
+    return labels
+
+
+def _foreign_city_labels(country_code):
+    country_code = (country_code or '').strip().lower()
+    if not country_code:
+        return []
+    if country_code in LOCATION_FOREIGN_CITIES_CACHE:
+        return LOCATION_FOREIGN_CITIES_CACHE[country_code]
+
+    api_name = _country_api_name(country_code)
+    if not api_name:
+        return []
+    data = _fetch_json('https://countriesnow.space/api/v0.1/countries/cities', {'country': api_name})
+    labels = sorted({city.strip() for city in data.get('data', []) if city and city.strip()})
+    LOCATION_FOREIGN_CITIES_CACHE[country_code] = labels
+    return labels
+
+
+@app.route('/api/localidades', methods=['GET'])
+def api_localidades():
+    query = request.args.get('q', '').strip()
+    tipo = request.args.get('tipo', 'cidade').strip().lower()
+    country = request.args.get('country', '').strip().lower()
+    estado = request.args.get('estado', '').strip().upper()
+    all_requested = request.args.get('all', '').strip().lower() in {'1', 'true', 'sim'}
+    if tipo not in {'cidade', 'pais'} or (not all_requested and len(query) < 2):
+        return jsonify({'suggestions': []})
+
+    try:
+        if tipo == 'pais':
+            suggestions = _all_country_suggestions() if all_requested else _country_suggestions(query)
+        elif country == 'br':
+            labels = _br_city_labels(estado)
+            suggestions = [{'label': label} for label in labels] if all_requested else _filter_location_labels(labels, query)
+        else:
+            labels = _foreign_city_labels(country)
+            suggestions = [{'label': label} for label in labels] if all_requested else _filter_location_labels(labels, query)
+    except Exception as e:
+        print(f"Erro ao consultar API de localidades: {e}")
+        return jsonify({'suggestions': []})
+
+    return jsonify({'suggestions': suggestions})
+
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'GET':
@@ -733,6 +906,7 @@ def home():
 
     salvar_uploads_temporarios(request.files)
     erros = []
+    erros_envio = []
 
     def render_with_data(code=400):
         form_dict = dict(dados)
@@ -858,6 +1032,10 @@ def home():
             erros.append('A idade mínima deve ser um número válido.')
         if idade_max and not idade_max.isdigit():
             erros.append('A idade máxima deve ser um número válido.')
+        if idade_min.isdigit() and int(idade_min) > 120:
+            erros.append('A idade mínima não pode ser maior que 120.')
+        if idade_max.isdigit() and int(idade_max) > 120:
+            erros.append('A idade máxima não pode ser maior que 120.')
         if idade_min.isdigit() and idade_max.isdigit() and int(idade_min) > int(idade_max):
             erros.append('A idade mínima não pode ser maior que a máxima.')
 
@@ -1063,11 +1241,14 @@ def home():
             estado = dados.get(f'{prefixo}estado', '').strip()
             cidade_c = dados.get(f'{prefixo}cidade', '').strip()
             bairro_c = dados.get(f'{prefixo}bairro', '').strip()
+            pais_origem = dados.get(f'{prefixo}pais_origem', '').strip()
+            cidade_origem = dados.get(f'{prefixo}cidade_origem', '').strip()
             if nacionalidade == 'brasileiro' and (not estado or not cidade_c):
                 erros.append(f'Estado e cidade do integrante {i} são obrigatórios.')
             elif nacionalidade == 'estrangeiro':
                 if not dados.get(f'{prefixo}passaporte', '').strip(): erros.append(f'Passaporte do integrante estrangeiro {i} é obrigatório.')
-                if not dados.get(f'{prefixo}pais_origem', '').strip(): erros.append(f'País de origem do integrante {i} é obrigatório.')
+                if not pais_origem: erros.append(f'País de origem do integrante {i} é obrigatório.')
+                if not cidade_origem: erros.append(f'Cidade de origem do integrante {i} é obrigatória.')
             cpf_conv = dados.get(f'{prefixo}cpf', '').strip()
             if nacionalidade == 'brasileiro':
                 if not cpf_conv:
@@ -1101,7 +1282,8 @@ def home():
                 'social_linkedin': dados.get(f'{prefixo}social_linkedin'),
                 'social_instagram': dados.get(f'{prefixo}social_instagram'),
                 'cidade': cidade_c, 'estado': estado, 'bairro': bairro_c,
-                'pais_origem': dados.get(f'{prefixo}pais_origem'),
+                'pais_origem': pais_origem,
+                'cidade_origem': cidade_origem,
                 'foto_base64': foto_conv_base64
             })
 
@@ -1127,6 +1309,14 @@ def home():
         erros.append(f'Para {nome_formato}, é necessário no mínimo {min_convidados} integrantes. Você adicionou apenas {len(convidados)}.')
     elif len(convidados) > max_convidados:
         erros.append(f'Para {nome_formato}, é permitido no máximo {max_convidados} integrantes.')
+
+    if dados.get('aceite_termos') != 'sim' or dados.get('direitos_autorais') != 'sim' or dados.get('consentimento_lgpd') != 'sim':
+        erros_envio.append('Você deve aceitar os Termos, Direitos Autorais e LGPD para enviar.')
+
+    if erros_envio:
+        for erro in erros_envio:
+            flash(erro, 'error')
+        return render_with_data(400)
 
     if erros and not pdf_validado_cliente:
         for erro in erros:

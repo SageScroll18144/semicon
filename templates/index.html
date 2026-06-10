@@ -10,7 +10,6 @@
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
     <style>
         :root {
             --roxo-principal: #FF3399;
@@ -149,10 +148,23 @@
         .tags-dropdown-item.suggestion-item { border-bottom: 1px solid #EEE; color: var(--roxo-escuro); font-weight: 600; }
         .tags-dropdown-empty { padding: 14px; font-size: 13px; color: #999; text-align: center; }
 
+        .location-select-wrap { position: relative; }
+        .location-dropdown {
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 260;
+            display: none; max-height: 240px; overflow-y: auto; background: #fff; color: #333;
+            border: 1.5px solid var(--cinza-borda); border-radius: 8px; box-shadow: 0 10px 26px rgba(0,0,0,0.16);
+        }
+        .location-dropdown.active { display: block; }
+        .location-dropdown-item { padding: 10px 12px; font-size: 13px; cursor: pointer; line-height: 1.35; background: #fff; color: #333; }
+        .location-dropdown-item:hover, .location-dropdown-item.active { background: var(--roxo-50); color: var(--roxo-escuro); }
+        .location-dropdown-empty { padding: 12px; font-size: 13px; color: #888; background: #fff; }
+
         .guest-card { background: #FAFAFA; border: 1px solid #E8E8E8; border-radius: 12px; padding: 24px; margin-bottom: 20px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
         .guest-card h4 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; color: var(--roxo-escuro); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #E0E0E0; display: flex; justify-content: space-between; align-items: center; }
         .remove-guest { background: none; border: none; color: #999; cursor: pointer; font-size: 16px; }
         .remove-guest:hover { color: var(--vermelho-obrigatorio); }
+        .remove-guest:disabled { opacity: .35; cursor: not-allowed; }
+        .remove-guest:disabled:hover { color: #999; }
         .guest-subsection { background: #fff; padding: 12px; border: 1px solid #EEE; border-radius: 8px; margin-bottom: 12px; }
         .guest-subsection-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #888; margin-bottom: 10px; letter-spacing: 0.5px; }
         .guest-card textarea.g-bio { min-height: 140px; line-height: 1.5; }
@@ -208,6 +220,7 @@
         .pdf-preview-container { background: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); max-height: 85vh; overflow-y: auto; width: 90%; max-width: 800px; text-align: center; }
         .pdf-actions { margin-top: 20px; display: flex; gap: 16px; justify-content: center; width: 100%; }
         .btn-preview-confirm { background: var(--verde-sucesso); color: white; border: none; padding: 14px 32px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(46,125,50,0.3); }
+        .btn-preview-confirm:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
         .btn-preview-confirm:hover { background: #1B5E20; transform: translateY(-2px); }
         .btn-preview-cancel { background: #fff; color: #333; border: none; padding: 14px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .btn-preview-cancel:hover { background: #f0f0f0; }
@@ -285,28 +298,28 @@
 
 <div id="pdfModalOverlay">
     <div class="pdf-preview-container">
-        <h2 style="color: var(--roxo-principal); font-family: 'Space Grotesk', sans-serif; margin-bottom: 15px;">Revise sua proposta</h2>
+        <h2 style="color: var(--roxo-principal); font-family: 'Space Grotesk', sans-serif; margin-bottom: 15px;">Revise sua proposta e confirme!</h2>
         <p style="margin-bottom: 15px; font-size: 14px; color: #555;">Verifique se os dados abaixo estão corretos antes de enviar.</p>
         <iframe id="pdfPreviewFrame" style="width: 100%; height: 60vh; border: 1px solid #ddd;"></iframe>
         
         <div style="text-align: left; margin-top: 20px; padding: 0 10px; border-top: 1px solid #ddd; max-height: 30vh; overflow-y: auto;">
             <div class="checkbox-option" style="margin-bottom: 14px; margin-top: 14px;">
                 <input type="checkbox" id="aceiteTermos" name="aceite_termos" value="sim">
-                <label for="aceiteTermos">Aceite Integral dos Termos: "Declaro que li, compreendi e aceito integralmente todas as condições, prazos e regras estabelecidas na Chamada Pública para Recebimento de Propostas de Atividades de Conteúdo — REC’n’Play 2026 e seus Guias complementares."</label>
+                <label for="aceiteTermos"><span class="required">*</span> Aceite Integral dos Termos: "Declaro que li, compreendi e aceito integralmente todas as condições, prazos e regras estabelecidas na Chamada Pública para Recebimento de Propostas de Atividades de Conteúdo — REC’n’Play 2026 e seus Guias complementares."</label>
             </div>
             <div class="checkbox-option" style="margin-bottom: 14px;">
                 <input type="checkbox" id="direitosAutorais" name="direitos_autorais" value="sim">
-                <label for="direitosAutorais">Direitos Autorais e Imagem: "Declaro que sou o titular ou possuo todas as autorizações, licenças e direitos de propriedade intelectual e de uso de imagem necessários sobre os conteúdos, marcas e materiais que serão apresentados na atividade, assumindo total e exclusiva responsabilidade civil e criminal por quaisquer reivindicações de terceiros."</label>
+                <label for="direitosAutorais"><span class="required">*</span> Direitos Autorais e Imagem: "Declaro que sou o titular ou possuo todas as autorizações, licenças e direitos de propriedade intelectual e de uso de imagem necessários sobre os conteúdos, marcas e materiais que serão apresentados na atividade, assumindo total e exclusiva responsabilidade civil e criminal por quaisquer reivindicações de terceiros."</label>
             </div>
             <div class="checkbox-option" style="margin-bottom: 14px;">
                 <input type="checkbox" id="consentimentoLgpd" name="consentimento_lgpd" value="sim">
-                <label for="consentimentoLgpd">Consentimento de Dados (LGPD): "Consinto com a coleta, armazenamento e tratamento dos meus dados pessoais e dos demais integrantes indicados na proposta, exclusivamente para fins de avaliação curatorial, comunicação, gestão de agenda e execução das atividades do Festival REC'n'Play 2026, nos termos da Lei nº 13.709/2018."</label>
+                <label for="consentimentoLgpd"><span class="required">*</span> Consentimento de Dados (LGPD): "Consinto com a coleta, armazenamento e tratamento dos meus dados pessoais e dos demais integrantes indicados na proposta, exclusivamente para fins de avaliação curatorial, comunicação, gestão de agenda e execução das atividades do Festival REC'n'Play 2026, nos termos da Lei nº 13.709/2018."</label>
             </div>
         </div>
 
         <div class="pdf-actions">
             <button type="button" class="btn-preview-cancel" onclick="closePDFModal()"><i class="fas fa-arrow-left"></i> Voltar e editar</button>
-            <button type="button" class="btn-preview-confirm" id="btnConfirmSend"><i class="fas fa-paper-plane"></i> Confirmar e Enviar</button>
+            <button type="button" class="btn-preview-confirm" id="btnConfirmSend" disabled><i class="fas fa-paper-plane"></i> Confirmar e Enviar</button>
         </div>
     </div>
 </div>
@@ -470,8 +483,8 @@
                     </div>
                 </div>
                 <div class="field-row hidden" id="faixaEtariaGroup" style="margin-top:0">
-                    <div class="field-group"><label for="idadeMinima">Idade mínima</label><input type="number" id="idadeMinima" name="idadeMinima" min="0" placeholder="Ex: 14" value="{{ dados.get('idadeMinima', '') }}"></div>
-                    <div class="field-group"><label for="idadeMaxima">Idade máxima</label><input type="number" id="idadeMaxima" name="idadeMaxima" min="0" placeholder="Ex: 60" value="{{ dados.get('idadeMaxima', '') }}"></div>
+                    <div class="field-group"><label for="idadeMinima">Idade mínima</label><input type="number" id="idadeMinima" name="idadeMinima" min="0" max="120" placeholder="Ex: 14" value="{{ dados.get('idadeMinima', '') }}"></div>
+                    <div class="field-group"><label for="idadeMaxima">Idade máxima</label><input type="number" id="idadeMaxima" name="idadeMaxima" min="0" max="120" placeholder="Ex: 60" value="{{ dados.get('idadeMaxima', '') }}"></div>
                 </div>
 
                 <!-- Acesso -->
@@ -508,7 +521,7 @@
                         </div>
                         <div class="field-row">
                             <div class="field-group"><label>Fluxo de usuários estimado por hora <span class="required">*</span></label><input type="number" name="exp_oper_fluxo_hora" min="1" value="{{ dados.get('exp_oper_fluxo_hora', '') }}" required></div>
-                            <div class="field-group"><label>Quantidade de equipe operacional do proponente durante a experiência <span class="required">*</span></label><input type="number" name="exp_oper_qtd_equipe" min="1" value="{{ dados.get('exp_oper_qtd_equipe', '') }}" required></div>
+                            <div class="field-group"><label>Quantidade de equipe operacional do proponente na montagem e desmontagem <span class="required">*</span></label><input type="number" name="exp_oper_qtd_equipe" min="1" value="{{ dados.get('exp_oper_qtd_equipe', '') }}" required></div>
                         </div>
                     </div>
                 </div>
@@ -646,7 +659,7 @@
                             </div>
                         </div>
 
-                        <div class="field-group" style="margin-top:16px"><label>Montagem e desmontagem <span class="required">*</span></label><textarea name="exp_montagem_desmontagem_desc" maxlength="300" style="min-height:70px" placeholder="Descreva o tempo e necessidades para montagem e desmontagem..." required>{{ dados.get('exp_montagem_desmontagem_desc', '') }}</textarea></div>
+                        <div class="field-group" style="margin-top:16px"><label>Tempo de montagem e desmontagem <span class="required">*</span></label><textarea name="exp_montagem_desmontagem_desc" maxlength="300" style="min-height:70px" placeholder="Descreva o tempo e necessidades para montagem e desmontagem..." required>{{ dados.get('exp_montagem_desmontagem_desc', '') }}</textarea></div>
                         
                         <div class="field-group"><label>Quantidade da equipe operacional do proponente? <span class="required">*</span></label><input type="number" name="exp_infra_qtd_equipe" min="1" value="{{ dados.get('exp_infra_qtd_equipe', '') }}" required></div>
                     </div>
@@ -668,7 +681,8 @@
                             <div class="infra-checkboxes" id="expEspacoCondicao">
                                 <div class="checkbox-option"><input type="checkbox" id="exp_condicao_isolamento" name="exp_espaco_condicao" value="isolamento_acustico" onchange="toggleExpCondicaoOutros()" {{ 'checked' if 'isolamento_acustico' in exp_espaco_condicao_values }}><label for="exp_condicao_isolamento">1. Isolamento acústico</label></div>
                                 <div class="checkbox-option"><input type="checkbox" id="exp_condicao_sala_escura" name="exp_espaco_condicao" value="sala_escura" onchange="toggleExpCondicaoOutros()" {{ 'checked' if 'sala_escura' in exp_espaco_condicao_values }}><label for="exp_condicao_sala_escura">2. Sala escura</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="exp_condicao_outros" name="exp_espaco_condicao" value="outros" onchange="toggleExpCondicaoOutros()" {{ 'checked' if 'outros' in exp_espaco_condicao_values }}><label for="exp_condicao_outros">3. Outros</label></div>
+                                <div class="checkbox-option"><input type="checkbox" id="exp_condicao_sem_especificacao" name="exp_espaco_condicao" value="sem_especificacao" onchange="toggleExpCondicaoOutros()" {{ 'checked' if 'sem_especificacao' in exp_espaco_condicao_values }}><label for="exp_condicao_sem_especificacao">3. Sem especificação</label></div>
+                                <div class="checkbox-option"><input type="checkbox" id="exp_condicao_outros" name="exp_espaco_condicao" value="outros" onchange="toggleExpCondicaoOutros()" {{ 'checked' if 'outros' in exp_espaco_condicao_values }}><label for="exp_condicao_outros">4. Outros</label></div>
                             </div>
                             <div class="helper-text">Você pode marcar mais de uma opção.</div>
                         </div>
@@ -745,7 +759,7 @@
         </div></div></div>
         <div class="guest-subsection"><div class="guest-subsection-title">Identificação</div>
             <div class="field-row"><div class="field-group" style="grid-column:span 2"><label>Nome completo <span class="required">*</span></label><input type="text" class="g-nome" name="convidadoX_nome" required></div></div>
-            <div class="field-row"><div class="field-group"><label>Papel na atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="palestrante">Palestrante</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
+            <div class="field-row"><div class="field-group"><label>Papel na atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="ministrante">Ministrante</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
             
             <div class="lgpd-notice">
                 <i class="fas fa-shield-alt"></i>
@@ -755,10 +769,10 @@
             <div class="field-row"><div class="field-group g-doc-cpf"><label>CPF <span class="required">*</span></label><input type="text" class="g-cpf" name="convidadoX_cpf" maxlength="14" oninput="maskCPF(this)" onblur="validateCPFfrontend(this)" required></div><div class="field-group g-doc-passaporte hidden"><label>Passaporte ou Documento de Identidade Internacional / RNM <span class="required">*</span></label><input type="text" class="g-passaporte" name="convidadoX_passaporte" required></div></div>
             <div class="field-row g-doc-br">
                 <div class="field-group"><label>Estado <span class="required">*</span></label><select class="g-estado" name="convidadoX_estado" required onchange="checkGuestBairro(this)"><option value="">Selecione...</option><option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option></select></div>
-                <div class="field-group"><label>Cidade <span class="required">*</span></label><input type="text" class="g-cidade" name="convidadoX_cidade" required oninput="checkGuestBairro(this)"></div>
+                <div class="field-group"><label>Cidade <span class="required">*</span></label><select class="g-cidade" name="convidadoX_cidade" required onchange="checkGuestBairro(this)"><option value="">Selecione o estado primeiro...</option></select></div>
             </div>
             <div class="field-group hidden g-bairro-field g-doc-br bairro-field" style="margin-top:0"><label>Bairro</label><input type="text" class="g-bairro" name="convidadoX_bairro" placeholder="Informe o bairro (opcional)"></div>
-            <div class="field-row g-doc-ext hidden"><div class="field-group" style="grid-column:span 2"><label>País de origem <span class="required">*</span></label><input type="text" class="g-pais" name="convidadoX_pais_origem" required></div></div>
+            <div class="field-row g-doc-ext hidden"><div class="field-group"><label>País de origem <span class="required">*</span></label><select class="g-pais" name="convidadoX_pais_origem" required><option value="">Carregando países...</option></select></div><div class="field-group"><label>Cidade de origem <span class="required">*</span></label><select class="g-cidade-origem" name="convidadoX_cidade_origem" required><option value="">Selecione o país primeiro...</option></select></div></div>
         </div>
         <div class="guest-subsection"><div class="guest-subsection-title">Contato</div>
             <div class="field-row"><div class="field-group"><label>E-mail <span class="required">*</span></label><input type="email" class="g-email" name="convidadoX_email" required onblur="validateEmailFrontend(this)"></div><div class="field-group"><label>Telefone <span class="required">*</span></label><input type="text" class="g-telefone" name="convidadoX_telefone" required></div></div>
@@ -938,6 +952,18 @@ function validateAgeFieldsBeforePDF(){
         maxField.focus();
         return false;
     }
+    if(minValue&&Number(minValue)>120){
+        minField.setCustomValidity('A idade mínima não pode ser maior que 120.');
+        minField.reportValidity();
+        minField.focus();
+        return false;
+    }
+    if(maxValue&&Number(maxValue)>120){
+        maxField.setCustomValidity('A idade máxima não pode ser maior que 120.');
+        maxField.reportValidity();
+        maxField.focus();
+        return false;
+    }
     if(minValue&&maxValue&&Number(minValue)>Number(maxValue)){
         maxField.setCustomValidity('A idade máxima deve ser maior ou igual à idade mínima.');
         maxField.reportValidity();
@@ -996,7 +1022,7 @@ function syncNomeRepresentante(){
 
 (function(){const s=document.getElementById('tipoProponente').value||'pj';setProponenteType(s)})();
 
-function checkGuestBairro(input){const card=input.closest('.guest-card');if(!card)return;const bf=card.querySelector('.g-bairro-field'),es=card.querySelector('.g-estado'),ci=card.querySelector('.g-cidade');const e=es?es.value:'',c=ci?ci.value.trim().toLowerCase():'';if(e==='PE'&&c==='recife')bf.classList.remove('hidden');else bf.classList.add('hidden')}
+function checkGuestBairro(input){const card=input.closest('.guest-card');if(!card)return;const bf=card.querySelector('.g-bairro-field'),es=card.querySelector('.g-estado'),ci=card.querySelector('.g-cidade');const e=es?es.value:'',c=normalizeLocationValue(ci?ci.value:'');if(e==='PE'&&c==='recife')bf.classList.remove('hidden');else bf.classList.add('hidden')}
 
 // ===== DURAÇÃO E FORMATO =====
 const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'roda_de_conversa':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'oficina':[{value:'1h',label:'1h'},{value:'1h30',label:'1h30'},{value:'2h',label:'2h'},{value:'2h30',label:'2h30'},{value:'3h',label:'3h'}],'experiencia':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'3h',label:'3h'},{value:'4h',label:'4h'},{value:'dia_todo',label:'9h (Dia todo)'}]};
@@ -1004,8 +1030,8 @@ const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}]
 function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value,s=document.getElementById('tempoDuracao'),cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op)});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv}}
 
 const PAPEL_OPTIONS={
-    'debate':[{value:'palestrante',label:'Palestrante'},{value:'mediador',label:'Mediador'}],
-    'roda_de_conversa':[{value:'palestrante',label:'Palestrante'},{value:'mediador',label:'Mediador'}],
+    'debate':[{value:'ministrante',label:'Ministrante'},{value:'mediador',label:'Mediador'}],
+    'roda_de_conversa':[{value:'ministrante',label:'Ministrante'},{value:'mediador',label:'Mediador'}],
     'oficina':[{value:'oficineiro',label:'Oficineiro'},{value:'monitor',label:'Monitor'}],
     'experiencia':[{value:'facilitador',label:'Facilitador'},{value:'monitor',label:'Monitor'}]
 };
@@ -1036,7 +1062,8 @@ const GUEST_LIMITS={
 function getGuestLimits(){return GUEST_LIMITS[document.getElementById('formatoAtividade')?.value]||{label:'Este formato',min:1,max:5}}
 function getMaxGuests(){return getGuestLimits().max}
 function getMinGuests(){return getGuestLimits().min}
-function syncGuestLimit(){const limits=getGuestLimits(),maxGuests=limits.max;document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);if(guestCount>maxGuests)showToast(`${limits.label} permite no máximo ${maxGuests} integrantes. Remova ${guestCount-maxGuests} integrante(s) para continuar.`,'error')}
+function syncGuestRemovalLocks(){const minGuests=getMinGuests();document.querySelectorAll('.guest-card').forEach((card,index)=>{const btn=card.querySelector('.remove-guest'),locked=index<minGuests;if(btn){btn.disabled=locked;btn.title=locked?`Este formato exige no mínimo ${minGuests} integrante(s).`:'Remover'}})}
+function syncGuestLimit(){const limits=getGuestLimits(),maxGuests=limits.max;document.getElementById('btnAddGuest').disabled=(guestCount>=maxGuests);syncGuestRemovalLocks();if(guestCount>maxGuests)showToast(`${limits.label} permite no máximo ${maxGuests} integrantes. Remova ${guestCount-maxGuests} integrante(s) para continuar.`,'error')}
 
 function toggleActivityFields(){
     const f=document.getElementById('formatoAtividade').value;
@@ -1363,21 +1390,189 @@ function validateExperienciaClient(){
 let expEquipRowCount=0;function addExpEquipRow(){expEquipRowCount++;const tb=document.getElementById('expEquipTableBody'),tr=document.createElement('tr');tr.id='expEquipRow'+expEquipRowCount;tr.innerHTML=`<td><input type="text" name="exp_equip_item_${expEquipRowCount}" required></td><td><input type="number" name="exp_equip_qtd_${expEquipRowCount}" min="1" value="1" required style="width:70px"></td><td><input type="text" name="exp_equip_obs_${expEquipRowCount}" maxlength="200"></td><td><button type="button" class="btn-remove-row" onclick="removeExpEquipRow('expEquipRow${expEquipRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr)}
 function removeExpEquipRow(id){document.getElementById(id).remove()}
 
+// ===== LOCATION LISTS =====
+const BR_CITIES_BY_STATE={
+    AC:['Rio Branco','Cruzeiro do Sul','Sena Madureira','Tarauacá','Feijó','Brasiléia'],
+    AL:['Maceió','Arapiraca','Rio Largo','Palmeira dos Índios','União dos Palmares','Penedo','Delmiro Gouveia'],
+    AP:['Macapá','Santana','Laranjal do Jari','Oiapoque','Mazagão','Porto Grande'],
+    AM:['Manaus','Parintins','Itacoatiara','Manacapuru','Coari','Tefé','Tabatinga'],
+    BA:['Salvador','Feira de Santana','Vitória da Conquista','Camaçari','Juazeiro','Ilhéus','Itabuna','Lauro de Freitas','Barreiras','Porto Seguro'],
+    CE:['Fortaleza','Caucaia','Juazeiro do Norte','Maracanaú','Sobral','Crato','Itapipoca','Maranguape','Iguatu','Quixadá'],
+    DF:['Brasília'],
+    ES:['Vitória','Vila Velha','Serra','Cariacica','Linhares','Colatina','Guarapari','São Mateus','Cachoeiro de Itapemirim'],
+    GO:['Goiânia','Aparecida de Goiânia','Anápolis','Rio Verde','Luziânia','Águas Lindas de Goiás','Valparaíso de Goiás','Trindade','Formosa'],
+    MA:['São Luís','Imperatriz','São José de Ribamar','Timon','Caxias','Codó','Paço do Lumiar','Açailândia','Bacabal'],
+    MT:['Cuiabá','Várzea Grande','Rondonópolis','Sinop','Tangará da Serra','Cáceres','Sorriso','Lucas do Rio Verde'],
+    MS:['Campo Grande','Dourados','Três Lagoas','Corumbá','Ponta Porã','Naviraí','Aquidauana','Nova Andradina'],
+    MG:['Belo Horizonte','Uberlândia','Contagem','Juiz de Fora','Betim','Montes Claros','Ribeirão das Neves','Uberaba','Governador Valadares','Ipatinga','Sete Lagoas','Divinópolis','Santa Luzia'],
+    PA:['Belém','Ananindeua','Santarém','Marabá','Parauapebas','Castanhal','Abaetetuba','Cametá','Bragança','Altamira'],
+    PB:['João Pessoa','Campina Grande','Santa Rita','Patos','Bayeux','Sousa','Cajazeiras','Cabedelo','Guarabira'],
+    PR:['Curitiba','Londrina','Maringá','Ponta Grossa','Cascavel','São José dos Pinhais','Foz do Iguaçu','Colombo','Guarapuava','Paranaguá'],
+    PE:['Recife','Jaboatão dos Guararapes','Olinda','Caruaru','Petrolina','Paulista','Cabo de Santo Agostinho','Camaragibe','Garanhuns','Vitória de Santo Antão','Igarassu','São Lourenço da Mata','Abreu e Lima','Ipojuca','Serra Talhada','Arcoverde'],
+    PI:['Teresina','Parnaíba','Picos','Piripiri','Floriano','Campo Maior','Barras','União'],
+    RJ:['Rio de Janeiro','São Gonçalo','Duque de Caxias','Nova Iguaçu','Niterói','Belford Roxo','Campos dos Goytacazes','São João de Meriti','Petrópolis','Volta Redonda','Macaé','Cabo Frio'],
+    RN:['Natal','Mossoró','Parnamirim','São Gonçalo do Amarante','Macaíba','Ceará-Mirim','Caicó','Assu'],
+    RS:['Porto Alegre','Caxias do Sul','Canoas','Pelotas','Santa Maria','Gravataí','Viamão','Novo Hamburgo','São Leopoldo','Rio Grande','Passo Fundo','Uruguaiana'],
+    RO:['Porto Velho','Ji-Paraná','Ariquemes','Vilhena','Cacoal','Rolim de Moura','Guajará-Mirim'],
+    RR:['Boa Vista','Rorainópolis','Caracaraí','Alto Alegre','Mucajaí','Pacaraima'],
+    SC:['Florianópolis','Joinville','Blumenau','São José','Chapecó','Itajaí','Criciúma','Palhoça','Lages','Balneário Camboriú'],
+    SP:['São Paulo','Guarulhos','Campinas','São Bernardo do Campo','Santo André','Osasco','Sorocaba','Ribeirão Preto','Santos','São José dos Campos','Jundiaí','Piracicaba','Bauru','São Carlos','Taubaté'],
+    SE:['Aracaju','Nossa Senhora do Socorro','Lagarto','Itabaiana','São Cristóvão','Estância','Tobias Barreto'],
+    TO:['Palmas','Araguaína','Gurupi','Porto Nacional','Paraíso do Tocantins','Colinas do Tocantins']
+};
+const FOREIGN_CITIES_BY_COUNTRY={
+    'África do Sul':['Joanesburgo','Cidade do Cabo','Durban','Pretória','Port Elizabeth'],
+    'Alemanha':['Berlim','Munique','Hamburgo','Frankfurt','Colônia','Düsseldorf','Stuttgart'],
+    'Angola':['Luanda','Benguela','Huambo','Lubango','Cabinda'],
+    'Argentina':['Buenos Aires','Córdoba','Rosário','Mendoza','La Plata','Mar del Plata','Salta'],
+    'Austrália':['Sydney','Melbourne','Brisbane','Perth','Adelaide','Canberra'],
+    'Áustria':['Viena','Graz','Linz','Salzburgo','Innsbruck'],
+    'Bélgica':['Bruxelas','Antuérpia','Gante','Bruges','Liège'],
+    'Bolívia':['La Paz','Santa Cruz de la Sierra','Cochabamba','Sucre','El Alto'],
+    'Cabo Verde':['Praia','Mindelo','Santa Maria','Assomada','São Filipe'],
+    'Canadá':['Toronto','Montreal','Vancouver','Calgary','Ottawa','Quebec'],
+    'Chile':['Santiago','Valparaíso','Concepción','La Serena','Antofagasta','Viña del Mar'],
+    'China':['Pequim','Xangai','Shenzhen','Guangzhou','Chengdu','Hangzhou'],
+    'Colômbia':['Bogotá','Medellín','Cali','Barranquilla','Cartagena','Bucaramanga'],
+    'Coreia do Sul':['Seul','Busan','Incheon','Daegu','Daejeon','Gwangju'],
+    'Dinamarca':['Copenhague','Aarhus','Odense','Aalborg','Esbjerg'],
+    'Emirados Árabes Unidos':['Dubai','Abu Dhabi','Sharjah','Ajman','Al Ain'],
+    'Equador':['Quito','Guayaquil','Cuenca','Manta','Loja'],
+    'Espanha':['Madri','Barcelona','Valência','Sevilha','Bilbao','Málaga','Zaragoza'],
+    'Estados Unidos':['Nova York','Los Angeles','Chicago','Houston','Phoenix','Filadélfia','San Francisco','Miami','Boston','Seattle','Washington'],
+    'Finlândia':['Helsinque','Espoo','Tampere','Vantaa','Turku'],
+    'França':['Paris','Marselha','Lyon','Toulouse','Nice','Nantes','Bordeaux'],
+    'Grécia':['Atenas','Tessalônica','Patras','Heraclião','Larissa'],
+    'Holanda':['Amsterdã','Roterdã','Haia','Utrecht','Eindhoven'],
+    'Índia':['Nova Délhi','Mumbai','Bangalore','Hyderabad','Chennai','Kolkata','Pune'],
+    'Irlanda':['Dublin','Cork','Galway','Limerick','Waterford'],
+    'Israel':['Tel Aviv','Jerusalém','Haifa','Rishon LeZion','Beer Sheva'],
+    'Itália':['Roma','Milão','Nápoles','Turim','Florença','Bolonha','Palermo'],
+    'Japão':['Tóquio','Osaka','Kyoto','Yokohama','Nagoya','Sapporo','Fukuoka'],
+    'México':['Cidade do México','Guadalajara','Monterrey','Puebla','Tijuana','Mérida'],
+    'Moçambique':['Maputo','Matola','Beira','Nampula','Chimoio','Nacala'],
+    'Noruega':['Oslo','Bergen','Trondheim','Stavanger','Drammen'],
+    'Paraguai':['Assunção','Ciudad del Este','San Lorenzo','Luque','Encarnación'],
+    'Peru':['Lima','Arequipa','Trujillo','Cusco','Chiclayo','Piura'],
+    'Polônia':['Varsóvia','Cracóvia','Lodz','Wroclaw','Poznan','Gdansk'],
+    'Portugal':['Lisboa','Porto','Braga','Coimbra','Faro','Aveiro','Funchal'],
+    'Reino Unido':['Londres','Manchester','Birmingham','Liverpool','Edimburgo','Glasgow','Bristol'],
+    'República Tcheca':['Praga','Brno','Ostrava','Pilsen','Liberec'],
+    'Singapura':['Singapura'],
+    'Suécia':['Estocolmo','Gotemburgo','Malmö','Uppsala','Västerås'],
+    'Suíça':['Zurique','Genebra','Basileia','Lausanne','Berna'],
+    'Turquia':['Istambul','Ancara','Izmir','Bursa','Antalya'],
+    'Uruguai':['Montevidéu','Salto','Paysandú','Maldonado','Rivera'],
+    'Venezuela':['Caracas','Maracaibo','Valência','Barquisimeto','Maracay']
+};
+const COUNTRY_OPTIONS=Object.keys(FOREIGN_CITIES_BY_COUNTRY).sort((a,b)=>a.localeCompare(b,'pt-BR'));
+const COUNTRY_CODE_BY_NAME={
+    'africa do sul':'za','alemanha':'de','angola':'ao','argentina':'ar','australia':'au','austria':'at',
+    'belgica':'be','bolivia':'bo','cabo verde':'cv','canada':'ca','chile':'cl','china':'cn',
+    'colombia':'co','coreia do sul':'kr','dinamarca':'dk','emirados arabes unidos':'ae','equador':'ec',
+    'espanha':'es','estados unidos':'us','finlandia':'fi','franca':'fr','grecia':'gr','holanda':'nl',
+    'india':'in','irlanda':'ie','israel':'il','italia':'it','japao':'jp','mexico':'mx','mocambique':'mz',
+    'noruega':'no','paraguai':'py','peru':'pe','polonia':'pl','portugal':'pt','reino unido':'gb',
+    'republica tcheca':'cz','singapura':'sg','suecia':'se','suica':'ch','turquia':'tr','uruguai':'uy',
+    'venezuela':'ve'
+};
+function normalizeLocationValue(value){return (value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase()}
+function fillDatalist(list,items){if(!list)return;list.innerHTML='';items.forEach(item=>{const option=document.createElement('option');option.value=item;list.appendChild(option)})}
+function normalizeLocationItems(items){return (items||[]).map(item=>typeof item==='string'?{label:item}:item).filter(item=>item&&item.label)}
+function getLocationDropdown(input){const group=input?.closest('.field-group');if(!group)return null;group.classList.add('location-select-wrap');let dropdown=group.querySelector('.location-dropdown');if(!dropdown){dropdown=document.createElement('div');dropdown.className='location-dropdown';group.appendChild(dropdown)}return dropdown}
+function hideAllLocationDropdowns(except=null){document.querySelectorAll('.location-dropdown.active').forEach(dropdown=>{if(dropdown!==except)dropdown.classList.remove('active')})}
+function hideLocationDropdown(input){getLocationDropdown(input)?.classList.remove('active')}
+function renderLocationDropdown(input,items,onSelect){
+    const dropdown=getLocationDropdown(input);if(!dropdown)return;
+    const allItems=normalizeLocationItems(items),query=normalizeLocationValue(input.value);
+    const filtered=(query?allItems.filter(item=>normalizeLocationValue(item.label).includes(query)):allItems).slice(0,160);
+    dropdown.innerHTML='';
+    if(!filtered.length){const empty=document.createElement('div');empty.className='location-dropdown-empty';empty.textContent=input.dataset.locationLoading==='true'?'Carregando...':'Nenhuma opção encontrada';dropdown.appendChild(empty)}
+    filtered.forEach(item=>{const option=document.createElement('div');option.className='location-dropdown-item';option.textContent=item.label;option.addEventListener('mousedown',e=>{e.preventDefault();input.value=item.label;if(item.code)input.dataset.countryCode=item.code;hideLocationDropdown(input);if(onSelect)onSelect(item)});dropdown.appendChild(option)});
+    hideAllLocationDropdowns(dropdown);dropdown.classList.add('active');
+}
+function setLocationItems(input,items,onSelect){if(!input)return;input._locationItems=normalizeLocationItems(items);input._locationOnSelect=onSelect;if(document.activeElement===input)renderLocationDropdown(input,input._locationItems,onSelect)}
+function bindLocationDropdown(input,onSelect){if(!input||input.dataset.locationDropdownBound==='true')return;input.dataset.locationDropdownBound='true';input.removeAttribute('list');input.addEventListener('focus',()=>renderLocationDropdown(input,input._locationItems||[],input._locationOnSelect||onSelect));input.addEventListener('input',()=>renderLocationDropdown(input,input._locationItems||[],input._locationOnSelect||onSelect));input.addEventListener('keydown',e=>{if(e.key==='Escape')hideLocationDropdown(input)})}
+document.addEventListener('mousedown',e=>{if(!e.target.closest('.location-select-wrap'))hideAllLocationDropdowns()});
+function findCountryKey(value){const normalized=normalizeLocationValue(value);return COUNTRY_OPTIONS.find(country=>normalizeLocationValue(country)===normalized)||''}
+function getCountryCodeFromInput(input){return (input?.dataset.countryCode||COUNTRY_CODE_BY_NAME[normalizeLocationValue(input?.value)]||'').toLowerCase()}
+function countryFallbackItems(){return COUNTRY_OPTIONS.map(label=>({label,code:COUNTRY_CODE_BY_NAME[normalizeLocationValue(label)]||''}))}
+function fillLocationSelect(select,items,placeholder='Selecione...',selectedValue=undefined){
+    if(!select)return;
+    const current=selectedValue!==undefined?selectedValue:(select.dataset.pendingValue||select.value||'');
+    select.innerHTML='';
+    const first=document.createElement('option');first.value='';first.textContent=placeholder;select.appendChild(first);
+    normalizeLocationItems(items).forEach(item=>{const option=document.createElement('option');option.value=item.label;option.textContent=item.label;if(item.code)option.dataset.code=item.code;select.appendChild(option)});
+    if(current&&Array.from(select.options).some(option=>option.value===current)){select.value=current;delete select.dataset.pendingValue}
+    else{select.value='';if(current)select.dataset.pendingValue=current;else delete select.dataset.pendingValue}
+}
+function setLocationSelectLoading(select,message){if(!select)return;const pending=select.dataset.pendingValue||select.value||'';fillLocationSelect(select,[],message,'');if(pending)select.dataset.pendingValue=pending;select.disabled=true}
+function setLocationSelectOptions(select,items,placeholder='Selecione...',selectedValue=undefined){fillLocationSelect(select,items,placeholder,selectedValue);select.disabled=false}
+function updateCountryCodeFromSelection(select){if(!select)return;const option=select.selectedOptions&&select.selectedOptions[0];select.dataset.countryCode=(option?.dataset.code||COUNTRY_CODE_BY_NAME[normalizeLocationValue(select.value)]||'').toLowerCase()}
+const LOCATION_OPTIONS_CACHE={};
+function fetchLocationSuggestions(params={}){
+    const cacheKey=params.all?JSON.stringify(params):'';
+    if(cacheKey&&LOCATION_OPTIONS_CACHE[cacheKey])return Promise.resolve(LOCATION_OPTIONS_CACHE[cacheKey]);
+    const url=new URL('/api/localidades',window.location.origin);
+    Object.entries(params).forEach(([key,value])=>{if(value)url.searchParams.set(key,value)});
+    return fetch(url.toString()).then(response=>response.ok?response.json():{suggestions:[]}).then(data=>{const items=normalizeLocationItems(data.suggestions||[]);if(cacheKey)LOCATION_OPTIONS_CACHE[cacheKey]=items;return items}).catch(()=>[]);
+}
+function fetchIBGECityOptions(estado){
+    if(!estado)return Promise.resolve([]);
+    const url=`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${encodeURIComponent(estado)}/municipios?orderBy=nome`;
+    return fetch(url).then(response=>response.ok?response.json():[]).then(data=>normalizeLocationItems(data.map(item=>item.nome).filter(Boolean))).catch(()=>[]);
+}
+function updateBrazilCityOptions(card,clear=false){
+    const estado=card.querySelector('.g-estado')?.value||'',city=card.querySelector('.g-cidade'),fallback=normalizeLocationItems(BR_CITIES_BY_STATE[estado]||[]);
+    if(clear&&city)delete city.dataset.pendingValue;
+    if(!estado){setLocationSelectLoading(city,'Selecione o estado primeiro...');checkGuestBairro(city);return}
+    setLocationSelectLoading(city,'Carregando cidades oficiais...');
+    fetchLocationSuggestions({tipo:'cidade',country:'br',estado:estado,all:'1'}).then(items=>items.length?items:fetchIBGECityOptions(estado)).then(items=>{setLocationSelectOptions(city,items.length?items:fallback,'Selecione...',clear?'':undefined);checkGuestBairro(city)});
+}
+function updateForeignCityOptions(card,clear=false){
+    const country=card.querySelector('.g-pais'),city=card.querySelector('.g-cidade-origem');updateCountryCodeFromSelection(country);
+    const countryCode=getCountryCodeFromInput(country),key=findCountryKey(country?.value),fallback=normalizeLocationItems(key?FOREIGN_CITIES_BY_COUNTRY[key]:[]);
+    if(clear&&city)delete city.dataset.pendingValue;
+    if(!countryCode){setLocationSelectLoading(city,'Selecione o país primeiro...');return}
+    setLocationSelectLoading(city,'Carregando cidades...');
+    fetchLocationSuggestions({tipo:'cidade',country:countryCode,all:'1'}).then(items=>setLocationSelectOptions(city,items.length?items:fallback,'Selecione...',clear?'':undefined));
+}
+function updateCountryOptions(card){
+    const country=card.querySelector('.g-pais'),fallback=countryFallbackItems();
+    setLocationSelectLoading(country,'Carregando países...');
+    updateCountryCodeFromSelection(country);
+    fetchLocationSuggestions({tipo:'pais',all:'1'}).then(items=>{setLocationSelectOptions(country,items.length?items:fallback,'Selecione...');updateCountryCodeFromSelection(country);updateForeignCityOptions(card,false)});
+}
+function setupGuestLocationLists(card){
+    const cityInput=card.querySelector('.g-cidade'),countryInput=card.querySelector('.g-pais');
+    if(card.dataset.locationBound!=='true'){
+        card.dataset.locationBound='true';
+        card.querySelector('.g-estado')?.addEventListener('change',function(){updateBrazilCityOptions(card,true);checkGuestBairro(this)});
+        cityInput?.addEventListener('change',function(){checkGuestBairro(this)});
+        countryInput?.addEventListener('change',function(){updateCountryCodeFromSelection(this);updateForeignCityOptions(card,true)});
+    }
+    updateCountryOptions(card);
+    updateBrazilCityOptions(card,false);
+    updateForeignCityOptions(card,false);
+}
+
 // ===== GUEST LOGIC =====
-function populateAgeDropdowns(){const f=[{value:'0 a 18',label:'0 a 18'},{value:'19 a 25',label:'19 a 25'},{value:'26 a 35',label:'26 a 35'},{value:'36 a 60',label:'36 a 60'}];document.querySelectorAll('.g-idade').forEach(s=>{if(s.options.length<=1)f.forEach(x=>{const o=document.createElement('option');o.value=x.value;o.textContent=x.label;s.appendChild(o)})})}
+function populateAgeDropdowns(){const f=[{value:'0 a 18',label:'0 a 18'},{value:'19 a 25',label:'19 a 25'},{value:'26 a 35',label:'26 a 35'},{value:'36 a 59',label:'36 a 59'},{value:'60+',label:'60+'}];document.querySelectorAll('.g-idade').forEach(s=>{if(s.options.length<=1)f.forEach(x=>{const o=document.createElement('option');o.value=x.value;o.textContent=x.label;s.appendChild(o)})})}
+function renumberGuests(){document.querySelectorAll('.guest-card').forEach((card,index)=>{const n=index+1;card.dataset.id=n;card.querySelector('.num').innerText=n;card.querySelectorAll('input,select,textarea').forEach(field=>{if(field.name)field.name=field.name.replace(/convidado\d+_/,'convidado'+n+'_')});const file=card.querySelector('.g-foto'),label=card.querySelector('.g-foto-label');if(file&&label){file.id=`guest_file_${n}`;label.setAttribute('for',file.id)}setupGuestLocationLists(card)});guestCount=document.querySelectorAll('.guest-card').length;syncGuestRemovalLocks()}
 
 function addGuest(scroll=true,data=null){
     const maxGuests=getMaxGuests();
     if(guestCount>=maxGuests){showToast(`Máximo de ${maxGuests} integrantes para este formato.`,'error');return}
     guestCount++;const c=document.getElementById('guestTemplate').content.cloneNode(true),card=c.querySelector('.guest-card');card.dataset.id=guestCount;card.querySelector('.num').innerText=guestCount;card.querySelectorAll('input,select,textarea').forEach(i=>{if(i.name)i.name=i.name.replace('convidadoX','convidado'+guestCount)});
+    setupGuestLocationLists(card);
     const fi=card.querySelector('.g-foto'),fl=card.querySelector('.g-foto-label'),fs=card.querySelector('.g-foto-status');fi.id=`guest_file_${guestCount}`;fl.setAttribute('for',fi.id);
     fi.addEventListener('change',function(e){var p=card.querySelector('.g-photo-preview'),s=card.querySelector('.g-foto-status');p.classList.remove('error-border');if(this.files&&this.files[0]){openCropModal(this.files[0],this,p,s)}else{p.innerHTML='<i class="fas fa-user"></i>';resetUploadStatus(s);}});
     const ti=card.querySelector('.g-telefone');if(ti)ti.addEventListener('input',maskPhone);const gi=card.querySelector('.g-cpf');if(gi)gi.addEventListener('paste',function(e){e.preventDefault();const p=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').substring(0,11);e.target.value=p;maskCPF(e.target)});
-    if(data){card.querySelectorAll('input, select, textarea').forEach(i=>{if(i.name&&data[i.name]!==undefined){if(i.type==='checkbox'){i.checked=(data[i.name]==='sim'||data[i.name]===true);if(i.name.endsWith('_acessibilidade')&&i.checked)toggleGuestAcessibilidade(i)}else if(i.type==='radio')i.checked=(i.value===data[i.name]);else i.value=data[i.name]}});const ns=card.querySelector('.g-nacionalidade');if(ns)toggleGuestDocs(ns);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
+    if(data){card.querySelectorAll('input, select, textarea').forEach(i=>{if(i.name&&data[i.name]!==undefined){if(i.type==='checkbox'){i.checked=(data[i.name]==='sim'||data[i.name]===true);if(i.name.endsWith('_acessibilidade')&&i.checked)toggleGuestAcessibilidade(i)}else if(i.type==='radio')i.checked=(i.value===data[i.name]);else{if(i.classList.contains('g-cidade')||i.classList.contains('g-pais')||i.classList.contains('g-cidade-origem'))i.dataset.pendingValue=data[i.name];i.value=data[i.name]}}});updateBrazilCityOptions(card,false);updateForeignCityOptions(card,false);const ns=card.querySelector('.g-nacionalidade');if(ns)toggleGuestDocs(ns);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
     document.getElementById('guestsList').appendChild(card);populateAgeDropdowns();syncGuestRoleOptions();syncGuestLimit();if(scroll&&!data)card.scrollIntoView({behavior:'smooth',block:'center'})
 }
-function removeGuest(btn){const card=btn.closest('.guest-card');card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();guestCount--;syncGuestLimit()},300)}
-function toggleGuestDocs(sel){const card=sel.closest('.guest-card'),isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>toggleSection(f,!isBR));card.querySelectorAll('.g-doc-br').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>toggleSection(f,!isBR))}
+function removeGuest(btn){const card=btn.closest('.guest-card'),cards=Array.from(document.querySelectorAll('.guest-card')),index=cards.indexOf(card),minGuests=getMinGuests();if(index>-1&&index<minGuests){showToast(`Este formato exige no mínimo ${minGuests} integrante(s).`, 'error');return}card.style.opacity='0';card.style.transition='opacity 0.3s';setTimeout(()=>{card.remove();renumberGuests();syncGuestLimit()},300)}
+function toggleGuestDocs(sel){const card=sel.closest('.guest-card'),isBR=sel.value==='brasileiro';card.querySelectorAll('.g-doc-cpf').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-passaporte').forEach(f=>toggleSection(f,!isBR));card.querySelectorAll('.g-doc-br').forEach(f=>toggleSection(f,isBR));card.querySelectorAll('.g-doc-ext').forEach(f=>toggleSection(f,!isBR));updateBrazilCityOptions(card,false);updateForeignCityOptions(card,false);checkGuestBairro(card.querySelector('.g-estado')||card.querySelector('.g-cidade'))}
 function toggleGuestAcessibilidade(cb){const card=cb.closest('.guest-card'),d=card.querySelector('.g-acess-detail');toggleSection(d,cb.checked);const desc=d.querySelector('.g-acess-desc');if(!cb.checked){desc.value=''}}
 (function(){const r=JSON.parse({{ guest_data_json | tojson }});try{const g=r,k=Object.keys(g),idx=new Set();k.forEach(x=>{const m=x.match(/^convidado(\d+)_/);if(m)idx.add(parseInt(m[1]))});if(idx.size>0)Array.from(idx).sort((a,b)=>a-b).forEach(i=>{const p='convidado'+i+'_',sd={};k.filter(x=>x.startsWith(p)).forEach(x=>sd[x]=g[x]);addGuest(false,sd)});else addGuest(false)}catch(e){addGuest(false)}})();
 restoreExperienceState();
@@ -1595,6 +1790,7 @@ function createPaperViewHTML(){
             row('Cidade',byName(full('cidade'),card)),
             row('Bairro',byName(full('bairro'),card)),
             row('País de origem',byName(full('pais_origem'),card)),
+            row('Cidade de origem',byName(full('cidade_origem'),card)),
             row('E-mail',byName(full('email'),card)),
             row('Telefone',byName(full('telefone'),card)),
             row('LinkedIn',byName(full('social_linkedin'),card)),
@@ -1786,6 +1982,11 @@ async function gerarPDFPreview(e){
 function submitToBackend(){
     const btn=document.getElementById('btnConfirmSend');
     const originalText=btn.innerHTML;
+    if(!arePDFTermsAccepted()){
+        showToast('Você deve aceitar os Termos, Direitos Autorais e LGPD para enviar.', 'error');
+        checkTermsAndToggleSubmit();
+        return;
+    }
     btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Enviando...';
     btn.disabled=true;
 
@@ -1814,7 +2015,7 @@ function submitToBackend(){
     // RESTAURA ESTADO DO SELECT APÓS CAPTURA
     if(wasAcessoDisabled) acessoSelect.disabled = true;
 
-    restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});const emptyFileKeys=[];for(let[key,value]of formData.entries()){if(value instanceof File&&value.size===0)emptyFileKeys.push(key)}emptyFileKeys.forEach(key=>formData.delete(key));if(generatedPDFBlob){formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');formData.set('pdf_validado_cliente','sim')}const propPreviewImg=document.querySelector('#photoPreview img');if(propPreviewImg){const blob=dataURLtoBlob(propPreviewImg.src);if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')}document.querySelectorAll('.guest-card').forEach(card=>{const guestId=card.dataset.id;const guestPreviewImg=card.querySelector('.g-photo-preview img');if(guestPreviewImg){const blob=dataURLtoBlob(guestPreviewImg.src);if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)}});fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const flashSuccess=doc.querySelector('.flash-messages li.success');const flashError=doc.querySelector('.flash-messages li.error');if(flashError){replacePageAtTop(doc,'error','Corrija os erros indicados.')}else{const successMessage=flashSuccess?flashSuccess.innerText.trim():'Proposta enviada com sucesso!';try{sessionStorage.setItem('form_success_message',successMessage)}catch(e){}window.location.href='/'}}).catch(err=>{console.error(err);showToast('Erro de conexão.','error');btn.innerHTML=originalText;btn.disabled=false})}
+    restoredFields.forEach(field=>{field.disabled=false;if(field.dataset.wasRequired==='true'){field.required=true;field.dataset.wasRequired='false'}});const emptyFileKeys=[];for(let[key,value]of formData.entries()){if(value instanceof File&&value.size===0)emptyFileKeys.push(key)}emptyFileKeys.forEach(key=>formData.delete(key));if(generatedPDFBlob){formData.set('pdf_comprovante',generatedPDFBlob,'proposta_recnplay_2026.pdf');formData.set('pdf_validado_cliente','sim')}const propPreviewImg=document.querySelector('#photoPreview img');if(propPreviewImg){const blob=dataURLtoBlob(propPreviewImg.src);if(blob)formData.set('fotoProponente',blob,'logo_proposta.jpg')}document.querySelectorAll('.guest-card').forEach(card=>{const guestId=card.dataset.id;const guestPreviewImg=card.querySelector('.g-photo-preview img');if(guestPreviewImg){const blob=dataURLtoBlob(guestPreviewImg.src);if(blob)formData.set(`convidado${guestId}_foto`,blob,`convidado${guestId}.jpg`)}});fetch('/',{method:'POST',body:formData}).then(response=>response.text()).then(html=>{const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const flashSuccess=doc.querySelector('.flash-messages li.success');const flashError=doc.querySelector('.flash-messages li.error');if(flashError){replacePageAtTop(doc,'error','Corrija os erros indicados.')}else{const successMessage=flashSuccess?flashSuccess.innerText.trim():'Proposta enviada com sucesso!';try{sessionStorage.setItem('form_success_message',successMessage)}catch(e){}alert(successMessage);window.location.href='/'}}).catch(err=>{console.error(err);showToast('Erro de conexão.','error');btn.innerHTML=originalText;btn.disabled=false})}
 
 document.getElementById('inscricaoForm').removeEventListener('submit',null); 
 document.getElementById('inscricaoForm').addEventListener('submit',gerarPDFPreview);document.getElementById('btnConfirmSend').addEventListener('click',submitToBackend);
@@ -1836,14 +2037,18 @@ function limparFormulario(){
     document.getElementById('aceiteTermos').checked = false;
     document.getElementById('direitosAutorais').checked = false;
     document.getElementById('consentimentoLgpd').checked = false;
+    checkTermsAndToggleSubmit();
 
     addGuest();showToast('Formulário limpo.','info');
 }
 
 // ===== ENVIO APÓS PDF GERADO =====
+function arePDFTermsAccepted(){
+    return document.getElementById('aceiteTermos').checked&&document.getElementById('direitosAutorais').checked&&document.getElementById('consentimentoLgpd').checked;
+}
 function checkTermsAndToggleSubmit() {
     const btnSend = document.getElementById('btnConfirmSend');
-    if (btnSend) btnSend.disabled = false;
+    if (btnSend) btnSend.disabled = !arePDFTermsAccepted();
 }
 
 document.getElementById('aceiteTermos').addEventListener('change', checkTermsAndToggleSubmit);
