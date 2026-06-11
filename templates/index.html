@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REC'n'Play 2026 - Chamada Pública</title>
+    <title>Chamada Aberta de Propostas de Atividades de Conteúdo - REC’n’Play 2026</title>
     <link rel="icon" href="/static/aba.jpg" type="image/jpeg">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -305,7 +305,7 @@
         <div style="text-align: left; margin-top: 20px; padding: 0 10px; border-top: 1px solid #ddd; max-height: 30vh; overflow-y: auto;">
             <div class="checkbox-option" style="margin-bottom: 14px; margin-top: 14px;">
                 <input type="checkbox" id="aceiteTermos" name="aceite_termos" value="sim">
-                <label for="aceiteTermos"><span class="required">*</span> Aceite Integral dos Termos: "Declaro que li, compreendi e aceito integralmente todas as condições, prazos e regras estabelecidas na Chamada Pública para Recebimento de Propostas de Atividades de Conteúdo — REC’n’Play 2026 e seus Guias complementares."</label>
+                <label for="aceiteTermos"><span class="required">*</span> Aceite Integral dos Termos: "Declaro que li, compreendi e aceito integralmente todas as condições, prazos e regras estabelecidas na Chamada Aberta para Recebimento de Propostas de Atividades de Conteúdo — REC’n’Play 2026 e seus Guias complementares."</label>
             </div>
             <div class="checkbox-option" style="margin-bottom: 14px;">
                 <input type="checkbox" id="direitosAutorais" name="direitos_autorais" value="sim">
@@ -327,7 +327,7 @@
 <div class="form-wrapper">
     <div class="logo-crop" id="logoCrop"><img src="/static/logo.jpg" alt="REC'n'Play 2026" class="logo-image" id="logoImg"></div>
     <div class="form-card">
-        <div class="card-top"><h1>CHAMADA PÚBLICA</h1></div>
+        <div class="card-top"><h1>CHAMADA ABERTA</h1></div>
         <div class="step-indicator"><span class="step-text">Participe da construção da programação oficial do REC'n'Play 2026 submetendo propostas de atividades inovadoras, colaborativas e transformadoras.</span></div>
 
         {%- with messages = get_flashed_messages(with_categories=true) -%}
@@ -343,8 +343,8 @@
                 <p>O REC'n'Play é um festival colaborativo, e estamos felizes com seu interesse em contribuir com a programação de 2026.</p>
                 <p>Este formulário é destinado à submissão de propostas de atividades para compor parte da programação do festival.</p>
                 <p>Cada inscrição deverá corresponder a uma única atividade. Caso deseje submeter mais de uma proposta, será necessário preencher um novo formulário para cada atividade. Apenas as 5 submissões mais recentes de cada proponente serão consideradas para avaliação.</p>
-                <p>Antes de iniciar o preenchimento, recomendamos a leitura completa da <a href="#" target="_blank">Chamada Pública</a>, e dos Guias Complementares onde você encontrará informações relevantes.</p>
-                <p>Em caso de dúvidas, entre em contato com nosso <a href="#" target="_blank">FAQ</a>.</p>
+                <p>Antes de iniciar o preenchimento, recomendamos a leitura completa da <a href="#" target="_blank">Chamada Aberta de Propostas de Atividades de Conteúdo - REC’n’Play 2026</a>, e dos Guias Complementares onde você encontrará informações relevantes.</p>
+                <p>Em caso de dúvidas, entre em contato com nosso FAQ.</p>
                 <p>Agora é contigo. Lança a tua ideia!</p>
             </div>
 
@@ -419,7 +419,7 @@
                 <h2 class="section-title"><i class="fas fa-lightbulb"></i> 3. Dados da atividade</h2>
 
                 <!-- Nome da atividade -->
-                <div class="field-group"><label for="tituloAtividade">Nome da atividade <span class="required">*</span></label><input type="text" id="tituloAtividade" name="tituloAtividade" required value="{{ dados.get('tituloAtividade', '') }}" placeholder="Escreva o nome que será usado na divulgação da atividade no site e no aplicativo do festival"></div>
+                <div class="field-group"><label for="tituloAtividade">Nome da atividade <span class="required">*</span> <i class="tooltip-icon" data-tooltip="Nome que será usado na divulgação da atividade no site e no aplicativo do festival">?</i></label><input type="text" id="tituloAtividade" name="tituloAtividade" required value="{{ dados.get('tituloAtividade', '') }}" placeholder="Escreva o nome que será usado na divulgação da atividade no site e no aplicativo do festival"></div>
 
                 <!-- Eixo | Formato -->
                 <div class="field-row">
@@ -472,7 +472,7 @@
 
                 <!-- Público Alvo | Restrição de Idade -->
                 <div class="field-row">
-                    <div class="field-group"><label for="publicoAlvo">Público-alvo <span class="required">*</span></label><select id="publicoAlvo" name="publicoAlvo" required><option value="">Selecione...</option><option value="publico_geral" {{ 'selected' if dados.get('publicoAlvo') == 'publico_geral' }}>Público geral</option><option value="publico_especialista" {{ 'selected' if dados.get('publicoAlvo') == 'publico_especialista' }}>Especialista no tema</option><option value="professores" {{ 'selected' if dados.get('publicoAlvo') == 'professores' }}>Professores</option><option value="infantil" {{ 'selected' if dados.get('publicoAlvo') == 'infantil' }}>Infantil</option><option value="adolescente" {{ 'selected' if dados.get('publicoAlvo') == 'adolescente' }}>Adolescente</option><option value="apenas_mulheres" {{ 'selected' if dados.get('publicoAlvo') == 'apenas_mulheres' }}>Apenas mulheres</option></select></div>
+                    <div class="field-group"><label for="publicoAlvo">Público-alvo <span class="required">*</span></label><select id="publicoAlvo" name="publicoAlvo" required onchange="togglePublicoAlvoOutros()"><option value="">Selecione...</option><option value="publico_geral" {{ 'selected' if dados.get('publicoAlvo') == 'publico_geral' }}>Público geral</option><option value="publico_especialista" {{ 'selected' if dados.get('publicoAlvo') == 'publico_especialista' }}>Especialista no tema</option><option value="professores" {{ 'selected' if dados.get('publicoAlvo') == 'professores' }}>Professores</option><option value="infantil" {{ 'selected' if dados.get('publicoAlvo') == 'infantil' }}>Infantil</option><option value="adolescente" {{ 'selected' if dados.get('publicoAlvo') == 'adolescente' }}>Adolescente</option><option value="apenas_mulheres" {{ 'selected' if dados.get('publicoAlvo') == 'apenas_mulheres' }}>Apenas mulheres</option><option value="outros" {{ 'selected' if dados.get('publicoAlvo') == 'outros' }}>Outros</option></select></div>
                     <div class="field-group">
                         <label>Restrição de faixa etária?</label>
                         <div class="radio-group">
@@ -480,6 +480,9 @@
                             <div class="radio-option"><input type="radio" id="restricaoNao" name="restricaoEtaria" value="nao" onchange="toggleRestricao()" {{ 'checked' if dados.get('restricaoEtaria') == 'nao' }}><label for="restricaoNao">Não</label></div>
                         </div>
                     </div>
+                </div>
+                <div class="field-row hidden" id="publicoAlvoOutrosGroup" style="margin-top:0">
+                    <div class="field-group" style="grid-column:span 2"><label for="publicoAlvoOutros">Descreva o público-alvo <span class="required">*</span></label><input type="text" id="publicoAlvoOutros" name="publicoAlvoOutros" maxlength="120" required value="{{ dados.get('publicoAlvoOutros', '') }}" placeholder="Digite o público-alvo"></div>
                 </div>
                 <div class="field-row hidden" id="faixaEtariaGroup" style="margin-top:0">
                     <div class="field-group"><label for="idadeMinima">Idade mínima</label><input type="number" id="idadeMinima" name="idadeMinima" min="0" max="120" placeholder="Ex: 14" value="{{ dados.get('idadeMinima', '') }}"></div>
@@ -500,9 +503,6 @@
                     </div>
                 </div>
                 <div class="field-group hidden" id="inscricaoCheckboxGroup"><div class="inscricao-checkbox-box"><div class="checkbox-option"><input type="checkbox" id="inscricaoResponsabilidade" name="inscricaoResponsabilidade" value="sim" {{ 'checked' if dados.get('inscricaoResponsabilidade') == 'sim' }} required><label for="inscricaoResponsabilidade">Declaro que me responsabilizo por enviar o link de inscrição para a equipe do festival, por todos os processos de seleção e pela segurança dos dados dos participantes, em conformidade com a LGPD. <span class="required">*</span></label></div></div></div>
-
-                <!-- Recurso de acessibilidade indispensível? -->
-                <div class="field-group"><label for="recursosAcessibilidade">Recurso de acessibilidade indispensável? <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></label><textarea id="recursosAcessibilidade" name="recursosAcessibilidade" maxlength="200" style="min-height:70px" placeholder="Ex: intérprete de Libras, rampas de acesso, audiodescrição...">{{ dados.get('recursosAcessibilidade', '') }}</textarea></div>
 
                 <!-- ===== EXPERIÊNCIA: ACESSIBILIDADE / OPERAÇÃO (caixa roxa) ===== -->
                 <div id="expAcessOperacaoBox" class="purple-dashed-box hidden">
@@ -542,6 +542,9 @@
                         <div class="infra-outros-field hidden" id="infraOutrosField"><label style="font-weight:600;font-size:13px;margin-bottom:8px;display:block">Outros recursos</label><table class="material-table" id="infraTable"><thead><tr><th style="width:40%">Recurso</th><th style="width:15%">Quantidade</th><th style="width:35%">Observações</th><th style="width:10%"></th></tr></thead><tbody id="infraTableBody"></tbody></table><button type="button" class="btn-add-row" onclick="addInfraRow()"><i class="fas fa-plus"></i> Adicionar recurso</button></div>
                     </div>
                 </div>
+
+                <!-- Recurso de acessibilidade indispensável? -->
+                <div class="field-group"><label for="recursosAcessibilidade">Recurso de acessibilidade indispensável? <span style="font-weight:400;color:#999">(Máx 200 caracteres)</span></label><textarea id="recursosAcessibilidade" name="recursosAcessibilidade" maxlength="200" style="min-height:70px" placeholder="Ex: intérprete de Libras, rampas de acesso, audiodescrição...">{{ dados.get('recursosAcessibilidade', '') }}</textarea></div>
 
                 <!-- ===== OFICINA: CAIXA TRACEJADA ROXA ===== -->
                 <div id="oficinaSection" class="purple-dashed-box hidden">
@@ -759,7 +762,7 @@
         </div></div></div>
         <div class="guest-subsection"><div class="guest-subsection-title">Identificação</div>
             <div class="field-row"><div class="field-group" style="grid-column:span 2"><label>Nome completo <span class="required">*</span></label><input type="text" class="g-nome" name="convidadoX_nome" required></div></div>
-            <div class="field-row"><div class="field-group"><label>Papel na atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="ministrante">Ministrante</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
+            <div class="field-row"><div class="field-group"><label>Papel na atividade <span class="required">*</span></label><select class="g-papel" name="convidadoX_papel" required><option value="">Selecione...</option><option value="convidado">Convidado</option><option value="mediador">Mediador</option></select></div><div class="field-group"><label>Nacionalidade <span class="required">*</span></label><select class="g-nacionalidade" name="convidadoX_nacionalidade" required onchange="toggleGuestDocs(this)"><option value="brasileiro">Brasileiro</option><option value="estrangeiro">Estrangeiro</option></select></div></div>
             
             <div class="lgpd-notice">
                 <i class="fas fa-shield-alt"></i>
@@ -895,6 +898,7 @@ function toggleVisibilityByCategory(){toggleMaterialAjudaOficina();toggleMateria
 function toggleMaterialAjudaOficina(){const s=document.getElementById('oficinaMaterialStep'),show=canRequestFinancialSupport();toggleSection(s,show);if(!show&&document.getElementById('materialAjuda')){document.getElementById('materialAjuda').value='nao';toggleMaterialTable()}}
 function toggleMaterialAjudaExperiencia(){const s=document.getElementById('expMaterialAjudaStep'),select=document.querySelector('[name="exp_material_ajuda"]'),show=canRequestFinancialSupport();toggleSection(s,show);if(!show&&select){select.value='nao';toggleExpMaterialTable(select)}}
 function toggleAjudaCustoVisibility(){const w=document.getElementById('ajudaCustoWrapper'),show=canRequestFinancialSupport();toggleSection(w,show);if(!show){document.getElementById('ajudaCustoSelect').value='';toggleAjudaCustoTable()}}
+function togglePublicoAlvoOutros(){const show=document.getElementById('publicoAlvo')?.value==='outros',section=document.getElementById('publicoAlvoOutrosGroup'),input=document.getElementById('publicoAlvoOutros');toggleSection(section,show);if(!show&&input)input.value=''}
 
 let infraRowCount=0;function toggleInfraOutros(){var cb=document.getElementById('infra_outros'),f=document.getElementById('infraOutrosField');if(cb.checked){toggleSection(f,true);if(infraRowCount===0)addInfraRow()}else{toggleSection(f,false);document.getElementById('infraTableBody').innerHTML='';infraRowCount=0}}
 function addInfraRow(){infraRowCount++;const tb=document.getElementById('infraTableBody'),tr=document.createElement('tr');tr.id='infraRow'+infraRowCount;tr.innerHTML=`<td><input type="text" name="infra_item_${infraRowCount}" maxlength="100" required></td><td><input type="number" name="infra_qtd_${infraRowCount}" min="1" value="1" required style="width:70px"></td><td><input type="text" name="infra_obs_${infraRowCount}" maxlength="200"></td><td><button type="button" class="btn-remove-row" onclick="removeInfraRow('infraRow${infraRowCount}')"><i class="fas fa-times"></i></button></td>`;tb.appendChild(tr)}
@@ -1043,12 +1047,12 @@ function syncNomeRepresentante(){
 function checkGuestBairro(input){const card=input.closest('.guest-card');if(!card)return;const bf=card.querySelector('.g-bairro-field'),es=card.querySelector('.g-estado'),ci=card.querySelector('.g-cidade');const e=es?es.value:'',c=normalizeLocationValue(ci?ci.value:'');if(e==='PE'&&c==='recife')bf.classList.remove('hidden');else bf.classList.add('hidden')}
 
 // ===== DURAÇÃO E FORMATO =====
-const DURACOES={'debate':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'roda_de_conversa':[{value:'45min',label:'45min'},{value:'1h',label:'1h'}],'oficina':[{value:'1h',label:'1h'},{value:'1h30',label:'1h30'},{value:'2h',label:'2h'},{value:'2h30',label:'2h30'},{value:'3h',label:'3h'}],'experiencia':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'3h',label:'3h'},{value:'4h',label:'4h'},{value:'dia_todo',label:'9h (Dia todo)'}]};
+const DURACOES={'debate':[{value:'1h',label:'1h'}],'roda_de_conversa':[{value:'1h',label:'1h'}],'oficina':[{value:'2h',label:'2h'},{value:'2h30',label:'2h30'},{value:'3h',label:'3h'},{value:'3h30',label:'3h30'},{value:'4h',label:'4h'}],'experiencia':[{value:'1h',label:'1h'},{value:'2h',label:'2h'},{value:'3h',label:'3h'},{value:'4h',label:'4h'},{value:'dia_todo',label:'9h (Dia todo)'}]};
 
-function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value,s=document.getElementById('tempoDuracao'),cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op)});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv}}
+function updateDuracaoOptions(){const f=document.getElementById('formatoAtividade').value,s=document.getElementById('tempoDuracao'),cv=s.value;s.innerHTML='<option value="">Selecione...</option>';if(f&&DURACOES[f]){DURACOES[f].forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.label;s.appendChild(op)});if(DURACOES[f].map(o=>o.value).includes(cv))s.value=cv;else if(DURACOES[f].length===1)s.value=DURACOES[f][0].value}}
 
 const PAPEL_OPTIONS={
-    'debate':[{value:'ministrante',label:'Ministrante'},{value:'mediador',label:'Mediador'}],
+    'debate':[{value:'convidado',label:'Convidado'},{value:'mediador',label:'Mediador'}],
     'roda_de_conversa':[{value:'ministrante',label:'Ministrante'},{value:'mediador',label:'Mediador'}],
     'oficina':[{value:'oficineiro',label:'Oficineiro'}],
     'experiencia':[{value:'facilitador',label:'Facilitador'},{value:'monitor',label:'Monitor'}]
@@ -1146,6 +1150,7 @@ function toggleRestricao(){const show=document.getElementById('restricaoSim').ch
 const savedFormData=JSON.parse({{ form_data_json | tojson }});
 const savedExpEspacoCondicoes={{ exp_espaco_condicao_values | tojson }};
 const savedFormato="{{ dados.get('formatoAtividade', '') }}",savedDuracao="{{ dados.get('tempoDuracao', '') }}";if(savedFormato){document.getElementById('formatoAtividade').value=savedFormato;updateDuracaoOptions();if(savedDuracao)document.getElementById('tempoDuracao').value=savedDuracao;toggleActivityFields();}
+togglePublicoAlvoOutros();
 toggleRestricao();
 
 // ===== TABELAS DINÂMICAS =====
@@ -1642,6 +1647,7 @@ function replacePageAtTop(doc,category,message){
         if(typeof toggleActivityFields==='function')toggleActivityFields();
         if(typeof toggleVisibilityByCategory==='function')toggleVisibilityByCategory();
         if(typeof toggleInscricaoCheckbox==='function')toggleInscricaoCheckbox();
+        if(typeof togglePublicoAlvoOutros==='function')togglePublicoAlvoOutros();
         if(typeof toggleInfraOutros==='function')toggleInfraOutros();
         if(typeof toggleRestricao==='function')toggleRestricao();
         if(typeof restoreExperienceState==='function')restoreExperienceState();
@@ -1732,11 +1738,11 @@ function createPaperViewHTML(){
         row('Descrição para publicação',byId('descricaoAtividade')),
         row('Palavras-chave',tags),
         row('Público-alvo',byId('publicoAlvo')),
+        document.getElementById('publicoAlvo')?.value==='outros'?row('Público-alvo (outros)',byId('publicoAlvoOutros')):'',
         row('Restrição de faixa etária',radio('restricaoEtaria')),
         row('Idade mínima',byId('idadeMinima')),
         row('Idade máxima',byId('idadeMaxima')),
-        row('Acesso à atividade',byId('acessoAtividade')),
-        row('Recurso de acessibilidade indispensável',byId('recursosAcessibilidade'))
+        row('Acesso à atividade',byId('acessoAtividade'))
     ].join('');
     const infraRows=[
         row('Recursos básicos de projeção',check('infra_projecao')),
@@ -1744,7 +1750,8 @@ function createPaperViewHTML(){
         row('Microfones',check('infra_microfones')),
         row('Internet',check('infra_internet')),
         row('Outros',check('infra_outros')),
-        document.getElementById('infra_outros')?.checked?table(['Recurso','Quantidade','Observações'],infraOutrosRows):''
+        document.getElementById('infra_outros')?.checked?table(['Recurso','Quantidade','Observações'],infraOutrosRows):'',
+        row('Recurso de acessibilidade indispensável',byId('recursosAcessibilidade'))
     ].join('');
     let oficinaHTML='';
     if(formatoValor==='oficina'){
@@ -1870,7 +1877,7 @@ function createPDFPage(pageNumber,generatedAt){
         </div>
         <div class="pdf-page-content"></div>
         <div class="pdf-page-footer">
-            <span>Chamada Pública REC'n'Play 2026</span>
+            <span>Chamada Aberta de Propostas de Atividades de Conteúdo - REC’n’Play 2026</span>
             <span class="pdf-page-number">Página ${pageNumber}</span>
         </div>
     `;
@@ -2096,7 +2103,7 @@ document.getElementById('inscricaoForm').addEventListener('submit',gerarPDFPrevi
 
 function limparFormulario(){
     document.getElementById('inscricaoForm').reset();
-    document.getElementById('guestsList').innerHTML='';guestCount=0;selectedTags=[];hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();setProponenteType('pj');toggleActivityFields();toggleInscricaoCheckbox();
+    document.getElementById('guestsList').innerHTML='';guestCount=0;selectedTags=[];hasSuggestion=false;document.getElementById('tagSuggestionHidden').value='';renderTagChips();updateHiddenTags();setProponenteType('pj');toggleActivityFields();toggleInscricaoCheckbox();togglePublicoAlvoOutros();
     document.getElementById('photoPreview').innerHTML='<i class="fas fa-image"></i>';document.getElementById('photoPreview').classList.remove('error-border');resetUploadStatus(document.getElementById('status_fotoProponente'));resetUploadStatus(document.getElementById('status_expAnexoCroqui'));resetUploadStatus(document.getElementById('status_expAnexoImagens'));
     document.getElementById('materialTableBody').innerHTML='';materialRowCount=0;document.getElementById('infraTableBody').innerHTML='';infraRowCount=0;document.getElementById('ajudaCustoTableBody').innerHTML='';ajudaCustoRowCount=0;document.querySelectorAll('input.error').forEach(i=>i.classList.remove('error'));
     toggleSection(document.getElementById('infraOutrosField'),false);toggleSection(document.getElementById('inscricaoCheckboxGroup'),false);toggleSection(document.getElementById('ajudaCustoSection'),false);toggleSection(document.getElementById('ajudaCustoWrapper'),false);toggleSection(document.getElementById('expPontosEnergiaField'),false);toggleSection(document.getElementById('expMobiliarioField'),false);toggleSection(document.getElementById('expEquipPropriosTable'),false);

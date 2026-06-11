@@ -1155,9 +1155,9 @@ def home():
         exp_acessibilidade = 'sim'
 
     duracoes_por_formato = {
-        'debate': {'45min', '1h'},
-        'roda_de_conversa': {'45min', '1h'},
-        'oficina': {'1h', '1h30', '2h', '2h30', '3h'},
+        'debate': {'1h'},
+        'roda_de_conversa': {'1h'},
+        'oficina': {'2h', '2h30', '3h', '3h30', '4h'},
         'experiencia': {'1h', '2h', '3h', '4h', 'dia_todo'},
     }
     acessos_por_formato = {
@@ -1171,6 +1171,12 @@ def home():
         erros.append('A duração selecionada não é válida para o formato escolhido.')
     if formato in acessos_por_formato and acesso_atividade and acesso_atividade not in acessos_por_formato[formato]:
         erros.append('O acesso selecionado não é válido para o formato escolhido.')
+    if dados.get('publicoAlvo') == 'outros':
+        publico_alvo_outros = dados.get('publicoAlvoOutros', '').strip()
+        if not publico_alvo_outros:
+            erros.append('Descreva o público-alvo ao selecionar "Outros".')
+        elif len(publico_alvo_outros) > 120:
+            erros.append('Público-alvo (Outros): máximo 120 caracteres.')
 
     if formato == 'oficina':
         if not dados.get('oficina_qtd_publico'): erros.append('Selecione a quantidade máxima de público.')
@@ -1340,8 +1346,8 @@ def home():
             papel = dados.get(f'{prefixo}papel', '').strip()
             if not papel: erros.append(f'Selecione o papel do integrante {i}.')
             papeis_por_formato = {
-                'debate': {'palestrante', 'mediador'},
-                'roda_de_conversa': {'palestrante', 'mediador'},
+                'debate': {'convidado', 'mediador'},
+                'roda_de_conversa': {'ministrante', 'mediador'},
                 'oficina': {'oficineiro'},
                 'experiencia': {'facilitador', 'monitor'}
             }
@@ -1602,6 +1608,7 @@ def home():
             'descricao': dados.get('descricaoAtividade'),
             'eixo': dados.get('eixo'),
             'publico_alvo': dados.get('publicoAlvo'),
+            'publico_alvo_outros': dados.get('publicoAlvoOutros') if dados.get('publicoAlvo') == 'outros' else None,
             'tags': dados.get('tags'),
             'tag_suggestion': dados.get('tagSuggestion'),
             'restricao_etaria': dados.get('restricaoEtaria'),
