@@ -68,18 +68,21 @@ GRUPOS_TAGS = {
         "Processamento de Linguagem Natural", "Digital Twins",
         "Edge Computing", "Wearables", "Assistentes Virtuais",
         "Tecnologia Assistiva", "Biotecnologia", "Deep Tech",
-        "Futurismo", "Tecnologias Disruptivas"
+        "Futurismo", "Tecnologias Disruptivas", "Machine Learning",
+        "Internet das Coisas (IoT)", "Tecnologias Emergentes"
     ],
     "Categoria 2 — Desenvolvimento, Dados e Segurança": [
         "Programação", "Cloud", "Arquitetura de Sistemas",
-        "Desenvolvimento de Software", "Low Code", "No Code",
-        "DevOps", "Integração de Sistemas", "Análise de Dados",
+        "Sistemas Embarcados", "Desenvolvimento de Software",
+        "Low Code", "No Code", "DevOps",
+        "Integração de Sistemas", "Análise de Dados",
         "Governança de Dados", "Cibersegurança", "Conectividade",
         "Privacidade", "Internet das Coisas", "Dados", "API",
         "Open Source", "Banco de Dados", "Engenharia de Dados",
         "Data Science", "Big Data", "Business Intelligence", "LGPD",
         "Segurança Digital", "Ethical Hacking", "Infraestrutura",
-        "Redes", "Computação em Nuvem", "QA e Testes", "Observabilidade"
+        "Redes", "Computação em Nuvem", "QA e Testes",
+        "Observabilidade", "Ciência de Dados", "Infraestrutura Digital"
     ],
     "Categoria 3 — Empreendedorismo e Inovação": [
         "Startups", "Ecossistemas de Inovação", "Inovação Aberta",
@@ -90,7 +93,8 @@ GRUPOS_TAGS = {
         "Intraempreendedorismo", "Captação de Recursos", "Pitch",
         "Escalabilidade", "Aceleração", "Incubação", "Impacto Social",
         "Economia Digital", "Novos Negócios", "Product Market Fit",
-        "Validação de Mercado", "Growth", "Corporate Venture"
+        "Validação de Mercado", "Growth", "Corporate Venture",
+        "Investimentos"
     ],
     "Categoria 4 — Gestão, Mercado e Trabalho": [
         "Marketing", "Branding", "Vendas", "Experiência do Cliente",
@@ -100,15 +104,17 @@ GRUPOS_TAGS = {
         "Estratégia", "Negociação", "Customer Success",
         "Trabalho Remoto", "Diversidade nas Organizações",
         "Educação Corporativa", "Economia do Trabalho",
-        "Saúde Mental no Trabalho", "Liderança Feminina"
+        "Saúde Mental no Trabalho", "Liderança Feminina",
+        "Customer Experience", "ESG", "Mercado de Trabalho",
+        "Educação Profissional", "Capacitação", "Gestão de Pessoas"
     ],
     "Categoria 5 — Comunicação e Mídias Digitais": [
-        "Comunicação Digital", "Produção de Conteúdo", "Creator Economy",
-        "Redes Sociais", "Influência Digital", "Podcast",
-        "Plataformas Digitais", "Mídia Digital", "Narrativas Digitais",
-        "Jornalismo", "Comunicação Institucional",
-        "Marketing de Conteúdo", "SEO", "Community Building",
-        "Streaming", "Audiovisual Digital", "Storytelling",
+        "Comunicação", "Comunicação Digital", "Produção de Conteúdo",
+        "Creator Economy", "Redes Sociais", "Influência Digital",
+        "Podcast", "Plataformas Digitais", "Mídia Digital",
+        "Narrativas Digitais", "Jornalismo",
+        "Comunicação Institucional", "Marketing de Conteúdo", "SEO",
+        "Community Building", "Streaming", "Storytelling",
         "Desinformação", "Fact Checking", "Cultura da Internet",
         "Comunicação Pública"
     ],
@@ -118,7 +124,8 @@ GRUPOS_TAGS = {
         "Experiências Imersivas", "Design", "Service Design",
         "Design Thinking", "Design Estratégico", "Design de Experiência",
         "Motion Design", "Animação", "Criatividade", "Prototipagem",
-        "Economia dos Games", "eSports", "Metaverso"
+        "Economia dos Games", "eSports", "Metaverso",
+        "Experiência do Usuário"
     ],
     "Categoria 7 — Arte, Cultura e Linguagens": [
         "Audiovisual", "Música", "Artes Visuais", "Literatura", "Moda",
@@ -130,14 +137,15 @@ GRUPOS_TAGS = {
         "Cultura Brasileira"
     ],
     "Categoria 8 — Cidade, Sustentabilidade e Território": [
-        "Urbanismo", "Mobilidade", "Arquitetura", "Cidades Inteligentes",
-        "Território", "Ocupação Urbana", "Infraestrutura",
-        "Acessibilidade", "Políticas Urbanas", "Sustentabilidade",
-        "Meio Ambiente", "Mudanças Climáticas", "Energia",
-        "Economia Circular", "Resíduos Sólidos", "Habitação",
-        "Patrimônio Urbano", "Desenvolvimento Territorial",
-        "Resiliência Urbana", "Soluções Baseadas na Natureza",
-        "Justiça Climática"
+        "Cidades", "Urbanismo", "Mobilidade", "Arquitetura",
+        "Cidades Inteligentes", "Território", "Ocupação Urbana",
+        "Infraestrutura", "Acessibilidade", "Políticas Urbanas",
+        "Sustentabilidade", "Meio Ambiente", "Mudanças Climáticas",
+        "Energia", "Economia Circular", "Resíduos Sólidos",
+        "Habitação", "Patrimônio Urbano",
+        "Desenvolvimento Territorial", "Resiliência Urbana",
+        "Soluções Baseadas na Natureza", "Justiça Climática",
+        "Centralidades"
     ],
     "Categoria 9 — Sociedade, Inclusão e Impacto": [
         "Diversidade", "Inclusão", "Acessibilidade", "Educação",
@@ -146,7 +154,11 @@ GRUPOS_TAGS = {
         "Direitos Humanos", "Juventude", "Envelhecimento", "Gênero",
         "Raça", "Povos Tradicionais", "Saúde Digital", "Bem-estar",
         "Alfabetização Digital", "Participação Cívica",
-        "Inovação Social", "Terceiro Setor"
+        "Inovação Social", "Terceiro Setor", "Educação Digital"
+    ],
+    "Categoria X — Transversais": [
+        "GovTech", "Finanças", "Varejo", "Indústria",
+        "Agronegócio", "Turismo", "Esportes"
     ]
 }
 
