@@ -58,7 +58,7 @@ CAMPOS_OBRIGATORIOS_BASE = [
 # INÍCIO: Matcher de Pareceristas
 # ──────────────────────────────────────────────
 GRUPOS_TAGS = {
-    "ia_tecnologias_emergentes": [
+    "Categoria 1 — IA e Tecnologias Emergentes": [
         "Inteligência Artificial", "IA Generativa", "LLMs",
         "Engenharia de Prompt", "Automação", "IA aplicada a negócios",
         "IA aplicada à educação", "IA aplicada à produtividade",
@@ -70,7 +70,7 @@ GRUPOS_TAGS = {
         "Tecnologia Assistiva", "Biotecnologia", "Deep Tech",
         "Futurismo", "Tecnologias Disruptivas"
     ],
-    "desenvolvimento_dados_seguranca": [
+    "Categoria 2 — Desenvolvimento, Dados e Segurança": [
         "Programação", "Cloud", "Arquitetura de Sistemas",
         "Desenvolvimento de Software", "Low Code", "No Code",
         "DevOps", "Integração de Sistemas", "Análise de Dados",
@@ -81,7 +81,7 @@ GRUPOS_TAGS = {
         "Segurança Digital", "Ethical Hacking", "Infraestrutura",
         "Redes", "Computação em Nuvem", "QA e Testes", "Observabilidade"
     ],
-    "empreendedorismo_inovacao": [
+    "Categoria 3 — Empreendedorismo e Inovação": [
         "Startups", "Ecossistemas de Inovação", "Inovação Aberta",
         "Modelagem de Negócios", "Transformação Digital",
         "Internacionalização", "Venture Capital",
@@ -92,7 +92,7 @@ GRUPOS_TAGS = {
         "Economia Digital", "Novos Negócios", "Product Market Fit",
         "Validação de Mercado", "Growth", "Corporate Venture"
     ],
-    "gestao_mercado_trabalho": [
+    "Categoria 4 — Gestão, Mercado e Trabalho": [
         "Marketing", "Branding", "Vendas", "Experiência do Cliente",
         "Liderança", "RH", "Cultura Organizacional", "Soft Skills",
         "Empregabilidade", "Carreira", "Futuro do Trabalho", "Gestão",
@@ -102,7 +102,7 @@ GRUPOS_TAGS = {
         "Educação Corporativa", "Economia do Trabalho",
         "Saúde Mental no Trabalho", "Liderança Feminina"
     ],
-    "comunicacao_midias_digitais": [
+    "Categoria 5 — Comunicação e Mídias Digitais": [
         "Comunicação Digital", "Produção de Conteúdo", "Creator Economy",
         "Redes Sociais", "Influência Digital", "Podcast",
         "Plataformas Digitais", "Mídia Digital", "Narrativas Digitais",
@@ -112,7 +112,7 @@ GRUPOS_TAGS = {
         "Desinformação", "Fact Checking", "Cultura da Internet",
         "Comunicação Pública"
     ],
-    "design_games_experiencias_criativas": [
+    "Categoria 6 — Design, Games e Experiências Criativas": [
         "UX", "UI", "Design de Produto", "Design Digital", "Games",
         "Game Design", "Gamificação", "Interatividade",
         "Experiências Imersivas", "Design", "Service Design",
@@ -120,7 +120,7 @@ GRUPOS_TAGS = {
         "Motion Design", "Animação", "Criatividade", "Prototipagem",
         "Economia dos Games", "eSports", "Metaverso"
     ],
-    "arte_cultura_linguagens": [
+    "Categoria 7 — Arte, Cultura e Linguagens": [
         "Audiovisual", "Música", "Artes Visuais", "Literatura", "Moda",
         "Dança", "Teatro", "Fotografia", "Gastronomia",
         "Patrimônio Cultural", "Cultura Popular", "Produção Cultural",
@@ -129,7 +129,7 @@ GRUPOS_TAGS = {
         "Expressões Artísticas", "Cultura Pernambucana",
         "Cultura Brasileira"
     ],
-    "cidade_sustentabilidade_territorio": [
+    "Categoria 8 — Cidade, Sustentabilidade e Território": [
         "Urbanismo", "Mobilidade", "Arquitetura", "Cidades Inteligentes",
         "Território", "Ocupação Urbana", "Infraestrutura",
         "Acessibilidade", "Políticas Urbanas", "Sustentabilidade",
@@ -139,7 +139,7 @@ GRUPOS_TAGS = {
         "Resiliência Urbana", "Soluções Baseadas na Natureza",
         "Justiça Climática"
     ],
-    "sociedade_inclusao_impacto": [
+    "Categoria 9 — Sociedade, Inclusão e Impacto": [
         "Diversidade", "Inclusão", "Acessibilidade", "Educação",
         "Cidadania", "Saúde", "Comportamento", "Comunidades",
         "Impacto Social", "Equidade", "Participação Social",
