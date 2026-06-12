@@ -58,56 +58,95 @@ CAMPOS_OBRIGATORIOS_BASE = [
 # INÍCIO: Matcher de Pareceristas
 # ──────────────────────────────────────────────
 GRUPOS_TAGS = {
-    "tecnologia_base": [
-        "Blockchain", "Dados", "Cibersegurança", "Cloud",
-        "Computação Quântica", "Desenvolvimento de Software"
+    "ia_tecnologias_emergentes": [
+        "Inteligência Artificial", "IA Generativa", "LLMs",
+        "Engenharia de Prompt", "Automação", "IA aplicada a negócios",
+        "IA aplicada à educação", "IA aplicada à produtividade",
+        "Agentes de IA", "Transformação Digital", "XR",
+        "Realidade Virtual", "Realidade Aumentada", "Blockchain",
+        "Computação Quântica", "Robótica", "Visão Computacional",
+        "Processamento de Linguagem Natural", "Digital Twins",
+        "Edge Computing", "Wearables", "Assistentes Virtuais",
+        "Tecnologia Assistiva", "Biotecnologia", "Deep Tech",
+        "Futurismo", "Tecnologias Disruptivas"
     ],
-    "ia_xr": [
-        "Inteligência Artificial", "XR / Realidade Virtual e Aumentada",
-        "Desenvolvimento de Software"
+    "desenvolvimento_dados_seguranca": [
+        "Programação", "Cloud", "Arquitetura de Sistemas",
+        "Desenvolvimento de Software", "Low Code", "No Code",
+        "DevOps", "Integração de Sistemas", "Análise de Dados",
+        "Governança de Dados", "Cibersegurança", "Conectividade",
+        "Privacidade", "Internet das Coisas", "Dados", "API",
+        "Open Source", "Banco de Dados", "Engenharia de Dados",
+        "Data Science", "Big Data", "Business Intelligence", "LGPD",
+        "Segurança Digital", "Ethical Hacking", "Infraestrutura",
+        "Redes", "Computação em Nuvem", "QA e Testes", "Observabilidade"
     ],
-    "automacao_iot_robotica": [
-        "Automação", "Internet das Coisas", "Robótica",
-        "Sistemas Embarcados", "Cultura Maker",
-        "Simulação e Modelagem", "Desenvolvimento de Software"
+    "empreendedorismo_inovacao": [
+        "Startups", "Ecossistemas de Inovação", "Inovação Aberta",
+        "Modelagem de Negócios", "Transformação Digital",
+        "Internacionalização", "Venture Capital",
+        "Investimento em Inovação", "Comunidades",
+        "Negócios Emergentes", "Empreendedorismo",
+        "Intraempreendedorismo", "Captação de Recursos", "Pitch",
+        "Escalabilidade", "Aceleração", "Incubação", "Impacto Social",
+        "Economia Digital", "Novos Negócios", "Product Market Fit",
+        "Validação de Mercado", "Growth", "Corporate Venture"
     ],
-    "negocios_inovacao": [
-        "Empreendedorismo", "Inovação", "Startup", "Empresa Júnior",
-        "Modelagem de Negócios", "Internacionalização", "Investimentos",
-        "Transformação Digital", "Gestão de Comunidades"
+    "gestao_mercado_trabalho": [
+        "Marketing", "Branding", "Vendas", "Experiência do Cliente",
+        "Liderança", "RH", "Cultura Organizacional", "Soft Skills",
+        "Empregabilidade", "Carreira", "Futuro do Trabalho", "Gestão",
+        "Gestão de Projetos", "Gestão Ágil", "Produtividade",
+        "Estratégia", "Negociação", "Customer Success",
+        "Trabalho Remoto", "Diversidade nas Organizações",
+        "Educação Corporativa", "Economia do Trabalho",
+        "Saúde Mental no Trabalho", "Liderança Feminina"
     ],
-    "marketing_pessoas_vendas": [
-        "Marketing", "Branding", "RH", "Cultura Organizacional",
-        "Carreira Profissional", "Desenvolvimento de Times",
-        "Comportamento do Consumidor", "Vendas B2B e B2C",
-        "Agro", "Futuro do trabalho", "Atacado e Varejo"
+    "comunicacao_midias_digitais": [
+        "Comunicação Digital", "Produção de Conteúdo", "Creator Economy",
+        "Redes Sociais", "Influência Digital", "Podcast",
+        "Plataformas Digitais", "Mídia Digital", "Narrativas Digitais",
+        "Jornalismo", "Comunicação Institucional",
+        "Marketing de Conteúdo", "SEO", "Community Building",
+        "Streaming", "Audiovisual Digital", "Storytelling",
+        "Desinformação", "Fact Checking", "Cultura da Internet",
+        "Comunicação Pública"
     ],
-    "comunicacao_conteudo": [
-        "Comunicação", "Criação de Conteúdo", "Podcast", "Audiovisual"
+    "design_games_experiencias_criativas": [
+        "UX", "UI", "Design de Produto", "Design Digital", "Games",
+        "Game Design", "Gamificação", "Interatividade",
+        "Experiências Imersivas", "Design", "Service Design",
+        "Design Thinking", "Design Estratégico", "Design de Experiência",
+        "Motion Design", "Animação", "Criatividade", "Prototipagem",
+        "Economia dos Games", "eSports", "Metaverso"
     ],
-    "ux_games": [
-        "Experiência do Usuário (UX / CX)", "Interface do Usuário (UI)",
-        "Gameficação", "Desenvolvimento de Jogos", "E-Sports",
-        "Desenvolvimento de Software"
+    "arte_cultura_linguagens": [
+        "Audiovisual", "Música", "Artes Visuais", "Literatura", "Moda",
+        "Dança", "Teatro", "Fotografia", "Gastronomia",
+        "Patrimônio Cultural", "Cultura Popular", "Produção Cultural",
+        "Cultura Digital", "Museus", "Memória", "Curadoria",
+        "Festivais", "Quadrinhos", "Arte Urbana", "Economia Criativa",
+        "Expressões Artísticas", "Cultura Pernambucana",
+        "Cultura Brasileira"
     ],
-    "artes_cultura": [
-        "Artes Visuais", "Fotografia", "Literatura", "Moda",
-        "Música", "Dança", "Gastronomia", "Teatro"
+    "cidade_sustentabilidade_territorio": [
+        "Urbanismo", "Mobilidade", "Arquitetura", "Cidades Inteligentes",
+        "Território", "Ocupação Urbana", "Infraestrutura",
+        "Acessibilidade", "Políticas Urbanas", "Sustentabilidade",
+        "Meio Ambiente", "Mudanças Climáticas", "Energia",
+        "Economia Circular", "Resíduos Sólidos", "Habitação",
+        "Patrimônio Urbano", "Desenvolvimento Territorial",
+        "Resiliência Urbana", "Soluções Baseadas na Natureza",
+        "Justiça Climática"
     ],
-    "cidades_territorio": [
-        "Urbanismo", "Arquitetura", "Mobilidade Urbana", "Território",
-        "Cidadania Digital", "Intervenções Urbanas", "Cidades Inteligentes"
-    ],
-    "sustentabilidade": [
-        "Meio Ambiente", "ESG", "Economia Circular", "Mudanças Climáticas",
-        "Energia Renovável", "Gestão de Resíduos", "ODS"
-    ],
-    "diversidade_impacto": [
-        "Acessibilidade", "PcD", "Mulheres", "LGBTQIAPN+",
-        "Pessoa Idosa", "Equidade Racial", "Neurodivergência",
-        "Diversidade e Inclusão", "Periferias", "Desinformação",
-        "Cultura Popular", "Patrimônio", "Artes", "Impacto Social",
-        "Educação e Formação", "Infância"
+    "sociedade_inclusao_impacto": [
+        "Diversidade", "Inclusão", "Acessibilidade", "Educação",
+        "Cidadania", "Saúde", "Comportamento", "Comunidades",
+        "Impacto Social", "Equidade", "Participação Social",
+        "Direitos Humanos", "Juventude", "Envelhecimento", "Gênero",
+        "Raça", "Povos Tradicionais", "Saúde Digital", "Bem-estar",
+        "Alfabetização Digital", "Participação Cívica",
+        "Inovação Social", "Terceiro Setor"
     ]
 }
 
@@ -116,21 +155,21 @@ PARECERISTAS = [
     {
         "id": 1,
         "nome": "Parecerista Sustentabilidade",
-        "tags": ["Economia Circular", "ESG", "Meio Ambiente", "ODS"],
+        "tags": ["Economia Circular", "Meio Ambiente", "Sustentabilidade", "Mudanças Climáticas"],
         "limite_atividades": 10,
         "atividades_atribuidas": 0
     },
     {
         "id": 2,
         "nome": "Parecerista Negócios",
-        "tags": ["Empreendedorismo", "Inovação", "Startup", "Transformação Digital"],
+        "tags": ["Empreendedorismo", "Startups", "Transformação Digital", "Modelagem de Negócios"],
         "limite_atividades": 10,
         "atividades_atribuidas": 0
     },
     {
         "id": 3,
         "nome": "Parecerista Impacto",
-        "tags": ["Impacto Social", "Educação e Formação", "Diversidade e Inclusão", "ESG"],
+        "tags": ["Impacto Social", "Educação", "Diversidade", "Inclusão"],
         "limite_atividades": 10,
         "atividades_atribuidas": 0
     }
