@@ -1,605 +1,1694 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor de Temperatura | ESP32 Dashboard</title>
-    <style>
-        :root {
-            --primary-color: #3b82f6;
-            --secondary-color: #60a5fa;
-            --accent-color: #f59e0b;
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Avaliações</title>
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --surface: #ffffff;
+      --surface-2: #f0f4f8;
+      --line: #d9dee7;
+      --ink: #172033;
+      --muted: #657184;
+      --blue: #2563eb;
+      --blue-soft: #e9f0ff;
+      --green: #13795b;
+      --green-soft: #e6f5ef;
+      --amber: #a16207;
+      --amber-soft: #fff5d6;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --shadow: 0 18px 45px rgba(23, 32, 51, 0.08);
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
 
-        /* Header */
-        header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow);
-        }
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
 
-        header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .shell {
+      width: min(1540px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
 
-        .status-badge {
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    .topbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--success-color);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
+    .title-block {
+      display: grid;
+      gap: 4px;
+    }
 
-        /* Main Content */
-        main {
-            flex: 1;
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 2vw, 2rem);
+      line-height: 1.1;
+      font-weight: 760;
+    }
 
-        /* Cards */
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s ease;
-        }
+    .route-label {
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
 
-        .card:hover {
-            transform: translateY(-2px);
-        }
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
 
-        .card h2 {
-            font-size: 1.125rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 12px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 680;
+      white-space: nowrap;
+    }
 
-        /* Temperature Display Card */
-        .temp-display {
-            grid-column: span 1;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
+    button.pill {
+      cursor: pointer;
+    }
 
-        .temp-value-container {
-            position: relative;
-            z-index: 2;
-        }
+    button.pill:hover,
+    button.pill.active {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #9ab7ff;
+    }
 
-        .temp-value {
-            font-size: 5rem;
-            font-weight: 700;
-            color: var(--text-main);
-            line-height: 1;
-        }
+    .pill.good {
+      color: var(--green);
+      background: var(--green-soft);
+      border-color: #b9e4d4;
+    }
 
-        .temp-unit {
-            font-size: 1.5rem;
-            color: var(--text-muted);
-            font-weight: 400;
-            vertical-align: super;
-        }
+    button.pill.good.active {
+      color: var(--green);
+      background: var(--green-soft);
+      border-color: #76c7aa;
+    }
 
-        .temp-icon {
-            font-size: 4rem;
-            margin-bottom: 0.5rem;
-            transition: color 0.3s ease;
-        }
+    .pill.warn {
+      color: var(--amber);
+      background: var(--amber-soft);
+      border-color: #f1d58c;
+    }
 
-        .temp-status {
-            margin-top: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            padding: 0.25rem 1rem;
-            border-radius: 999px;
-        }
+    button.pill.warn.active {
+      color: var(--amber);
+      background: var(--amber-soft);
+      border-color: #e1bd62;
+    }
 
-        /* Chart Card */
-        .chart-container {
-            grid-column: span 1;
-            min-height: 300px;
-            display: flex;
-            flex-direction: column;
-        }
+    .grid-wrap {
+      overflow: auto;
+      max-height: calc(100vh - 128px);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overscroll-behavior: contain;
+    }
 
-        canvas {
-            width: 100%;
-            height: 100%;
-            flex: 1;
-        }
+    table {
+      width: 100%;
+      min-width: 3140px;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
 
-        /* Controls Card */
-        .controls {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      padding: 10px 12px;
+      background: #eaf0f6;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid #dfe5ed;
+      color: #334155;
+      font-size: 0.73rem;
+      line-height: 1.2;
+      text-transform: uppercase;
+      text-align: left;
+      font-weight: 800;
+      white-space: nowrap;
+    }
 
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+    tbody td {
+      width: 180px;
+      max-width: 260px;
+      min-width: 180px;
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid #edf0f5;
+      vertical-align: top;
+      color: #253044;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      background: #fff;
+    }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
+    tbody td.people-column {
+      width: 380px;
+      max-width: 440px;
+      min-width: 360px;
+    }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
 
-        .btn-primary:hover {
-            background-color: #2563eb;
-        }
+    th.sticky,
+    td.sticky {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      min-width: 220px;
+      width: 220px;
+      max-width: 220px;
+      background: #fff;
+      box-shadow: 1px 0 0 var(--line);
+    }
 
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--text-muted);
-            color: var(--text-main);
-        }
+    th.sticky {
+      z-index: 4;
+      background: #eaf0f6;
+    }
 
-        .btn-outline:hover {
-            background-color: #e5e7eb;
-        }
+    td.activity-name {
+      font-weight: 780;
+    }
 
-        /* Logs/History */
-        .logs {
-            grid-column: 1 / -1;
-            max-height: 200px;
-            overflow-y: auto;
-        }
+    .cell {
+      display: grid;
+      gap: 8px;
+    }
 
-        .log-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 0.875rem;
-        }
+    .cell-text {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
 
-        .log-item:last-child {
-            border-bottom: none;
-        }
+    .empty {
+      color: #98a3b3;
+      font-style: italic;
+    }
 
-        .log-time {
-            color: var(--text-muted);
-        }
+    .mini-label {
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 1.5rem;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            border-top: 1px solid #e5e7eb;
-            margin-top: auto;
-        }
+    .segmented {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
 
-        /* Animations */
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
+    .choice,
+    .scale,
+    .submit {
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 9px;
+      background: var(--surface);
+      color: #334155;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: border-color 160ms ease, background 160ms ease, color 160ms ease, opacity 160ms ease;
+    }
 
-        /* Responsive adjustments */
-        @media (max-width: 600px) {
-            .temp-value { font-size: 3.5rem; }
-            .chart-container { grid-column: 1 / -1; }
-            header { flex-direction: column; gap: 1rem; align-items: flex-start; }
-            .status-badge { align-self: flex-start; }
-        }
-    </style>
+    .choice:hover,
+    .scale:hover {
+      border-color: #9aa8bd;
+      background: var(--surface-2);
+    }
+
+    .choice.active,
+    .scale.active {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #9ab7ff;
+    }
+
+    .choice[data-value="sim"].active,
+    .choice[data-value="Recomendado"].active {
+      color: var(--green);
+      background: var(--green-soft);
+      border-color: #76c7aa;
+    }
+
+    .choice[data-value="nao"].active,
+    .choice[data-value="Não recomendado"].active,
+    .choice[data-value="Fora do escopo da categoria de análise"].active {
+      color: var(--red);
+      background: var(--red-soft);
+      border-color: #ffb3aa;
+    }
+
+    .choice[data-value="Recomendado com ressalvas"].active {
+      color: var(--amber);
+      background: var(--amber-soft);
+      border-color: #e1bd62;
+    }
+
+    .choice[data-value="Preciso de mais informações"].active {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #9ab7ff;
+    }
+
+    .submit {
+      min-width: 100px;
+      border: 0;
+      background: var(--blue);
+      color: #fff;
+    }
+
+    button:disabled,
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+      font-size: 0.84rem;
+    }
+
+    input,
+    select {
+      min-height: 36px;
+      padding: 6px 8px;
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+      padding: 8px;
+      line-height: 1.36;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .inline-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-align: right;
+    }
+
+    .counter.limit {
+      color: var(--red);
+      font-weight: 750;
+    }
+
+    .person-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .person {
+      display: grid;
+      gap: 7px;
+      padding-top: 9px;
+      border-top: 1px solid #edf0f5;
+    }
+
+    .person:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .person-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .person-photo {
+      width: 52px;
+      height: 52px;
+      flex: 0 0 52px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+      object-fit: cover;
+    }
+
+    .person-photo.placeholder {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .person-main {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .person-name {
+      font-weight: 800;
+    }
+
+    .person-role,
+    .person-location {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
+
+    .person-details {
+      display: grid;
+      gap: 5px;
+      padding: 8px 0;
+      border-top: 1px dashed #e1e6ef;
+      border-bottom: 1px dashed #e1e6ef;
+    }
+
+    .person-detail {
+      display: grid;
+      gap: 2px;
+    }
+
+    .person-detail-label {
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .person-detail-value {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .bio-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .bio-toggle {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .bio-toggle:hover {
+      border-color: #9aa8bd;
+      background: var(--surface-2);
+      color: var(--ink);
+    }
+
+    .person-link {
+      color: var(--blue);
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .person-link:hover {
+      text-decoration: underline;
+    }
+
+    .scale-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .scale-row {
+      display: grid;
+      gap: 5px;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 780;
+      overflow-wrap: anywhere;
+    }
+
+    .status.saved {
+      color: var(--green);
+    }
+
+    .state {
+      display: grid;
+      place-items: center;
+      min-height: 260px;
+      padding: 32px;
+      color: var(--muted);
+      text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .state strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 1.1rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: min(100% - 20px, 1540px);
+        padding-top: 16px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .summary {
+        justify-content: flex-start;
+      }
+    }
+  </style>
 </head>
 <body>
-
-    <header>
-        <h1>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
-            </svg>
-            ESP32 Monitor
-        </h1>
-        <div class="status-badge">
-            <div class="status-dot"></div>
-            <span id="connection-status">Sistema Online</span>
-        </div>
+  <main class="shell">
+    <header class="topbar">
+      <div class="title-block">
+        <h1>Avaliações</h1>
+        <div class="route-label" id="routeLabel"></div>
+      </div>
+      <div class="summary" aria-live="polite">
+        <button class="pill active" type="button" id="totalPill" data-filter="all" aria-pressed="true">0 itens</button>
+        <button class="pill good" type="button" id="sentPill" data-filter="sent" aria-pressed="false">0 enviados</button>
+        <button class="pill warn" type="button" id="pendingPill" data-filter="pending" aria-pressed="false">0 pendentes</button>
+      </div>
     </header>
 
-    <main>
-        <!-- Card Principal de Temperatura -->
-        <section class="card temp-display">
-            <div id="weather-icon" class="temp-icon">🌡️</div>
-            <div class="temp-value-container">
-                <span id="temp-display" class="temp-value">--.-</span>
-                <span class="temp-unit">°C</span>
-            </div>
-            <div id="temp-badge" class="temp-status" style="background-color: #e5e7eb; color: var(--text-muted);">
-                Aguardando dados...
-            </div>
-        </section>
+    <section class="state" id="stateBox">
+      <div>
+        <strong>Carregando avaliações</strong>
+        <span>Conectando ao Monday.</span>
+      </div>
+    </section>
 
-        <!-- Card de Gráfico -->
-        <section class="card chart-container">
-            <h2>Histórico (Tempo Real)</h2>
-            <canvas id="tempChart"></canvas>
-        </section>
+    <section class="grid-wrap hidden" id="gridWrap" aria-label="Planilha de avaliações">
+      <table>
+        <thead>
+          <tr>
+            <th class="sticky">Nome da atividade</th>
+            <th>Nome do especialista</th>
+            <th>ID atividade</th>
+            <th>Objetivo</th>
+            <th>Justificativa</th>
+            <th>Metodologia</th>
+            <th>Descrição para publicação</th>
+            <th>Eixo</th>
+            <th>Formato</th>
+            <th>Integrantes</th>
+            <th>Palavra-chave</th>
+            <th>Categoria avaliada</th>
+            <th>Duração</th>
+            <th>Público-alvo</th>
+            <th>Restrição de faixa etária</th>
+            <th>Dados operacionais</th>
+            <th>Informações extras</th>
+            <th>Escala</th>
+            <th>Recomendação</th>
+            <th>Envio</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </section>
+  </main>
 
-        <!-- Card de Controle -->
-        <section class="card controls">
-            <div>
-                <h2>Configuração</h2>
-                <p style="font-size: 0.875rem; color: var(--text-muted);">Endpoint: <code>/api/temperatura</code></p>
-            </div>
-            <div>
-                <button id="btn-refresh" class="btn btn-primary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M23 4v6h-6"></path>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                    </svg>
-                    Atualizar Agora
-                </button>
-                <button id="btn-clear" class="btn btn-outline">Limpar Histórico</button>
-            </div>
-        </section>
+  <script>
+    const evaluatorId = {{ avaliador_id|tojson }};
+    const textLimit = 8000;
+    const outOfScopeRecommendation = "Fora do escopo da categoria de análise";
+    const recommendedValue = "Recomendado";
+    const state = new Map();
+    let currentFilter = "all";
 
-        <!-- Card de Logs Recentes -->
-        <section class="card logs">
-            <h2>Logs Recentes</h2>
-            <div id="logs-list">
-                <!-- Logs serão inseridos via JS -->
-            </div>
-        </section>
-    </main>
+    const categoriesByEvaluatorId = {
+      "1": "IA e Tecnologias Emergentes",
+      "2": "IA e Tecnologias Emergentes",
+      "3": "Desenvolvimento, Dados e Segurança",
+      "4": "Empreendedorismo e Inovação",
+      "5": "Gestão, Mercado e Trabalho",
+      "6": "Comunicação e Mídias Digitais",
+      "7": "Design, Games e Experiências Criativas",
+      "8": "Arte, Cultura e Linguagens",
+      "9": "Cidade, Sustentabilidade e Território",
+      "10": "Sociedade, Inclusão e Impacto",
+    };
 
-    <footer>
-        <p>Dashboard de Monitoramento &copy; 2023 | Desenvolvido para ESP32 & NTC Thermistor</p>
-    </footer>
+    const condizenceFields = [
+      ["eixoCondizente", "Eixo"],
+      ["formatoCondizente", "Formato"],
+      ["palavrasChaveCondizentes", "Palavra-chave"],
+      ["categoriaCondizente", "Categoria avaliada"],
+      ["duracaoCondizente", "Duração"],
+      ["publicoAlvoCondizente", "Público-alvo"],
+      ["faixaEtariaCondizente", "Restrição de faixa etária"],
+      ["dadosOperacionaisCondizentes", "Dados operacionais"],
+    ];
 
-    <script>
-        // Elementos do DOM
-        const tempDisplay = document.getElementById('temp-display');
-        const tempBadge = document.getElementById('temp-badge');
-        const weatherIcon = document.getElementById('weather-icon');
-        const logsList = document.getElementById('logs-list');
-        const canvas = document.getElementById('tempChart');
-        const ctx = canvas.getContext('2d');
-        const btnRefresh = document.getElementById('btn-refresh');
-        const btnClear = document.getElementById('btn-clear');
-        const statusText = document.getElementById('connection-status');
-        const statusDot = document.querySelector('.status-dot');
-        const API_URL = window.location.protocol === 'file:'
-            ? 'http://127.0.0.1:5000/api/temperatura'
-            : '/api/temperatura';
-        const POLL_INTERVAL_MS = 10000;
+    const scaleFields = [
+      ["relevanciaTematica", "Relevância temática"],
+      ["clarezaProposta", "Clareza da proposta"],
+      ["consistenciaMetodologica", "Consistência metodológica"],
+      ["potencialInteracao", "Potencial de interação e engajamento com o público"],
+      ["diversidadePerspectivas", "Diversidade de perspectiva, experiências e abordagens"],
+      ["alinhamentoRecnplay", "Alinhamento com a proposta do REC'n'Play 2026"],
+    ];
 
-        // Estado da Aplicação
-        let maxDataPoints = 30;
-        let dataHistory = [];
-        let labels = [];
-        let isFetching = false;
-        
-        // Inicialização do Canvas (responsivo)
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight - 40; // Subtrai o título
-            drawChart();
+    const yesNoOptions = [
+      { value: "sim", label: "Sim" },
+      { value: "nao", label: "Não" },
+    ];
+
+    const recommendationOptions = [
+      { value: "Recomendado", label: "Recomendado" },
+      { value: "Não recomendado", label: "Não recomendado" },
+      { value: "Recomendado com ressalvas", label: "Recomendado com ressalvas" },
+      { value: "Preciso de mais informações", label: "Preciso de mais informações" },
+    ];
+
+    const stateBox = document.querySelector("#stateBox");
+    const gridWrap = document.querySelector("#gridWrap");
+    const tableBody = document.querySelector("#tableBody");
+    const routeLabel = document.querySelector("#routeLabel");
+    const totalPill = document.querySelector("#totalPill");
+    const sentPill = document.querySelector("#sentPill");
+    const pendingPill = document.querySelector("#pendingPill");
+    const filterButtons = [totalPill, sentPill, pendingPill];
+
+    routeLabel.textContent = evaluatorId ? `/${evaluatorId}` : "Informe o avaliador na URL";
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        currentFilter = button.dataset.filter || "all";
+        if (state.size) {
+          renderFilteredRows();
+        } else {
+          updateSummary([]);
         }
-        window.addEventListener('resize', resizeCanvas);
-        
-        // Inicializar com alguns zeros para o gráfico não começar vazio
-        resizeCanvas();
+      });
+    });
 
-        // --- LÓGICA DE DADOS ---
+    function create(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) {
+        node.className = className;
+      }
+      if (text !== undefined) {
+        node.textContent = text;
+      }
+      return node;
+    }
 
-        function setConnectionState(message, color) {
-            statusText.innerText = message;
-            statusDot.style.backgroundColor = color;
+    function normalizeText(value) {
+      return String(value || "").trim();
+    }
+
+    function normalizeRecommendation(value) {
+      const text = normalizeText(value);
+      if (text === "Recomendado com ressalva") {
+        return "Recomendado com ressalvas";
+      }
+      return text;
+    }
+
+    function evaluatorCategory() {
+      const text = normalizeText(evaluatorId);
+      const numeric = (text.match(/\d+/) || [""])[0].replace(/^0+/, "");
+      return categoriesByEvaluatorId[text] || categoriesByEvaluatorId[numeric];
+    }
+
+    function hasAgeRestriction(value) {
+      const text = normalizeText(value).toLowerCase();
+      if (!text) {
+        return false;
+      }
+      return !/(sem restrição|sem restricao|não possui|nao possui|não há|nao ha|não tem|nao tem|não se aplica|nao se aplica|nenhuma|livre|todas as idades|todos os públicos|todos os publicos)/i.test(text);
+    }
+
+    function isValidAge(value) {
+      const text = normalizeText(value);
+      if (!/^\d{1,3}$/.test(text)) {
+        return false;
+      }
+      const age = Number(text);
+      return age >= 0 && age <= 130;
+    }
+
+    function personInitials(name) {
+      const parts = normalizeText(name).split(/\s+/).filter(Boolean);
+      return (parts.slice(0, 2).map((part) => part[0]).join("") || "?").toUpperCase();
+    }
+
+    function personLocation(person) {
+      const city = normalizeText(person.cidade);
+      const state = normalizeText(person.estado);
+      if (city && state) {
+        return `${city} - ${state}`;
+      }
+      return city || state;
+    }
+
+    function socialHref(value, type) {
+      const text = normalizeText(value);
+      if (!text || /\s/.test(text)) {
+        return "";
+      }
+      if (/^https?:\/\//i.test(text)) {
+        return text;
+      }
+      const clean = text.replace(/^@/, "").replace(/^\/+/, "");
+      if (type === "instagram") {
+        return `https://www.instagram.com/${clean}`;
+      }
+      if (type === "linkedin") {
+        if (/^linkedin\.com\//i.test(clean)) {
+          return `https://${clean}`;
         }
+        return `https://www.linkedin.com/in/${clean}`;
+      }
+      return "";
+    }
 
-        function normalizeReading(item) {
-            const temperature = Number(item && item.temperatura);
+    function appendPersonDetail(wrap, label, value, linkType = "") {
+      const text = normalizeText(value);
+      if (!text) {
+        return;
+      }
+      const row = create("div", "person-detail");
+      const header = create("div", "bio-header");
+      const button = create("button", "bio-toggle", "v");
+      const body = create("div", "person-detail-value hidden");
+      button.type = "button";
+      button.setAttribute("aria-expanded", "false");
+      button.setAttribute("aria-label", `Mostrar ${label}`);
+      header.append(create("div", "person-detail-label", label), button);
+      const href = linkType ? socialHref(text, linkType) : "";
+      if (href) {
+        const link = create("a", "person-link", text);
+        link.href = href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        body.append(link);
+      } else {
+        body.textContent = text;
+      }
+      button.addEventListener("click", () => {
+        const expanded = button.getAttribute("aria-expanded") === "true";
+        button.setAttribute("aria-expanded", expanded ? "false" : "true");
+        button.setAttribute("aria-label", expanded ? `Mostrar ${label}` : `Ocultar ${label}`);
+        button.textContent = expanded ? "v" : "^";
+        body.classList.toggle("hidden", expanded);
+      });
+      row.append(header, body);
+      wrap.append(row);
+    }
 
-            if (!Number.isFinite(temperature)) {
-                return null;
-            }
+    function appendPersonDetails(node, person) {
+      const details = create("div", "person-details");
+      appendPersonDetail(details, "LinkedIn", person.linkedin, "linkedin");
+      appendPersonDetail(details, "Instagram", person.instagram, "instagram");
+      appendPersonDetail(details, "Instituição", person.instituicao);
+      appendPersonDetail(details, "Tipo de instituição", person.tipoInstituicao);
+      appendPersonDetail(details, "Bio", person.bio);
+      if (details.childElementCount) {
+        node.append(details);
+      }
+    }
 
-            return {
-                temperatura: temperature,
-                sensor_id: (item && item.sensor_id) || 'esp32',
-                timestamp: (item && (item.timestamp || item.created_at)) || ''
-            };
-        }
+    function setState(title, text, isError = false) {
+      stateBox.classList.remove("hidden");
+      gridWrap.classList.add("hidden");
+      stateBox.innerHTML = "";
 
-        function formatReadingTime(timestamp, options = {}) {
-            const date = timestamp ? new Date(timestamp) : new Date();
-            const safeDate = Number.isNaN(date.getTime()) ? new Date() : date;
-            const timeOptions = {
-                hour: '2-digit',
-                minute: '2-digit'
-            };
+      const wrap = create("div");
+      const strong = create("strong", "", title);
+      const span = create("span", "", text);
+      if (isError) {
+        strong.style.color = "var(--red)";
+      }
+      wrap.append(strong, span);
+      stateBox.append(wrap);
+    }
 
-            if (options.seconds !== false) {
-                timeOptions.second = '2-digit';
-            }
+    function updateSummary(rows) {
+      const sent = rows.filter((row) => row.enviado).length;
+      const total = rows.length;
+      totalPill.textContent = `${total} ${total === 1 ? "item" : "itens"}`;
+      sentPill.textContent = `${sent} ${sent === 1 ? "enviado" : "enviados"}`;
+      pendingPill.textContent = `${total - sent} ${total - sent === 1 ? "pendente" : "pendentes"}`;
+      filterButtons.forEach((button) => {
+        const active = button.dataset.filter === currentFilter;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+    }
 
-            return safeDate.toLocaleTimeString('pt-BR', timeOptions);
-        }
+    function filteredRows(rows) {
+      if (currentFilter === "sent") {
+        return rows.filter((row) => row.enviado);
+      }
+      if (currentFilter === "pending") {
+        return rows.filter((row) => !row.enviado);
+      }
+      return rows;
+    }
 
-        // Função para atualizar a UI
-        function updateUI(temperature) {
-            if (!Number.isFinite(temperature)) {
-                return;
-            }
+    function emptyReview() {
+      return {
+        descricaoSugestao: "",
+        eixoSugestao: "",
+        formatoSugestao: "",
+        condizencias: {},
+        categoriaSelecionada: "",
+        integrantes: [],
+        palavraSugerida: "",
+        duracaoEsperada: "",
+        idadeMinima: "",
+        idadeMaxima: "",
+        dadosOperacionaisAdaptaveis: "",
+        dadosOperacionaisAdaptacao: "",
+        escalas: {},
+        recomendacao: "",
+        informacoesComplementares: "",
+        foraEscopo: "",
+      };
+    }
 
-            // Atualizar número principal
-            tempDisplay.innerText = temperature.toFixed(1);
+    function ensureReview(row) {
+      if (row._reviewPrepared && row.review && typeof row.review === "object") {
+        return row.review;
+      }
 
-            // Lógica de status baseado na temperatura (exemplo simples)
-            if (temperature < 15) {
-                tempBadge.innerText = "Frio";
-                tempBadge.style.backgroundColor = "#dbeafe"; // azul claro
-                tempBadge.style.color = "#1e40af";
-                weatherIcon.innerText = "❄️";
-            } else if (temperature >= 15 && temperature < 28) {
-                tempBadge.innerText = "Confortável";
-                tempBadge.style.backgroundColor = "#d1fae5"; // verde claro
-                tempBadge.style.color = "#065f46";
-                weatherIcon.innerText = "😊";
-            } else if (temperature >= 28 && temperature < 35) {
-                tempBadge.innerText = "Quente";
-                tempBadge.style.backgroundColor = "#ffedd5"; // laranja claro
-                tempBadge.style.color = "#9a3412";
-                weatherIcon.innerText = "☀️";
-            } else {
-                tempBadge.innerText = "Muito Quente!";
-                tempBadge.style.backgroundColor = "#fee2e2"; // vermelho claro
-                tempBadge.style.color = "#991b1b";
-                weatherIcon.innerText = "🔥";
-            }
-        }
+      const source = row.review && typeof row.review === "object" ? row.review : {};
+      const review = emptyReview();
+      Object.assign(review, source);
+      review.condizencias = Object.assign({}, source.condizencias || {});
+      review.escalas = Object.assign({}, source.escalas || {});
+      if (!normalizeText(review.categoriaSelecionada)) {
+        review.categoriaSelecionada = evaluatorCategory() || "";
+      }
+      review.idadeMinima = normalizeText(review.idadeMinima);
+      review.idadeMaxima = normalizeText(review.idadeMaxima);
 
-        function renderLogs(readings) {
-            logsList.innerHTML = '';
+      const savedPeople = Array.isArray(source.integrantes) ? source.integrantes : [];
+      const people = Array.isArray(row.integrantes) ? row.integrantes : [];
+      review.integrantes = people.map((person, index) => {
+        const saved = savedPeople[index] || {};
+        return {
+          nome: normalizeText(person.nome || saved.nome || `Integrante ${index + 1}`),
+          deAcordo: normalizeText(saved.deAcordo),
+          acao: normalizeText(saved.acao),
+          sugestao: normalizeText(saved.sugestao),
+        };
+      });
 
-            readings.slice(0, 10).forEach((reading) => {
-                const item = document.createElement('div');
-                const time = document.createElement('span');
-                const message = document.createElement('span');
-                const value = document.createElement('strong');
+      if (!review.integrantes.length && savedPeople.length) {
+        review.integrantes = savedPeople.map((person, index) => ({
+          nome: normalizeText(person.nome || `Integrante ${index + 1}`),
+          deAcordo: normalizeText(person.deAcordo),
+          acao: normalizeText(person.acao),
+          sugestao: normalizeText(person.sugestao),
+        }));
+      }
 
-                item.className = 'log-item';
-                time.className = 'log-time';
-                time.textContent = formatReadingTime(reading.timestamp);
-                value.textContent = `${reading.temperatura.toFixed(2)} \u00B0C`;
-                message.appendChild(value);
-                message.appendChild(document.createTextNode(` recebido de ${reading.sensor_id}`));
-                item.appendChild(time);
-                item.appendChild(message);
-                logsList.appendChild(item);
-            });
-        }
+      if (row.recomendacao && !review.recomendacao) {
+        review.recomendacao = row.recomendacao;
+      }
+      review.recomendacao = normalizeRecommendation(review.recomendacao);
+      row.review = review;
+      row._reviewPrepared = true;
+      return review;
+    }
 
-        function renderHistory(rawReadings) {
-            const readings = rawReadings.map(normalizeReading).filter(Boolean);
+    function td(className = "") {
+      return create("td", className);
+    }
 
-            if (!readings.length) {
-                setConnectionState('Aguardando dados do ESP32', '#f59e0b');
-                dataHistory = [];
-                labels = [];
-                logsList.innerHTML = '';
-                drawChart();
-                return;
-            }
+    function readTextCell(value, className = "") {
+      const cell = td(className);
+      const text = normalizeText(value);
+      const node = create("div", text ? "cell-text" : "cell-text empty", text || "Não informado");
+      cell.append(node);
+      return cell;
+    }
 
-            const latestReading = readings[0];
-            const chartReadings = readings.slice(0, maxDataPoints).reverse();
+    function readBlock(value) {
+      const wrap = create("div", "cell");
+      const text = normalizeText(value);
+      wrap.append(create("div", text ? "cell-text" : "cell-text empty", text || "Não informado"));
+      return wrap;
+    }
 
-            updateUI(latestReading.temperatura);
-            dataHistory = chartReadings.map((reading) => reading.temperatura);
-            labels = chartReadings.map((reading) => formatReadingTime(reading.timestamp, { seconds: false }));
-            renderLogs(readings);
-            drawChart();
-        }
-
-        // --- GRÁFICO (Canvas puro) ---
-        function drawChart() {
-            const width = canvas.width;
-            const height = canvas.height;
-            const padding = 30;
-
-            // Limpar
-            ctx.clearRect(0, 0, width, height);
-
-            // Definir limites Y (Min/Max dinâmico)
-            let minVal = Math.min(...dataHistory, 20); // Mínimo de 20C se não houver dados
-            let maxVal = Math.max(...dataHistory, 30); // Máximo de 30C se não houver dados
-            
-            // Adicionar margem aos limites
-            minVal = Math.floor(minVal - 2);
-            maxVal = Math.ceil(maxVal + 2);
-            const range = maxVal - minVal;
-
-            if (dataHistory.length < 2) return;
-
-            // Desenhar Eixos
-            ctx.beginPath();
-            ctx.strokeStyle = '#e5e7eb';
-            ctx.lineWidth = 1;
-            // Linhas de grade horizontais
-            for (let i = 0; i <= 4; i++) {
-                const y = padding + (height - 2 * padding) * (i / 4);
-                ctx.moveTo(padding, y);
-                ctx.lineTo(width - padding, y);
-                
-                // Texto do eixo Y
-                ctx.fillStyle = '#9ca3af';
-                ctx.font = '10px sans-serif';
-                const valLabel = maxVal - (range * (i / 4));
-                ctx.fillText(valLabel.toFixed(0) + '°', 0, y + 3);
-            }
-            ctx.stroke();
-
-            // Desenhar Linha de Dados
-            ctx.beginPath();
-            ctx.strokeStyle = '#3b82f6';
-            ctx.lineWidth = 3;
-            ctx.lineJoin = 'round';
-            ctx.lineCap = 'round';
-
-            const xStep = (width - 2 * padding) / (maxDataPoints - 1);
-
-            dataHistory.forEach((val, index) => {
-                // X: da esquerda para direita (baseado no index atual vs maxDataPoints)
-                // Para fazer o gráfico "correr" para esquerda, o x depende da posição no array relativa ao tamanho total permitido
-                // Mas aqui vamos apenas preencher da esquerda para a direita baseado no tamanho atual
-                
-                const xPos = padding + index * ((width - 2 * padding) / (dataHistory.length > 1 ? dataHistory.length - 1 : 1));
-                
-                // Y: inverter (0 em canvas é topo)
-                const normalizedY = (val - minVal) / range;
-                const yPos = (height - padding) - (normalizedY * (height - 2 * padding));
-
-                if (index === 0) {
-                    ctx.moveTo(xPos, yPos);
-                } else {
-                    ctx.lineTo(xPos, yPos);
-                }
-            });
-            ctx.stroke();
-
-            // Adicionar Gradiente abaixo da linha
-            const gradient = ctx.createLinearGradient(0, padding, 0, height - padding);
-            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
-            gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-            
-            ctx.lineTo(padding + ((dataHistory.length - 1) * ((width - 2 * padding) / (dataHistory.length - 1))), height - padding);
-            ctx.lineTo(padding, height - padding);
-            ctx.closePath();
-            ctx.fillStyle = gradient;
-            ctx.fill();
-        }
-
-        // --- CONEXÃO COM A API ---
-
-        async function fetchTemperature() {
-            if (isFetching) {
-                return;
-            }
-
-            isFetching = true;
-            btnRefresh.disabled = true;
-            setConnectionState('Buscando dados...', '#f59e0b');
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' },
-                    cache: 'no-store'
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const data = await response.json();
-                const history = Array.isArray(data.historico) ? data.historico : [];
-
-                renderHistory(history);
-
-                if (history.length) {
-                    setConnectionState('Recebendo dados do ESP32', '#10b981');
-                }
-            } catch (error) {
-                console.error("Erro ao buscar dados:", error);
-                setConnectionState('Erro de Conexão', '#ef4444');
-            } finally {
-                isFetching = false;
-                btnRefresh.disabled = false;
-            }
-        }
-
-        btnRefresh.addEventListener('click', fetchTemperature);
-
-        btnClear.addEventListener('click', () => {
-            dataHistory = [];
-            labels = [];
-            logsList.innerHTML = '';
-            tempDisplay.innerText = '--.-';
-            tempBadge.innerText = 'Aguardando dados...';
-            tempBadge.style.backgroundColor = '#e5e7eb';
-            tempBadge.style.color = 'var(--text-muted)';
-            drawChart();
+    function segmented(options, getValue, setValue, onChange) {
+      const group = create("div", "segmented");
+      const buttons = options.map((option) => {
+        const button = create("button", "choice", option.label);
+        button.type = "button";
+        button.dataset.value = option.value;
+        button.addEventListener("click", () => {
+          setValue(option.value);
+          if (onChange) {
+            onChange();
+          }
         });
+        group.append(button);
+        return button;
+      });
 
-        fetchTemperature();
-        setInterval(fetchTemperature, POLL_INTERVAL_MS);
+      return {
+        root: group,
+        sync(disabled = false) {
+          const value = getValue();
+          buttons.forEach((button) => {
+            button.classList.toggle("active", button.dataset.value === value);
+            button.disabled = disabled;
+            button.setAttribute("aria-pressed", button.dataset.value === value ? "true" : "false");
+          });
+        },
+      };
+    }
 
-    </script>
+    function textareaControl(getValue, setValue, placeholder = "") {
+      const wrap = create("div", "cell");
+      const textarea = document.createElement("textarea");
+      const counter = create("div", "counter");
+      textarea.maxLength = textLimit;
+      textarea.placeholder = placeholder;
+      textarea.addEventListener("input", () => {
+        setValue(textarea.value);
+        syncCounter();
+      });
+
+      function syncCounter() {
+        counter.textContent = `${textarea.value.length}/${textLimit}`;
+        counter.classList.toggle("limit", textarea.value.length > textLimit);
+      }
+
+      wrap.append(textarea, counter);
+      return {
+        root: wrap,
+        sync(disabled = false) {
+          textarea.value = getValue() || "";
+          textarea.disabled = disabled;
+          syncCounter();
+        },
+      };
+    }
+
+    function inputControl(getValue, setValue, placeholder = "", attributes = {}) {
+      const input = document.createElement("input");
+      input.type = attributes.type || "text";
+      input.placeholder = placeholder;
+      Object.entries(attributes).forEach(([key, value]) => {
+        if (key !== "type" && value !== undefined && value !== null) {
+          input.setAttribute(key, value);
+        }
+      });
+      input.addEventListener("input", () => {
+        setValue(input.value);
+      });
+      return {
+        root: input,
+        sync(disabled = false) {
+          input.value = getValue() || "";
+          input.disabled = disabled;
+        },
+      };
+    }
+
+    function readWithQuestion(value, label, reviewKey, row, elements, config = {}) {
+      const review = ensureReview(row);
+      const wrap = readBlock(value);
+      wrap.append(create("div", "mini-label", label));
+      const control = segmented(
+        yesNoOptions,
+        () => review.condizencias[reviewKey],
+        (next) => {
+          review.condizencias[reviewKey] = next;
+        },
+        () => syncRow(row, elements)
+      );
+      wrap.append(control.root);
+      elements.controls.push(control);
+      if (config.noTextField) {
+        const followupLabel = create("div", "mini-label", config.noTextField.label);
+        const followup = textareaControl(
+          () => review[config.noTextField.field],
+          (next) => {
+            review[config.noTextField.field] = next;
+          },
+          config.noTextField.placeholder
+        );
+        wrap.append(followupLabel, followup.root);
+        elements.condizenceFollowups.push({
+          key: reviewKey,
+          label: followupLabel,
+          control: followup,
+        });
+      }
+      return wrap;
+    }
+
+    function keywordCell(row, elements) {
+      const review = ensureReview(row);
+      const cell = td();
+      const wrap = readWithQuestion(
+        row.palavrasChave,
+        "Palavra-chave está condizente?",
+        "palavrasChaveCondizentes",
+        row,
+        elements
+      );
+      wrap.append(create("div", "mini-label", "Palavra sugerida"));
+      const suggested = textareaControl(
+        () => review.palavraSugerida,
+        (value) => {
+          review.palavraSugerida = value;
+        },
+        "Palavra sugerida"
+      );
+      wrap.append(suggested.root);
+      elements.controls.push(suggested);
+      cell.append(wrap);
+      return cell;
+    }
+
+    function categoryCell(row, elements) {
+      const review = ensureReview(row);
+      const cell = td();
+      const wrap = create("div", "cell");
+      const fixedCategory = evaluatorCategory() || "";
+      review.categoriaSelecionada = fixedCategory;
+      wrap.append(create("div", "mini-label", "Categoria definida"));
+      wrap.append(create("div", fixedCategory ? "cell-text" : "cell-text empty", fixedCategory || "Não encontrada para este avaliador"));
+      wrap.append(create("div", "mini-label", "Categoria avaliada está condizente?"));
+      const condizente = segmented(
+        yesNoOptions,
+        () => review.condizencias.categoriaCondizente,
+        (next) => {
+          review.condizencias.categoriaCondizente = next;
+        },
+        () => syncRow(row, elements)
+      );
+      wrap.append(condizente.root);
+      const outScopeLabel = create("div", "mini-label", "Motivo");
+      const outScopeText = textareaControl(
+        () => review.foraEscopo,
+        (value) => {
+          review.foraEscopo = value;
+        },
+        "Motivo de fora do escopo"
+      );
+      wrap.append(outScopeLabel, outScopeText.root);
+      elements.outScopeText = outScopeText;
+      elements.outScopeLabel = outScopeLabel;
+      elements.controls.push(condizente);
+      cell.append(wrap);
+      return cell;
+    }
+
+    function ageRestrictionCell(row, elements) {
+      const review = ensureReview(row);
+      const cell = td();
+      const wrap = readWithQuestion(
+        row.restricaoFaixaEtaria,
+        "Restrição de faixa etária está condizente?",
+        "faixaEtariaCondizente",
+        row,
+        elements
+      );
+      elements.afterCategoryControls.push(elements.controls.pop());
+
+      if (hasAgeRestriction(row.restricaoFaixaEtaria)) {
+        const ageFields = create("div", "inline-fields");
+        const minAge = inputControl(
+          () => review.idadeMinima,
+          (value) => {
+            review.idadeMinima = value;
+          },
+          "Idade mínima",
+          { type: "number", min: "0", max: "130", inputmode: "numeric" }
+        );
+        const maxAge = inputControl(
+          () => review.idadeMaxima,
+          (value) => {
+            review.idadeMaxima = value;
+          },
+          "Idade máxima",
+          { type: "number", min: "0", max: "130", inputmode: "numeric" }
+        );
+        ageFields.append(minAge.root, maxAge.root);
+        wrap.append(create("div", "mini-label", "Idade mínima e máxima"), ageFields);
+        elements.afterCategoryControls.push(minAge, maxAge);
+      }
+
+      cell.append(wrap);
+      return cell;
+    }
+
+    function descriptionCell(row, elements) {
+      const review = ensureReview(row);
+      const cell = td();
+      const wrap = readBlock(row.descricaoPublicacao);
+      wrap.append(create("div", "mini-label", "Sugestão de alteração"));
+      const suggestion = textareaControl(
+        () => review.descricaoSugestao,
+        (value) => {
+          review.descricaoSugestao = value;
+        },
+        "Sugestão"
+      );
+      wrap.append(suggestion.root);
+      elements.controls.push(suggestion);
+      cell.append(wrap);
+      return cell;
+    }
+
+    function peopleCell(row, elements) {
+      const review = ensureReview(row);
+      const cell = td("people-column");
+      const wrap = create("div", "person-list");
+      const people = Array.isArray(row.integrantes) ? row.integrantes : [];
+      if (!people.length) {
+        wrap.append(create("div", "empty", "Não informado"));
+      }
+
+      people.forEach((person, index) => {
+        const saved = review.integrantes[index];
+        const node = create("div", "person");
+        const displayName = person.nome || `Integrante ${index + 1}`;
+        const header = create("div", "person-header");
+        const photoUrl = normalizeText(person.fotoUrl);
+        const photoAlt = `Foto de ${displayName}`;
+        if (photoUrl) {
+          const photo = document.createElement("img");
+          photo.className = "person-photo";
+          photo.src = photoUrl;
+          photo.alt = photoAlt;
+          photo.loading = "lazy";
+          photo.referrerPolicy = "no-referrer";
+          photo.addEventListener("error", () => {
+            photo.replaceWith(create("div", "person-photo placeholder", personInitials(displayName)));
+          });
+          header.append(photo);
+        } else {
+          header.append(create("div", "person-photo placeholder", personInitials(displayName)));
+        }
+        const main = create("div", "person-main");
+        main.append(create("div", "person-name", displayName));
+        if (normalizeText(person.papel)) {
+          main.append(create("div", "person-role", `Papel: ${person.papel}`));
+        }
+        const location = personLocation(person);
+        if (location) {
+          main.append(create("div", "person-location", `Cidade/estado: ${location}`));
+        }
+        header.append(main);
+        node.append(header);
+        appendPersonDetails(node, person);
+        node.append(create("div", "mini-label", "De acordo?"));
+        const agreement = segmented(
+          yesNoOptions,
+          () => saved.deAcordo,
+          (next) => {
+            saved.deAcordo = next;
+            if (next === "sim") {
+              saved.acao = "";
+              saved.sugestao = "";
+            }
+          },
+          () => syncRow(row, elements)
+        );
+        const actionLabel = create("div", "mini-label", "Ação");
+        const action = segmented(
+          [
+            { value: "cancelar", label: "Cancelar" },
+            { value: "trocar", label: "Trocar" },
+          ],
+          () => saved.acao,
+          (next) => {
+            saved.acao = next;
+          },
+          () => syncRow(row, elements)
+        );
+        const suggestionLabel = create("div", "mini-label", "Sugestão");
+        const suggestion = textareaControl(
+          () => saved.sugestao,
+          (value) => {
+            saved.sugestao = value;
+          },
+          "Sugestão"
+        );
+
+        node.append(agreement.root, actionLabel, action.root, suggestionLabel, suggestion.root);
+        wrap.append(node);
+        elements.afterCategoryControls.push(agreement, action, suggestion);
+        elements.personFollowups.push({ reviewPerson: saved, actionLabel, action, suggestionLabel, suggestion });
+      });
+
+      cell.append(wrap);
+      return cell;
+    }
+
+    function dadosCell(row, elements) {
+      const review = ensureReview(row);
+      const cell = td();
+      const wrap = readBlock(row.dadosOperacionais);
+      wrap.append(create("div", "mini-label", "Está condizente?"));
+      const condizente = segmented(
+        yesNoOptions,
+        () => review.condizencias.dadosOperacionaisCondizentes,
+        (next) => {
+          review.condizencias.dadosOperacionaisCondizentes = next;
+        },
+        () => syncRow(row, elements)
+      );
+      wrap.append(condizente.root, create("div", "mini-label", "Há possibilidades de adaptações?"));
+
+      const adaptavel = segmented(
+        yesNoOptions,
+        () => review.dadosOperacionaisAdaptaveis,
+        (next) => {
+          review.dadosOperacionaisAdaptaveis = next;
+        },
+        () => syncRow(row, elements)
+      );
+      const adaptacao = textareaControl(
+        () => review.dadosOperacionaisAdaptacao,
+        (value) => {
+          review.dadosOperacionaisAdaptacao = value;
+        },
+        "Texto"
+      );
+
+      wrap.append(adaptavel.root, adaptacao.root);
+      elements.afterCategoryControls.push(condizente, adaptavel, adaptacao);
+      cell.append(wrap);
+      return cell;
+    }
+
+    function scaleCell(row, elements) {
+      const review = ensureReview(row);
+      const cell = td();
+      const wrap = create("div", "scale-list");
+      scaleFields.forEach(([key, label]) => {
+        const rowNode = create("div", "scale-row");
+        rowNode.append(create("div", "mini-label", label));
+        const control = segmented(
+          [1, 2, 3, 4].map((number) => ({ value: String(number), label: String(number) })),
+          () => String(review.escalas[key] || ""),
+          (next) => {
+            review.escalas[key] = Number(next);
+          },
+          () => syncRow(row, elements)
+        );
+        rowNode.append(control.root);
+        wrap.append(rowNode);
+        elements.afterCategoryControls.push(control);
+      });
+      cell.append(wrap);
+      return cell;
+    }
+
+    function recommendationCell(row, elements) {
+      const review = ensureReview(row);
+      const cell = td();
+      const wrap = create("div", "cell");
+      wrap.append(create("div", "mini-label", "Recomendação"));
+      const group = create("div", "segmented");
+      recommendationOptions.forEach((option) => {
+        const button = create("button", "choice", option.label);
+        button.type = "button";
+        button.dataset.value = option.value;
+        button.addEventListener("click", () => {
+          review.recomendacao = option.value;
+          if (option.value === "Recomendado com ressalvas") {
+            applyAutoComplement(row);
+          } else {
+            clearAutoComplement(row);
+          }
+          syncRow(row, elements);
+        });
+        elements.recommendationButtons.push(button);
+        group.append(button);
+      });
+
+      const outScopeButton = create("button", "choice hidden", outOfScopeRecommendation);
+      outScopeButton.type = "button";
+      outScopeButton.dataset.value = outOfScopeRecommendation;
+      elements.outScopeButton = outScopeButton;
+      group.append(outScopeButton);
+
+      const complement = textareaControl(
+        () => review.informacoesComplementares,
+        (value) => {
+          review.informacoesComplementares = value;
+        },
+        "Informações complementares"
+      );
+      elements.complement = complement;
+      wrap.append(group, complement.root);
+      cell.append(wrap);
+      return cell;
+    }
+
+    function envioCell(row, elements) {
+      const cell = td();
+      const wrap = create("div", "cell");
+      const submit = create("button", "submit", "Enviar");
+      const status = create("div", "status", "Pendente");
+      submit.type = "button";
+      submit.addEventListener("click", () => submitEvaluation(row, elements));
+      elements.submit = submit;
+      elements.status = status;
+      wrap.append(submit, status);
+      cell.append(wrap);
+      return cell;
+    }
+
+    function categoryOutOfScope(row) {
+      return ensureReview(row).condizencias.categoriaCondizente === "nao";
+    }
+
+    function hasBlockingCondizenceIssue(row) {
+      const review = ensureReview(row);
+      return condizenceFields.some(([key]) => key !== "categoriaCondizente" && review.condizencias[key] === "nao");
+    }
+
+    function buildAutoComplement(row) {
+      const review = ensureReview(row);
+      const lines = [];
+      if (normalizeText(review.descricaoSugestao)) {
+        lines.push(`Descrição para publicação: ${review.descricaoSugestao}`);
+      }
+      if (review.condizencias.eixoCondizente === "nao" && normalizeText(review.eixoSugestao)) {
+        lines.push(`Eixo sugerido: ${review.eixoSugestao}`);
+      }
+      if (review.condizencias.formatoCondizente === "nao" && normalizeText(review.formatoSugestao)) {
+        lines.push(`Formato sugerido: ${review.formatoSugestao}`);
+      }
+      if (normalizeText(review.palavraSugerida)) {
+        lines.push(`Palavra sugerida: ${review.palavraSugerida}`);
+      }
+      if (review.condizencias.duracaoCondizente === "nao" && normalizeText(review.duracaoEsperada)) {
+        lines.push(`Duração esperada: ${review.duracaoEsperada}`);
+      }
+      condizenceFields.forEach(([key, label]) => {
+        if (review.condizencias[key] === "nao" && key !== "categoriaCondizente") {
+          lines.push(`${label}: não está condizente.`);
+        }
+      });
+      review.integrantes.forEach((person) => {
+        if (person.deAcordo === "nao") {
+          const action = person.acao === "trocar" ? "trocar" : "cancelar";
+          const text = normalizeText(person.sugestao);
+          lines.push(`${person.nome}: ${action}${text ? ` - ${text}` : ""}.`);
+        }
+      });
+      if (normalizeText(review.dadosOperacionaisAdaptacao)) {
+        lines.push(`Dados operacionais: ${review.dadosOperacionaisAdaptacao}`);
+      }
+      return lines.join("\n\n");
+    }
+
+    function applyAutoComplement(row) {
+      const review = ensureReview(row);
+      const generated = buildAutoComplement(row);
+      if (!generated) {
+        return;
+      }
+      const current = normalizeText(review.informacoesComplementares);
+      if (!current || current === review._autoComplement) {
+        review.informacoesComplementares = generated;
+      } else if (!current.includes(generated)) {
+        review.informacoesComplementares = `${generated}\n\n${current}`;
+      }
+      review._autoComplement = generated;
+    }
+
+    function clearAutoComplement(row) {
+      const review = ensureReview(row);
+      const generated = normalizeText(review._autoComplement) || buildAutoComplement(row);
+      const current = normalizeText(review.informacoesComplementares);
+      if (!generated || !current) {
+        review._autoComplement = "";
+        return;
+      }
+      if (current === generated) {
+        review.informacoesComplementares = "";
+      } else if (current.startsWith(`${generated}\n\n`)) {
+        review.informacoesComplementares = current.slice(generated.length).trim();
+      }
+      review._autoComplement = "";
+    }
+
+    function syncRow(row, elements) {
+      const review = ensureReview(row);
+      const outScope = categoryOutOfScope(row);
+      const blocksRecommended = hasBlockingCondizenceIssue(row);
+      if (outScope) {
+        review.recomendacao = outOfScopeRecommendation;
+      } else if (review.recomendacao === outOfScopeRecommendation) {
+        review.recomendacao = "";
+      }
+      if (!outScope && blocksRecommended && review.recomendacao === recommendedValue) {
+        review.recomendacao = "";
+      }
+      elements.controls.forEach((control) => control.sync(false));
+      elements.afterCategoryControls.forEach((control) => control.sync(outScope));
+      elements.condizenceFollowups.forEach((item) => {
+        const visible = !outScope && review.condizencias[item.key] === "nao";
+        item.label.classList.toggle("hidden", !visible);
+        item.control.root.classList.toggle("hidden", !visible);
+        item.control.sync(outScope || !visible);
+      });
+      elements.personFollowups.forEach((item) => {
+        const visible = item.reviewPerson.deAcordo === "nao";
+        item.actionLabel.classList.toggle("hidden", !visible);
+        item.action.root.classList.toggle("hidden", !visible);
+        item.suggestionLabel.classList.toggle("hidden", !visible);
+        item.suggestion.root.classList.toggle("hidden", !visible);
+        item.action.sync(outScope || !visible);
+        item.suggestion.sync(outScope || !visible);
+      });
+
+      elements.recommendationButtons.forEach((button) => {
+        const blockedRecommended = blocksRecommended && button.dataset.value === recommendedValue;
+        button.classList.toggle("active", button.dataset.value === review.recomendacao);
+        button.disabled = outScope || blockedRecommended;
+        button.setAttribute("aria-pressed", button.dataset.value === review.recomendacao ? "true" : "false");
+      });
+      elements.outScopeButton.classList.toggle("hidden", !outScope);
+      elements.outScopeButton.classList.toggle("active", outScope);
+      elements.outScopeButton.disabled = !outScope;
+      elements.outScopeLabel.classList.toggle("hidden", !outScope);
+      elements.outScopeText.root.classList.toggle("hidden", !outScope);
+      elements.outScopeText.sync(false);
+      elements.complement.sync(outScope);
+
+      elements.submit.textContent = row.enviado ? "Atualizar" : "Enviar";
+      elements.status.textContent = row.enviado ? "Enviado" : outScope ? "Fora do escopo" : "Pendente";
+      elements.status.classList.toggle("saved", Boolean(row.enviado));
+    }
+
+    function validateRow(row) {
+      const review = ensureReview(row);
+      if (!normalizeText(review.categoriaSelecionada)) {
+        return "Categoria não encontrada para este avaliador.";
+      }
+      if (!review.condizencias.categoriaCondizente) {
+        return "Informe se a categoria avaliada está condizente.";
+      }
+      if (categoryOutOfScope(row)) {
+        return normalizeText(review.foraEscopo) ? "" : "Informe o motivo de fora do escopo.";
+      }
+      for (const [key, label] of condizenceFields) {
+        if (!review.condizencias[key]) {
+          return `Informe se ${label} está condizente.`;
+        }
+        if (review.condizencias[key] === "nao") {
+          if (key === "eixoCondizente" && !normalizeText(review.eixoSugestao)) {
+            return "Informe a sugestão de eixo.";
+          }
+          if (key === "formatoCondizente" && !normalizeText(review.formatoSugestao)) {
+            return "Informe a sugestão de formato.";
+          }
+          if (key === "duracaoCondizente" && !normalizeText(review.duracaoEsperada)) {
+            return "Informe o tempo esperado da atividade.";
+          }
+        }
+      }
+      if (hasAgeRestriction(row.restricaoFaixaEtaria)) {
+        if (!isValidAge(review.idadeMinima)) {
+          return "Informe a idade mínima da restrição.";
+        }
+        if (!isValidAge(review.idadeMaxima)) {
+          return "Informe a idade máxima da restrição.";
+        }
+        if (Number(review.idadeMinima) > Number(review.idadeMaxima)) {
+          return "A idade mínima não pode ser maior que a idade máxima.";
+        }
+      }
+      for (const person of review.integrantes) {
+        if (!person.deAcordo) {
+          return `Informe se ${person.nome} está de acordo.`;
+        }
+        if (person.deAcordo === "nao") {
+          if (!person.acao) {
+            return `Informe se ${person.nome} deve ser cancelado ou trocado.`;
+          }
+          if (person.acao === "trocar" && !normalizeText(person.sugestao)) {
+            return `Informe a sugestão de troca para ${person.nome}.`;
+          }
+        }
+      }
+      for (const [key, label] of scaleFields) {
+        if (!review.escalas[key]) {
+          return `Informe a escala de ${label}.`;
+        }
+      }
+      if (!review.recomendacao) {
+        return "Selecione uma recomendação.";
+      }
+      if (hasBlockingCondizenceIssue(row) && review.recomendacao === recommendedValue) {
+        return "Não é possível aprovar quando há item não condizente.";
+      }
+      return "";
+    }
+
+    function buildRow(row) {
+      ensureReview(row);
+      const elements = {
+        controls: [],
+        afterCategoryControls: [],
+        condizenceFollowups: [],
+        personFollowups: [],
+        recommendationButtons: [],
+      };
+      const tr = create("tr");
+      tr.append(
+        readTextCell(row.nomeAtividade, "sticky activity-name"),
+        readTextCell(row.nomeEspecialista || evaluatorId),
+        readTextCell(row.idAtividade || row.itemId),
+        readTextCell(row.objetivo),
+        readTextCell(row.justificativa),
+        readTextCell(row.metodologia),
+        descriptionCell(row, elements)
+      );
+
+      [
+        ["eixo", "Eixo", "eixoCondizente", "eixoSugestao", "Sugestão de eixo"],
+        ["formato", "Formato", "formatoCondizente", "formatoSugestao", "Sugestão de formato"],
+      ].forEach(([field, label, key, suggestionField, suggestionLabel]) => {
+        const cell = td();
+        cell.append(readWithQuestion(row[field], `${label} está condizente?`, key, row, elements, {
+          noTextField: {
+            field: suggestionField,
+            label: suggestionLabel,
+            placeholder: suggestionLabel,
+          },
+        }));
+        tr.append(cell);
+      });
+
+      tr.append(peopleCell(row, elements));
+      tr.append(keywordCell(row, elements));
+      tr.append(categoryCell(row, elements));
+
+      const durationCell = td();
+      durationCell.append(readWithQuestion(row.duracao, "Duração está condizente?", "duracaoCondizente", row, elements, {
+        noTextField: {
+          field: "duracaoEsperada",
+          label: "Tempo esperado",
+          placeholder: "Tempo esperado",
+        },
+      }));
+      elements.afterCategoryControls.push(elements.controls.pop());
+      tr.append(durationCell);
+
+      const publicCell = td();
+      publicCell.append(readWithQuestion(row.publicoAlvo, "Público-alvo está condizente?", "publicoAlvoCondizente", row, elements));
+      elements.afterCategoryControls.push(elements.controls.pop());
+      tr.append(publicCell, ageRestrictionCell(row, elements));
+
+      tr.append(
+        dadosCell(row, elements),
+        readTextCell(row.informacoesExtras),
+        scaleCell(row, elements),
+        recommendationCell(row, elements),
+        envioCell(row, elements)
+      );
+      syncRow(row, elements);
+      return tr;
+    }
+
+    function renderRows(rows) {
+      state.clear();
+      rows.forEach((row) => {
+        ensureReview(row);
+        state.set(row.itemId, row);
+      });
+
+      renderFilteredRows();
+    }
+
+    function renderFilteredRows() {
+      const rows = Array.from(state.values());
+      const rowsToShow = filteredRows(rows);
+      tableBody.innerHTML = "";
+      rowsToShow.forEach((row) => {
+        ensureReview(row);
+        tableBody.append(buildRow(row));
+      });
+
+      updateSummary(rows);
+      stateBox.classList.add("hidden");
+      gridWrap.classList.remove("hidden");
+    }
+
+    async function loadRows() {
+      if (!evaluatorId) {
+        setState("Avaliador não informado", "Acesse a página usando /id-do-avaliador.", true);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/avaliacoes/${encodeURIComponent(evaluatorId)}`);
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || "Não foi possível carregar as avaliações.");
+        }
+        const rows = payload.rows || [];
+        if (!rows.length) {
+          updateSummary([]);
+          setState("Nenhum item encontrado", "Não há linhas do Monday para este avaliador.");
+          return;
+        }
+        renderRows(rows);
+      } catch (error) {
+        setState("Erro ao carregar", error.message, true);
+      }
+    }
+
+    async function submitEvaluation(row, elements) {
+      const error = validateRow(row);
+      if (error) {
+        elements.status.textContent = error;
+        elements.status.classList.remove("saved");
+        return;
+      }
+
+      elements.submit.disabled = true;
+      elements.submit.textContent = "Enviando";
+      elements.status.textContent = "Salvando";
+
+      try {
+        const response = await fetch(`/api/avaliacoes/${encodeURIComponent(evaluatorId)}/${encodeURIComponent(row.itemId)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ review: row.review }),
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || "Não foi possível enviar.");
+        }
+
+        row.review = payload.review;
+        row.recomendacao = payload.recomendacao;
+        row.enviado = true;
+        row._reviewPrepared = false;
+        state.set(row.itemId, row);
+        renderFilteredRows();
+      } catch (error) {
+        elements.status.textContent = error.message;
+        elements.status.classList.remove("saved");
+      } finally {
+        elements.submit.disabled = false;
+      }
+    }
+
+    loadRows();
+  </script>
 </body>
 </html>
